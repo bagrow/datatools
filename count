@@ -1,0 +1,3 @@
+#!/bin/bash
+
+awk ' NF > 0{ counts[$0] = counts[$0] + 1; tot = tot + 1} END { for (word in counts) print word, counts[word]/tot; }' | sort -g

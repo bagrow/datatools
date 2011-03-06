@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+# aver
+# Jim Bagrow
+# Last Modified: 2011-03-05
+
+import sys, os
+import numpy
+
+if __name__ == '__main__':
+    
+    try:
+        num_bins = int(sys.argv[1])
+    except IndexError:
+        num_bins = None
+    
+    # data is assumed to be two columns:
+    data = [ map(float, x.strip().split()) for x in sys.stdin.readlines() ]
+    X,Y = zip(*data)
+    
+    if num_bins is None:
+        from math import sqrt
+        num_bins = int(sqrt(len(data)))
+    
+    bin_edges = numpy.linspace(min(X),max(X), num_bins)
+    for i in xrange(1,num_bins):
+        bL,bR = bin_edges[i-1], bin_edges[i]
+        
+        data_in_bin = [y for x,y in data if bL <= x < bR]
+        if data_in_bin:
+            print 0.5*(bL+bR), numpy.mean(data_in_bin), numpy.std(data_in_bin)
+        
+
+

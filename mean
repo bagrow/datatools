@@ -1,0 +1,4 @@
+#!/bin/bash
+
+awk '{total+=$1; count+=1} END {print total/count}'
+

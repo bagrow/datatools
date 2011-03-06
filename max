@@ -1,0 +1,3 @@
+#!/bin/bash
+
+awk '{if(max==""){max=$1}; if($1>max) {max=$1}; } END {print max}'

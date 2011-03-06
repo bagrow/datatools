@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+# logbin
+# Jim Bagrow
+# Last Modified: 2011-02-27
+
+import sys
+import warnings
+import numpy
+
+if __name__ == '__main__':
+    
+    # eventually make this take a file and num_bins (bin width?)
+    try:
+        num_bins = int(sys.argv[1])
+    except IndexError:
+        num_bins = None
+    
+    data = [ float(x) for x in sys.stdin.readlines() if float(x) > 0 ]
+    
+    if num_bins is None:
+        from math import sqrt
+        num_bins = int(sqrt(len(data)))
+    
+    min_data,max_data = min(data),max(data)
+    bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins )
+    
+    warnings.simplefilter("ignore", Warning)
+    hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=True)
+    bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
+    print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
+    
+    for b,h in zip(bin_centers, hist):
+        print b, h
+
+
