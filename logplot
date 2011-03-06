@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PRECMD=''
-LINCMD='w lp'
+LINCMD='w lp pt 6'
 while getopts "c:l:" flag
 do
     case "$flag"  in
