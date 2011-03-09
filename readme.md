@@ -9,15 +9,16 @@ Examples
 ========
 
     $ cat data.txt | mean
-    $ cat xy.data.txt | aver | logplot -c "set title xy" -l "w p"
-    $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | plot
+    $ cat xy.data.txt | aver | plot -c "set title xy" -l "w p"
+    $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
 
 
 Install
 =======
-Get the git repository
+Get the git repository:
 
-    $ git clone <url>
+    $ cd
+    $ git clone git://github.com/bagrow/datatools.git
 
 Then add the `datatools` directory to your path.  For example, put
 
@@ -41,8 +42,9 @@ Requirements
 Todo
 ====
 
-* Fix (c)cdf to only plot unique values.
 * Real help and documentation.
+* Fix (c)cdf to only plot unique values.
+* aver should be more efficient.
 
 
 License

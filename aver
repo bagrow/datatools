@@ -43,7 +43,7 @@ if __name__ == '__main__':
     for i in xrange(1,num_bins):
         bL,bR = bin_edges[i-1], bin_edges[i]
         
-        data_in_bin = [y for x,y in data if bL <= x < bR]
+        data_in_bin = [y for x,y in data if bL <= x < bR] # slow!
         if data_in_bin:
             print 0.5*(bL+bR), numpy.mean(data_in_bin), numpy.std(data_in_bin)
         
