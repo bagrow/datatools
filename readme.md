@@ -9,6 +9,7 @@ Examples
 ========
 
     $ cat data.txt | mean
+    $ cat ages.txt | count | plot
     $ cat xy.data.txt | aver | plot -c "set title xy" -l "w p"
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
 
