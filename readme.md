@@ -46,8 +46,7 @@ Todo
 
 * Real help and documentation.
 * Fix (c)cdf to only plot unique values.
-* aver should be more efficient.
-
+* support dumb terminal if x11 is not available?
 
 License
 =======
