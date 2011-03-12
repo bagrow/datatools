@@ -36,7 +36,7 @@ Requirements
 
 * bash
 * awk
-* gnuplot
+* gnuplot (and X11 terminal)
 * python
     - numpy (version with fixed histogram normalization)
 
