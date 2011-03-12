@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-03-05
+# Last Modified: 2011-03-12
 
 """
     This file is part of Datatools.
@@ -21,15 +21,34 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os
-import numpy
+import sys, numpy
 
-if __name__ == '__main__':
+def uniq_binning():
+    """for each unique x-value, print the mean of all y-values"""
     
-    try:
-        num_bins = int(sys.argv[1])
-    except IndexError:
-        num_bins = None
+    # data is assumed to be two columns:
+    data = [ x.strip().split() for x in sys.stdin.readlines() ]
+    
+    x2listy = {}
+    for x,y in data:
+        try:
+            x = int(x)    # is x an int?
+        except ValueError:
+            pass          # nope, keep it a string...
+        y = float(y)
+        try:
+            x2listy[x].append(y)
+        except KeyError:
+            x2listy[x] = [y]
+    
+    for x in sorted(x2listy.keys()):
+        print x, numpy.mean(x2listy[x])
+
+
+def aver_binning(num_bins):
+    """bin the y-values into linear bins by x, print bin center
+    and mean of all y values within that bin.
+    """
     
     # data is assumed to be two columns:
     data = [ map(float, x.strip().split()) for x in sys.stdin.readlines() ]
@@ -37,15 +56,30 @@ if __name__ == '__main__':
     
     if num_bins is None:
         from math import sqrt
-        num_bins = int(sqrt(len(data)))
+        num_bins = int(sqrt(len(data)))+1 # plus one because bin_edges!
     
-    bin_edges = numpy.linspace(min(X),max(X), num_bins)
-    for i in xrange(1,num_bins):
-        bL,bR = bin_edges[i-1], bin_edges[i]
-        
-        data_in_bin = [y for x,y in data if bL <= x < bR] # slow!
-        if data_in_bin:
-            print 0.5*(bL+bR), numpy.mean(data_in_bin), numpy.std(data_in_bin)
-        
+    bin_edges = numpy.linspace( min(X),max(X), num_bins+1 )
+    bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
+    for x,y in sorted(data):
+        if x > bR: # this x,y is in next bin, so finish off current bin
+            print 0.5*(bL+bR), numpy.mean( data_in_bin )
+            b += 1
+            bL, bR = bin_edges[b], bin_edges[b+1]
+            data_in_bin = []
+        data_in_bin.append( y )
+    print 0.5*(bL+bR), numpy.mean( data_in_bin ) # don't forget last bin!
 
 
+if __name__ == '__main__':
+    
+    # check if u or uniq or unique is a commandline arg:
+    args = set( a.lower().replace('-','') for a in sys.argv[1:] )
+    if set(['u','uniq','unique']) & args:
+        uniq_binning()
+    else:
+        try:
+            num_bins = int(sys.argv[1])
+        except IndexError:
+            num_bins = None
+        aver_binning(num_bins)
+    

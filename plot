@@ -31,6 +31,7 @@ cat /dev/stdin > file.tmp
 
 gnuplot << EOF
 set term x11 enhanced persist
+#set term dumb 130 40
 unset key
 
 $PRECMD
