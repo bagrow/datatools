@@ -17,7 +17,7 @@
 
 
 PRECMD=''
-LINCMD='w lp pt 6'
+LINCMD='w p pt 6'
 while getopts "c:l:" flag
 do
     case "$flag"  in
