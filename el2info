@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+
+# el2info
+# Jim Bagrow
+# Last Modified: 2011-03-15
+
+import sys, os
+try:
+    import networkx
+except ImportError:
+    sys.exit("networkx is required, see http://networkx.lanl.gov/")
+
+def get_edge(line):
+    """First try to split with tab, then with space. No other delimiters are
+    currently supporting...
+    """
+    L = line.strip().split("\t")[:2]
+    if len(L) == 2:
+        return L
+    return line.strip().split(" ")[:2]
+
+
+if __name__ == '__main__':
+    
+    # read edgelist from stdin:
+    edges = [ get_edge(line) for line in sys.stdin.readlines() ]
+    
+    G = networkx.Graph() # only unweighted, undirected graphs are supported...
+    G.add_edges_from( edges )
+    
+    N   = G.number_of_nodes()
+    M   = G.number_of_edges()
+    n2c = networkx.clustering(G)
+    C   = 1.0 * sum(n2c.values()) / len(n2c)
+    T   = networkx.transitivity(G)
+    
+    L       = networkx.connected_components(G)
+    N_comps = len(L)
+    
+    flt_fmt = "%0.8f"
+    print "       Number of Nodes =", N
+    print "       Number of Links =", M
+    print "               Density =", flt_fmt % (M / (N*(N-1)/2.0))
+    print "        Average Degree =", flt_fmt % (2.0 * M / N)
+    print "Clustering Coefficient =", flt_fmt % C
+    print "          Transitivity =", flt_fmt % T 
+    print "  Number of Components =", N_comps
+    if N_comps == 1:
+        print "              Diameter =", networkx.diameter(G)
+    else:
+        print "       Fraction in GCC =", flt_fmt % (1.0 * L[0] / N)
+    

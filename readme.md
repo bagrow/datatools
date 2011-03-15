@@ -39,7 +39,7 @@ Requirements
 * gnuplot (and X11 terminal)
 * python
     - numpy (version with fixed histogram normalization)
-
+    - [networkx][] (only for el2info)
 
 Todo
 ====
@@ -66,3 +66,4 @@ License
     You should have received a copy of the GNU General Public License
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
+[networkx]: http://networkx.lanl.gov
