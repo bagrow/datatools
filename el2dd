@@ -6,9 +6,19 @@
 
 import sys, os
 
+def get_edge(line):
+    """first try to split with tab, then with space, no other delimiters are
+    currently supporting...
+    """
+    L = line.strip().split("\t")[:2]
+    if len(L) == 2:
+        return L
+    return line.strip().split(" ")[:2]
+
+
 if __name__ == '__main__':
     
-    edges = [ line.strip().split()[:2] for line in sys.stdin.readlines() ]
+    edges = [ get_edge(line) for line in sys.stdin.readlines() ]
     
     n2k = {}
     for ni,nj in edges:
