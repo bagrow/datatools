@@ -15,11 +15,23 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name [-n]"
+    echo -e ""
+    echo -e "Read data from STDIN and count number of occurrences of each unique value."
+    echo -e "  Use -n to return the number of occurrences and not the fraction."
+    echo -e "Example:\n  cat ages.txt | $name | plot -c \"set xlabel 'age';set ylabel '# people'\""
+	exit 1
+}
+
 NORMED=true
-while getopts ":nN" opt; do
+while getopts "nNh -help" opt; do
   case $opt in
     n | N) NORMED=false;;
-    \?)    echo "Invalid option: -$OPTARG" >&2;;
+        h) usage;;
+    -help) usage;;
+      [?]) usage;;
   esac
 done
 

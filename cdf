@@ -23,8 +23,20 @@
 
 import sys, os
 
+name  = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+        
+Compute the empirical cumulative distribution function of date received from
+  STDIN.
+Example:
+  cat vals.txt | %s | plot -c "set xlabel 'x'; set ylabel 'Pr(X>x)';" """ % (name,name) 
+
 if __name__ == '__main__':
     
+    if len(sys.argv) > 1:
+        sys.exit(usage)
+
     data = [ float(x) for x in sys.stdin.readlines() ]
     N = len(data)
     

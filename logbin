@@ -21,17 +21,32 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
+import sys, os
 import warnings
 import numpy
 
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [number of bins]
+        
+Compute the histogram of the data received from STDIN using logarithmically sized
+  bins.  If the number of bins is unspecified, an estimate is used based on the
+  number of data points.
+Example:
+  cat vals.txt | %s 200 | logplot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
+
+error = "Number of bins must be an integer, run `%s --help` for info." % name
+
 if __name__ == '__main__':
     
-    # eventually make this take a file and num_bins (bin width?)
+    if "-h" in sys.argv or "--help" in sys.argv:
+        sys.exit(usage)
     try:
         num_bins = int(sys.argv[1])
     except IndexError:
         num_bins = None
+    except ValueError:
+        sys.exit(error)
     
     data = [ float(x) for x in sys.stdin.readlines() if float(x) > 0 ]
     

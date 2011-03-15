@@ -15,13 +15,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
-usage="Display the smallest value of the numbers read from STDIN\n
-\tExample: $ cat data.txt | `basename $0`"
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name "
+    echo -e ""
+    echo -e "Compute the minimum of the data received from STDIN."
+    echo -e "Example:\n  cat ages.txt | $name"
+	exit 1
+}
+
 while [ "$1" != "" ]; do
     case $1 in
-        -h | --help ) echo -e $usage
-                      exit
-                      ;;
+        -h | --help ) usage;;
     esac
     shift
 done
