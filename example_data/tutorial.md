@@ -43,10 +43,10 @@ Transforming data
 
 Much of datatools functionality involves transforming one type of data to
 another so that it may be plotted, etc.  For example, `bin` computes the
-histogram of X-data, return XY-data where the X-values are the centers of bins
-and the Y-values are the number (or fraction) of original datapoints that fall
-within that bin.  Other functions that read X-data and return plottable XY-
-data are `logbin`, `count`, `cdf`, and `ccdf`.
+histogram of X-data, returning XY-data where the X-values are the centers of
+bins and the Y-values are the number (or fraction) of original datapoints that
+fall within that bin.  Other functions that read X-data and return plottable
+XY- data are `logbin`, `count`, `cdf`, and `ccdf`.
 
 
 Plotting data
