@@ -22,6 +22,7 @@
 """
 
 import sys, os, numpy
+import warnings
 
 name = os.path.basename(sys.argv[0])
 usage = \
@@ -53,6 +54,7 @@ if __name__ == '__main__':
         from math import sqrt
         num_bins = int(sqrt(len(data)))
     
+    warnings.simplefilter("ignore", Warning)
     hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=True)
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
     
