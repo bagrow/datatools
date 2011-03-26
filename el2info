@@ -2,7 +2,7 @@
 
 # el2info
 # Jim Bagrow
-# Last Modified: 2011-03-15
+# Last Modified: 2011-03-26
 
 import sys, os
 try:
@@ -43,10 +43,10 @@ if __name__ == '__main__':
     print "               Density =", flt_fmt % (M / (N*(N-1)/2.0))
     print "        Average Degree =", flt_fmt % (2.0 * M / N)
     print "Clustering Coefficient =", flt_fmt % C
-    print "          Transitivity =", flt_fmt % T 
+    print "          Transitivity =", flt_fmt % T
     print "  Number of Components =", N_comps
     if N_comps == 1:
         print "              Diameter =", networkx.diameter(G)
     else:
-        print "       Fraction in GCC =", flt_fmt % (1.0 * L[0] / N)
+        print "       Fraction in GCC =", flt_fmt % (1.0 * len(L[0]) / N)
     
