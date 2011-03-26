@@ -31,7 +31,7 @@ STDIN:
 
 
 Simple statistics from X-data
-===========================
+=============================
 
 One can compute simple statistics by piping a column of numbers, sampled from a
 probability distribution for example, into `min`, `max`, `sum`, `mean`, and
@@ -46,7 +46,7 @@ another so that it may be plotted, etc.  For example, `bin` computes the
 histogram of X-data, returning XY-data where the X-values are the centers of
 bins and the Y-values are the number (or fraction) of original datapoints that
 fall within that bin.  Other functions that read X-data and return plottable
-XY- data are `logbin`, `count`, `cdf`, and `ccdf`.
+XY-data are `logbin`, `count`, `cdf`, and `ccdf`.
 
 
 Plotting data
