@@ -60,7 +60,7 @@ if __name__ == '__main__':
     warnings.simplefilter("ignore", Warning)
     hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=True)
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
-    print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
+    #print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
     
     for b,h in zip(bin_centers, hist):
         print b, h
