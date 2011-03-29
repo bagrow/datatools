@@ -2,7 +2,7 @@ Datatools
 =========
 
 A collection of small scripts for quickly plotting and munging data from the
-command line.  Support for basic statistics, histograms, and CDFs is included.
+command line.  Supports basic statistics, histograms, and CDFs.
 
 
 Examples
