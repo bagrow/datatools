@@ -1,0 +1,86 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name"
+    echo -e ""
+    echo -e "Compute the median of the data received from STDIN."
+    echo -e "Example:\n  cat vals.txt | $name"
+	exit 1
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help ) usage;;
+    esac
+    shift
+done
+
+awk '
+BEGIN {
+    delete ARGV;
+    sum = 0;
+    n = 0;
+}
+{
+    nums[n++] = $1;
+    sum += $1;
+}
+ 
+END {
+    nums[n] = nums[0];
+    heapsort(n, nums);
+    
+    mid = int(n/2)+1;
+    median = (n % 2) ? nums[mid] : (nums[mid] + nums[mid-1])/2;
+    
+    print median;
+} 
+
+function heapsort (n, ra) {
+    l = int(0.5+n/2) + 1
+    ir = n;
+    for (;;) {
+        if (l > 1) {
+            rra = ra[--l];
+        } else {
+            rra = ra[ir];
+            ra[ir] = ra[1];
+            if (--ir == 1) {
+                ra[1] = rra;
+                return;
+            }
+        }
+        i = l;
+        j = l * 2;
+        while (j <= ir) {
+            if (j < ir && ra[j] < ra[j+1]) { ++j; }
+            if (rra < ra[j]) {
+                ra[i] = ra[j];
+                j += (i = j);
+            } else {
+                j = ir + 1;
+            }
+        }
+        ra[i] = rra;
+    }
+}
+'
+
+# The above awk command was adapted from http://dada.perl.it/shootout/moments.gawk.html
+
