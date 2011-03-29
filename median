@@ -32,15 +32,7 @@ while [ "$1" != "" ]; do
 done
 
 awk '
-BEGIN {
-    delete ARGV;
-    sum = 0;
-    n = 0;
-}
-{
-    nums[n++] = $1;
-    sum += $1;
-}
+{ nums[n++] = $1; }
  
 END {
     nums[n] = nums[0];
