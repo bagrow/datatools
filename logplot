@@ -43,14 +43,14 @@ do
 done
 
 
-cat /dev/stdin > file.tmp
+cat /dev/stdin > /tmp/file.tmp
 
 gnuplot << EOF
 set term x11 enhanced persist
 unset key
 set log xy
 $PRECMD
-plot 'file.tmp' using 1:2 $LINCMD
+plot '/tmp/file.tmp' using 1:2 $LINCMD
 EOF
 
-rm -f file.tmp
+rm -f /tmp/file.tmp
