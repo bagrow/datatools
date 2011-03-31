@@ -64,3 +64,10 @@ This directory contains some example data files to experiment with.
     $ cat xy.dat | aver 100 | plot
     $ cat x.dat | mean
     $ cat x.ints.dat | count | plot -l 'w lp'
+    $ cat karate.edgelist | el2info
+
+The file `karate.edgelist` contains the Zachary Karate Club:
+
+W. W. Zachary, An information flow model for conflict and fission in small
+groups, Journal of Anthropological Research 33, 452-473 (1977).
+
