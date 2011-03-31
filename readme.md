@@ -43,6 +43,7 @@ Requirements
 * python
     - numpy (version with fixed histogram normalization)
     - [networkx][] (only for el2info)
+    - [matplotlib][] (only for el2draw)
 
 Todo
 ====
@@ -70,3 +71,4 @@ License
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
 [networkx]: http://networkx.lanl.gov
+[matplotlib]: http://matplotlib.sourceforge.net
