@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+# el2draw.py
+# Jim Bagrow
+# Last Modified: 2011-03-30
+
+import sys, os
+try:
+    import networkx
+except ImportError:
+    sys.exit("Networkx is required, see http://networkx.lanl.gov/.")
+
+try:
+    import pylab as plt
+except ImportError:
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        sys.exit("Either pylab or matplotlib.pyplot is required.")
+
+def get_edge(line):
+    """First try to split with tab, then with space. No other delimiters are
+    currently supporting...
+    """
+    L = line.strip().split("\t")[:2]
+    if len(L) == 2:
+        return L
+    return line.strip().split(" ")[:2]
+
+
+if __name__ == '__main__':
+    
+    # read edgelist from stdin:
+    edges = [ get_edge(line) for line in sys.stdin.readlines() ]
+    
+    G = networkx.Graph() # only unweighted, undirected graphs are supported...
+    G.add_edges_from( edges )
+    
+    networkx.draw(G)
+    plt.show()
