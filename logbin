@@ -58,7 +58,11 @@ if __name__ == '__main__':
     bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins )
     
     warnings.simplefilter("ignore", Warning)
-    hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=True)
+    try: # deal with deprecated numpy behavior :(
+        hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=True, density=True)
+    except TypeError:
+        hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=True)
+    
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
     #print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
     
