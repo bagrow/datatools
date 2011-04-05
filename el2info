@@ -2,7 +2,7 @@
 
 # el2info
 # Jim Bagrow
-# Last Modified: 2011-03-26
+# Last Modified: 2011-04-01
 
 import sys, os
 try:
@@ -31,7 +31,10 @@ if __name__ == '__main__':
     N   = G.number_of_nodes()
     M   = G.number_of_edges()
     n2c = networkx.clustering(G)
-    C   = 1.0 * sum(n2c.values()) / len(n2c)
+    if hasattr(n2c, 'values'):
+        C   = 1.0 * sum(n2c.values()) / len(n2c)
+    else: # older version of networkx
+        C   = 1.0 * sum(n2c) / len(n2c) 
     T   = networkx.transitivity(G)
     
     L       = networkx.connected_components(G)
