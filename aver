@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-03-12
+# Last Modified: 2011-04-07
 
 """
     This file is part of Datatools.
@@ -21,7 +21,22 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, numpy
+import sys, os
+import numpy
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [-u|--uniq|--unique] [-l|--log] [number of bins] 
+
+Average/smooth XY-data received from STDIN by binning the X-values then, for
+  each x-bin, compute the mean of all the y-values within that bin.  Using -u,
+  --uniq, or --unique will compute the mean of all corresponding y-values for
+  each unique x-value.  This is useful for integer-valued x-data, for example,
+  where binning isn't necessary. Use -l or --log for logarithmically-spaced
+  x-bins.
+
+Example:
+  cat tutorial/xy.dat | %s | plot """ % (name,name)
 
 def uniq_binning():
     """for each unique x-value, print the mean of all y-values"""
@@ -45,7 +60,7 @@ def uniq_binning():
         print x, numpy.mean(x2listy[x])
 
 
-def aver_binning(num_bins):
+def aver_binning(num_bins, log=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
@@ -56,13 +71,19 @@ def aver_binning(num_bins):
     
     if num_bins is None:
         from math import sqrt
-        num_bins = int(sqrt(len(data)))+1 # plus one because bin_edges!
+        num_bins = int(sqrt(len(data))) + 1
     
-    bin_edges = numpy.linspace( min(X),max(X), num_bins+1 )
+    if log:
+        minVal = numpy.log10(min(X)-1e-8) # safe?
+        maxVal = numpy.log10(max(X)+1e-8)
+        bin_edges = numpy.logspace( minVal, maxVal, num_bins+1 )
+    else:
+        bin_edges = numpy.linspace( min(X),max(X), num_bins+1 )
+    
     bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
     for x,y in sorted(data):
         if x > bR: # this x,y is in next bin, so finish off current bin
-            print 0.5*(bL+bR), numpy.mean( data_in_bin )
+            print 0.5*(bL+bR), numpy.mean( data_in_bin ) # is this safe with log bin?
             b += 1
             bL, bR = bin_edges[b], bin_edges[b+1]
             data_in_bin = []
@@ -71,15 +92,20 @@ def aver_binning(num_bins):
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        sys.exit( usage )
     
     # check if u or uniq or unique is a commandline arg:
     args = set( a.lower().replace('-','') for a in sys.argv[1:] )
     if set(['u','uniq','unique']) & args:
         uniq_binning()
     else:
+        log = False
+        if set(['l','log']) & args:
+            log = True
         try:
-            num_bins = int(sys.argv[1])
-        except IndexError:
+            num_bins = int(sys.argv[-1])
+        except ValueError:
             num_bins = None
-        aver_binning(num_bins)
+        aver_binning(num_bins, log=log)
     
