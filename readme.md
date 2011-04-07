@@ -31,7 +31,7 @@ Then add the `datatools` directory to your path.  For example, put
         export PATH=~/datatools:$PATH
     fi
 
-in your bashrc.
+in your `bashrc`.
 
 
 Requirements
@@ -48,7 +48,6 @@ Requirements
 Todo
 ====
 
-* Real help and documentation.
 * Fix (c)cdf to only plot unique values.
 * Support dumb terminal if x11 is not available?
 
