@@ -2,21 +2,36 @@
 
 # el2draw.py
 # Jim Bagrow
-# Last Modified: 2011-03-30
+# Last Modified: 2011-04-07
 
 import sys, os
 try:
     import networkx
 except ImportError:
     sys.exit("Networkx is required, see http://networkx.lanl.gov/.")
-
 try:
     import pylab as plt
 except ImportError:
     try:
         import matplotlib.pyplot as plt
     except ImportError:
-        sys.exit("Either pylab or matplotlib.pyplot is required.")
+        sys.exit("Either Pylab or Matplotlib.pyplot is required.")
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+        
+Create a (very) simple drawing of the network whose edgelist was received from
+  STDIN.  Edgelist delimiter must be tab or space. An example edgelist is
+  provided: <DATATOOLS>/tutorial/karate.edgelist.  Only unweighted, undirected
+  networks are currently supported.  Drawing requires networkx and 
+  matplotlib/pylab.
+
+Example:
+  cat edgelist.txt | %s""" % (name,name)
+
+error = "%s takes no arguments, run `%s --help` for info." % (name,name)
+
 
 def get_edge(line):
     """First try to split with tab, then with space. No other delimiters are
@@ -29,6 +44,10 @@ def get_edge(line):
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        sys.exit(usage)
+    elif len(sys.argv) > 1:
+        sys.exit(error)
     
     # read edgelist from stdin:
     edges = [ get_edge(line) for line in sys.stdin.readlines() ]

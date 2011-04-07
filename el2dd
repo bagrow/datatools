@@ -2,13 +2,27 @@
 
 # el2dd
 # Jim Bagrow
-# Last Modified: 2011-03-12
+# Last Modified: 2011-04-07
 
 import sys, os
 
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+        
+Compute the degree distribution for the network whose edgelist was received
+  from STDIN.  Edgelist delimiter must be tab or space. An example edgelist is
+  provided: <DATATOOLS>/tutorial/karate.edgelist.  Only unweighted, undirected
+  networks are currently supported.
+
+Example:
+  cat edgelist.txt | %s | plot -c "set xlabel 'k'; set ylabel 'N(k)'" """ % (name,name)
+
+error = "%s takes no arguments, run `%s --help` for info." % (name,name)
+
 def get_edge(line):
     """first try to split with tab, then with space, no other delimiters are
-    currently supporting...
+    currently supported...
     """
     L = line.strip().split("\t")[:2]
     if len(L) == 2:
@@ -17,6 +31,10 @@ def get_edge(line):
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        sys.exit(usage)
+    elif len(sys.argv) > 1:
+        sys.exit(error)
     
     edges = [ get_edge(line) for line in sys.stdin.readlines() ]
     

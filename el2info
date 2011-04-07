@@ -2,13 +2,27 @@
 
 # el2info
 # Jim Bagrow
-# Last Modified: 2011-04-01
+# Last Modified: 2011-04-07
 
 import sys, os
 try:
     import networkx
 except ImportError:
     sys.exit("networkx is required, see http://networkx.lanl.gov/")
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+
+Compute a number of statistics for the network whose edgelist was received
+  from STDIN.  Edgelist delimiter must be tab or space. An example edgelist is
+  provided: <DATATOOLS>/tutorial/karate.edgelist.  Only unweighted, undirected
+  networks are currently supported.
+
+Example:
+  cat edgelist.txt | %s """ % (name,name)
+
+error = "%s takes no arguments, run `%s --help` for info." % (name,name)
 
 def get_edge(line):
     """First try to split with tab, then with space. No other delimiters are
@@ -21,6 +35,10 @@ def get_edge(line):
 
 
 if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        sys.exit(usage)
+    elif len(sys.argv) > 1:
+        sys.exit(error)
     
     # read edgelist from stdin:
     edges = [ get_edge(line) for line in sys.stdin.readlines() ]
@@ -43,7 +61,7 @@ if __name__ == '__main__':
     flt_fmt = "%0.8f"
     print "       Number of Nodes =", N
     print "       Number of Links =", M
-    print "               Density =", flt_fmt % (M / (N*(N-1)/2.0))
+    print "          Link Density =", flt_fmt % (M / (N*(N-1)/2.0))
     print "        Average Degree =", flt_fmt % (2.0 * M / N)
     print "Clustering Coefficient =", flt_fmt % C
     print "          Transitivity =", flt_fmt % T
