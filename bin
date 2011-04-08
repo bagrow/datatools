@@ -27,12 +27,12 @@ import warnings
 name = os.path.basename(sys.argv[0])
 usage = \
 """Usage: %s [number of bins]
-        
+
 Compute the histogram of the data received from STDIN using linearly spaced
   bins.  If the number of bins is unspecified, an estimate is used based on the
   number of data points.
 Example:
-  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name) 
+  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
 
 error = "Number of bins must be an integer, run `%s --help` for info." % name
 
