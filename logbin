@@ -55,7 +55,7 @@ if __name__ == '__main__':
         num_bins = int(sqrt(len(data)))
     
     min_data,max_data = min(data),max(data)
-    bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins )
+    bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins+1 )
     
     warnings.simplefilter("ignore", Warning)
     try: # deal with deprecated numpy behavior :(
