@@ -8,15 +8,18 @@ import sys, os
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s
+"""Usage: %s [-r|--raw]
         
 Compute the degree distribution for the network whose edgelist was received
   from STDIN.  Edgelist delimiter must be tab or space. An example edgelist is
   provided: <DATATOOLS>/tutorial/karate.edgelist.  Only unweighted, undirected
-  networks are currently supported.
+  networks are currently supported.  Using -r or --raw returns the degree
+  sequence {k_1, k_2, ..., k_N} instead of the counts (k, N_k), ... where k_i
+  is the degree of node i and N_k is the number of nodes with degree k.
 
 Example:
-  cat edgelist.txt | %s | plot -c "set xlabel 'k'; set ylabel 'N(k)'" """ % (name,name)
+  cat edgelist.txt | %s | plot -c "set xlabel 'k'; set ylabel 'N(k)'"
+  cat edgelist.txt | %s -r | mean """ % (name,name,name)
 
 error = "%s takes no arguments, run `%s --help` for info." % (name,name)
 
@@ -31,8 +34,11 @@ def get_edge(line):
 
 
 if __name__ == '__main__':
+    just_degree_sequence = False
     if '-h' in sys.argv or '--help' in sys.argv:
         sys.exit(usage)
+    elif '-r' in sys.argv or '--raw' in sys.argv:
+        just_degree_sequence = True
     elif len(sys.argv) > 1:
         sys.exit(error)
     
@@ -49,15 +55,19 @@ if __name__ == '__main__':
         except KeyError:
             n2k[nj]  = 1
     
-    k2nk = {}
-    for k in n2k.values():
-        try:
-            k2nk[k] += 1
-        except KeyError:
-            k2nk[k]  = 1
-    
-    for k,nk in sorted(k2nk.items()):
-        print k, nk
+    if just_degree_sequence:
+        for n in n2k:
+            print n2k[n]
+    else:
+        k2nk = {}
+        for k in n2k.values():
+            try:
+                k2nk[k] += 1
+            except KeyError:
+                k2nk[k]  = 1
+        
+        for k,nk in sorted(k2nk.items()):
+            print k, nk
 
     
 
