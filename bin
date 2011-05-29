@@ -2,7 +2,7 @@
 
 # bin
 # Jim Bagrow
-# Last Modified: 2011-03-15
+# Last Modified: 2011-05-29
 
 """
     This file is part of Datatools.
@@ -60,5 +60,4 @@ if __name__ == '__main__':
     
     for b,h in zip(bin_centers, hist):
         print b, h
-
 
