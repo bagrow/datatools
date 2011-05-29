@@ -15,7 +15,8 @@ Examples
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
     $ cat samples.txt | ccdf | logplot -l 'w l, x**-1'
 
-See `tutorial/` for more.
+See `tutorial/` for more information.  An importable python module is also
+available: see `python/` for more.
 
 Install
 =======
