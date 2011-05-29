@@ -23,6 +23,8 @@ Install
     $ cd datatools/python
     $ sudo python setup.py install
 
+Note that `sudo` may not be needed.  Be sure to rerun `setup.py` whenever the
+repository is updated
 
 Requirements
 ============
