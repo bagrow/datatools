@@ -2,7 +2,7 @@ datatools.py
 ============
 
 A companion, importable python module for datatools, containing most of the
-non-plotting functionality.  For plotting, consider using [matplotlib][].
+non-plotting functionality.  For plotting, [matplotlib][] is recommended.
 
 
 Example
