@@ -19,7 +19,9 @@ Example
 
 Install
 =======
-    
+
+After cloning the git repository:
+
     $ cd /some/dir/datatools/python
     $ sudo python setup.py install
 
