@@ -2,7 +2,7 @@
 
 # cdf
 # Jim Bagrow
-# Last Modified: 2011-03-05
+# Last Modified: 2011-05-29
 
 """
     This file is part of Datatools.
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     
     if len(sys.argv) > 1:
         sys.exit(usage)
-
+    
     data = [ float(x) for x in sys.stdin.readlines() ]
     N = len(data)
     
