@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+# setup.py
+# Jim Bagrow
+# Last Modified: 2011-05-29
+
 from distutils.core import setup
 setup(name='datatools',
       version='0.1',
