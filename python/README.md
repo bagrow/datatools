@@ -2,7 +2,7 @@ datatools.py
 ============
 
 A companion python module for datatools, containing many of the non-plotting
-function.  For plotting, consider using matplotlib/pylab.
+function.  For plotting, consider using [matplotlib][].
 
 
 Example
@@ -47,4 +47,7 @@ License
     
     You should have received a copy of the GNU General Public License
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+
+[matplotlib]: http://matplotlib.sourceforge.net
 
