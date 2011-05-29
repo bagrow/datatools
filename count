@@ -40,3 +40,4 @@ if $NORMED; then
 else
     awk ' NF > 0{ counts[$0] = counts[$0] + 1} END { for (word in counts) print word, counts[word]; }' | sort -g
 fi
+

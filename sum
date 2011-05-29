@@ -32,3 +32,4 @@ while [ "$1" != "" ]; do
 done
 
 awk '{sum+=$1} END {print sum}'
+

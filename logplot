@@ -54,3 +54,4 @@ plot '/tmp/file.tmp' using 1:2 $LINCMD
 EOF
 
 rm -f /tmp/file.tmp
+

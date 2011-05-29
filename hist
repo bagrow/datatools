@@ -34,4 +34,5 @@ do
     esac
 done
 
+# this is the whole thing:
 bin | plot
