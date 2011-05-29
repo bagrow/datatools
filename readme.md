@@ -3,7 +3,7 @@ Datatools
 
 A collection of small scripts for quickly plotting and munging data from the
 command line.  Supports basic statistics, histograms, and CDFs.  An importable
-python module is also available: see `python/` for more.      
+python module is also available: see `python/` for more.
 
 
 Examples
