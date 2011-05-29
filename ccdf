@@ -2,7 +2,7 @@
 
 # ccdf
 # Jim Bagrow
-# Last Modified: 2011-03-15
+# Last Modified: 2011-05-29
 
 """
     This file is part of Datatools.
@@ -27,11 +27,10 @@ name  = os.path.basename(sys.argv[0])
 usage = \
 """Usage: %s
         
-Compute the empirical complementary cumulative distribution function of date
-  received from STDIN.
+Compute the empirical cumulative distribution function of date received from
+  STDIN.
 Example:
   cat vals.txt | %s | plot -c "set xlabel 'x'; set ylabel 'Pr(X>x)';" """ % (name,name) 
-
 
 if __name__ == '__main__':
     
