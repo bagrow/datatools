@@ -60,4 +60,3 @@ if __name__ == '__main__':
     
     for b,h in zip(bin_centers, hist):
         print b, h
-
