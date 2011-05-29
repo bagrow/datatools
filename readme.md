@@ -2,7 +2,8 @@ Datatools
 =========
 
 A collection of small scripts for quickly plotting and munging data from the
-command line.  Supports basic statistics, histograms, and CDFs.
+command line.  Supports basic statistics, histograms, and CDFs.  An importable
+python module is also available: see `python/` for more.      
 
 
 Examples
@@ -15,8 +16,7 @@ Examples
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
     $ cat samples.txt | ccdf | logplot -l 'w l, x**-1'
 
-See `tutorial/` for more information.  An importable python module is also
-available: see `python/` for more.
+See `tutorial/` for more information.
 
 Install
 =======
