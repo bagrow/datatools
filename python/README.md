@@ -1,8 +1,8 @@
 datatools.py
 ============
 
-A companion python module for datatools, containing many of the non-plotting
-function.  For plotting, consider using [matplotlib][].
+A companion, importable python module for datatools, containing most of the
+non-plotting functionality.  For plotting, consider using [matplotlib][].
 
 
 Example
@@ -20,11 +20,11 @@ Example
 Install
 =======
     
-    $ cd datatools/python
+    $ cd /some/dir/datatools/python
     $ sudo python setup.py install
 
-Note that `sudo` may not be needed.  Be sure to rerun `setup.py` whenever the
-repository is updated
+Note that `sudo` may not be needed.  Be sure to rerun `python setup.py install`
+whenever the repository is updated.
 
 Requirements
 ============
