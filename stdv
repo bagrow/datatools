@@ -32,4 +32,4 @@ while [ "$1" != "" ]; do
 done
 
 # this is the whole command:
-awk '{sum+=$1; sumsq+=$1*$1} END {print sqrt(sumsq/NR - (sum/NR)**2)}'
+awk '{sum+=$1; sumsq+=$1*$1} END {print sqrt(1.0*sumsq/NR - (1.0*sum/NR)**2)}'

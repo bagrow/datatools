@@ -32,5 +32,5 @@ while [ "$1" != "" ]; do
 done
 
 # this is the whole command:
-awk '{total+=$1; count+=1} END {print total/count}'
+awk '{sum+=$1} END {print 1.0*sum/NR}'
 
