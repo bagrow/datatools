@@ -19,15 +19,14 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name"
     echo -e ""
-    echo -e "Print a number of basic summary statistisc about data read from STDIN."
+    echo -e "Print a number of basic summary statistics about data read from STDIN."
     echo -e "Example:\n  cat distribution.txt | $name"
 	exit 1
 }
 
 NORMED=true
-while getopts "nNh -help" opt; do
+while getopts "h -help" opt; do
   case $opt in
-    n | N) NORMED=false;;
         h) usage;;
     -help) usage;;
       [?]) usage;;
