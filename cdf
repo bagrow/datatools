@@ -44,4 +44,3 @@ if __name__ == '__main__':
     
     for x,y in zip(sorted(data),Y):
         print x,y
-
