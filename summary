@@ -15,43 +15,35 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
-
 usage(){
     name=`basename $0`
-    echo -e "Usage: $name [-c \"gnuplot command(s)\"] [-l \"gnuplot plot option(s)\"]"
+    echo -e "Usage: $name"
     echo -e ""
-    echo -e "Read xy data from STDIN and plot."
-    echo -e "  Flags -c and -l allow commands to be passed to gnuplot. They must be"
-    echo -e "  valid gnuplot strings. The -c string is run just before the plot"
-    echo -e "  command, while the -l string is run at the end of the plot command.\n"
-    echo -e "Example:\n  cat f.txt | $name -c \"set xlabel 'x';set ylabel 'y'\" -l \"w lines\" "
+    echo -e "Print a number of basic summary statistics about data read from STDIN."
+    echo -e "Example:\n  cat distribution.txt | $name"
 	exit 1
 }
 
-
-PRECMD=''
-LINCMD='w lp pt 6'
-while getopts "c:l:h -help" flag
-do
-    case "$flag"  in
-        c) PRECMD=$OPTARG;;
-        l) LINCMD=$OPTARG;;
+NORMED=true
+while getopts "h -help" opt; do
+  case $opt in
         h) usage;;
     -help) usage;;
       [?]) usage;;
-    esac
+  esac
 done
 
 
-cat /dev/stdin > /tmp/file.tmp
-
-gnuplot << EOF
-set term x11 enhanced persist
-unset key
-
-$PRECMD
-plot '/tmp/file.tmp' $LINCMD
-EOF
-
-rm -f /tmp/file.tmp
+awk 'min == "" {min=max=$1}
+$1 < min  {min = $1}
+$1 > max  {max = $1}
+            {sum+=$1; sumsq+=$1*$1}
+END {
+    print "    LEN:", NR;
+    print "    MIN:", min;
+    print "    MAX:", max;
+    print "    SUM:", sum;
+    print "    AVG:", sum/NR;
+    print "    STD:", sqrt(sumsq/NR-(sum/NR)**2);
+}'
 

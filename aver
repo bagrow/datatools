@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-04-07
+# Last Modified: 2011-05-30
 
 """
     This file is part of Datatools.
@@ -26,20 +26,32 @@ import numpy
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [-u|--uniq|--unique] [-l|--log] [number of bins] 
+"""Usage: %s [-u|--uniq|--unique] [-l|--log] [-e|--errorbars] [number of bins] 
 
 Average/smooth XY-data received from STDIN by binning the X-values then, for
   each x-bin, compute the mean of all the y-values within that bin.  Using -u,
   --uniq, or --unique will compute the mean of all corresponding y-values for
   each unique x-value.  This is useful for integer-valued x-data, for example,
   where binning isn't necessary. Use -l or --log for logarithmically-spaced
-  x-bins.
+  x-bins.  Use -e or --errorbars to include a third column containing the
+  standard deviation of each x bin's y-values.
 
 Example:
   cat tutorial/xy.dat | %s | plot """ % (name,name)
 
-def uniq_binning():
+
+def _mean_stdv(data):
+    return "%f %f" % (numpy.mean(data),numpy.std(data))
+
+def _mean_only(data):
+    return "%f" % numpy.mean(data)
+
+
+def uniq_binning(errorbars=False):
     """for each unique x-value, print the mean of all y-values"""
+    F = _mean_only
+    if errorbars:
+        F = _mean_stdv
     
     # data is assumed to be two columns:
     data = [ x.strip().split() for x in sys.stdin.readlines() ]
@@ -57,13 +69,16 @@ def uniq_binning():
             x2listy[x] = [y]
     
     for x in sorted(x2listy.keys()):
-        print x, numpy.mean(x2listy[x])
+        print x, F(x2listy[x])
 
 
-def aver_binning(num_bins, log=False):
+def aver_binning(num_bins, log=False, errorbars=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
+    F = _mean_only
+    if errorbars:
+        F = _mean_stdv
     
     # data is assumed to be two columns:
     data = [ map(float, x.strip().split()) for x in sys.stdin.readlines() ]
@@ -83,12 +98,12 @@ def aver_binning(num_bins, log=False):
     bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
     for x,y in sorted(data):
         if x > bR: # this x,y is in next bin, so finish off current bin
-            print 0.5*(bL+bR), numpy.mean( data_in_bin ) # is this safe with log bin?
+            print 0.5*(bL+bR), F( data_in_bin ) # is this safe with log bin?
             b += 1
             bL, bR = bin_edges[b], bin_edges[b+1]
             data_in_bin = []
         data_in_bin.append( y )
-    print 0.5*(bL+bR), numpy.mean( data_in_bin ) # don't forget last bin!
+    print 0.5*(bL+bR), F( data_in_bin ) # don't forget last bin!
 
 
 if __name__ == '__main__':
@@ -97,8 +112,13 @@ if __name__ == '__main__':
     
     # check if u or uniq or unique is a commandline arg:
     args = set( a.lower().replace('-','') for a in sys.argv[1:] )
+    
+    errorbars = False
+    if set(['e','error','errorbars']) & args:
+        errorbars = True
+    
     if set(['u','uniq','unique']) & args:
-        uniq_binning()
+        uniq_binning(errorbars=errorbars)
     else:
         log = False
         if set(['l','log']) & args:
@@ -107,5 +127,5 @@ if __name__ == '__main__':
             num_bins = int(sys.argv[-1])
         except ValueError:
             num_bins = None
-        aver_binning(num_bins, log=log)
+        aver_binning(num_bins, log=log, errorbars=errorbars)
     
