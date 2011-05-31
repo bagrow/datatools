@@ -50,7 +50,7 @@ set term x11 enhanced persist
 unset key
 set log x 
 $PRECMD
-plot '/tmp/file.tmp' using 1:2 $LINCMD
+plot '/tmp/file.tmp' $LINCMD
 EOF
 
 rm -f /tmp/file.tmp
