@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name"
+    echo -e ""
+    echo -e "Print a number of basic summary statistisc about data read from STDIN."
+    echo -e "Example:\n  cat distribution.txt | $name"
+	exit 1
+}
+
+NORMED=true
+while getopts "nNh -help" opt; do
+  case $opt in
+    n | N) NORMED=false;;
+        h) usage;;
+    -help) usage;;
+      [?]) usage;;
+  esac
+done
+
+
+awk 'min == "" {min=max=$1}
+$1 < min  {min = $1}
+$1 > max  {max = $1}
+            {sum+=$1; sumsq+=$1*$1}
+END {
+    print "    LEN:", NR;
+    print "    MIN:", min;
+    print "    MAX:", max;
+    print "    SUM:", sum;
+    print "    AVG:", sum/NR;
+    print "    STD:", sqrt(sumsq/NR-(sum/NR)**2);
+}'
+
