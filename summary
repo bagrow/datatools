@@ -40,8 +40,8 @@ $1 > max  {max = $1}
             {sum+=$1; sumsq+=$1*$1}
 END {
     print "    LEN:", NR;
-    print "    MIN:", min;
-    print "    MAX:", max;
+    printf "    MIN: %0.8g\n", min;
+    printf "    MAX: %0.8g\n", max;
     print "    SUM:", sum;
     print "    AVG:", sum/NR;
     print "    STD:", sqrt(sumsq/NR-(sum/NR)**2);
