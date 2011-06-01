@@ -10,12 +10,9 @@ try:
 except ImportError:
     sys.exit("Networkx is required, see http://networkx.lanl.gov/.")
 try:
-    import pylab as plt
+    import matplotlib.pyplot as plt
 except ImportError:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        sys.exit("Either Pylab or Matplotlib.pyplot is required.")
+    sys.exit("Matplotlib is required, see http://matplotlib.sourceforge.net/.")
 
 name = os.path.basename(sys.argv[0])
 usage = \

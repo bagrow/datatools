@@ -43,8 +43,8 @@ Requirements
 * gnuplot (and X11 terminal)
 * python
     - numpy (version with fixed histogram normalization)
-    - [networkx][] (only for el2info)
-    - [matplotlib][] (only for el2draw)
+    - [networkx][] (only for `el2info` and `el2draw`)
+    - [matplotlib][] (only for `el2draw`)
 
 Todo
 ====
