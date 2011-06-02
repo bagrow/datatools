@@ -2,7 +2,7 @@
 
 # cdf
 # Jim Bagrow
-# Last Modified: 2011-05-29
+# Last Modified: 2011-06-01
 
 """
     This file is part of Datatools.
@@ -30,7 +30,7 @@ usage = \
 Compute the empirical cumulative distribution function of date received from
   STDIN.
 Example:
-  cat vals.txt | %s | plot -c "set xlabel 'x'; set ylabel 'Pr(X>x)';" """ % (name,name) 
+  cat vals.txt | %s | plot -c "set xlabel 'x'; set ylabel 'Pr(X>x)';" """ % (name,name)
 
 if __name__ == '__main__':
     
