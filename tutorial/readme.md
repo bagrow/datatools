@@ -72,3 +72,27 @@ W. W. Zachary, An information flow model for conflict and fission in small
 groups, Journal of Anthropological Research 33, 452-473 (1977).
 
 
+Getting help
+============
+
+All of the scripts contain help statements to make it easy to look up their options
+and determine functionality.  For example, running:
+    
+    $ aver -h
+    
+returns:
+    
+    Usage: aver [-u|--uniq|--unique] [-l|--log] [-e|--errorbars] [number of bins] 
+    
+    Average/smooth XY-data received from STDIN by binning the X-values then, for
+    each x-bin, compute the mean of all the y-values within that bin.  Using -u,
+    --uniq, or --unique will compute the mean of all corresponding y-values for
+    each unique x-value.  This is useful for integer-valued x-data, for example,
+    where binning isn't necessary. Use -l or --log for logarithmically-spaced
+    x-bins.  Use -e or --errorbars to include a third column containing the
+    standard deviation of each x bin's y-values.
+    
+    Example:
+    cat tutorial/xy.dat | aver | plot
+
+All help strings can be accessed using `-h` or `--help` from the command line.
