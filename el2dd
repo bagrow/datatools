@@ -21,7 +21,7 @@ Example:
   cat edgelist.txt | %s | plot -c "set xlabel 'k'; set ylabel 'N(k)'"
   cat edgelist.txt | %s -r | mean """ % (name,name,name)
 
-error = "%s takes no arguments, run `%s --help` for info." % (name,name)
+error = "%s takes at most one argument, run `%s --help` for info." % (name,name)
 
 def get_edge(line):
     """first try to split with tab, then with space, no other delimiters are
