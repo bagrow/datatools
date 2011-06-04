@@ -1,7 +1,7 @@
 Types of data
 =============
 
-Data tools deals primarily with three types of data, all of which are read from
+Datatools deals primarily with three types of data, all of which are read from
 STDIN:
     
 1. Distribution data or __X-data__ is simply a single column of values.  These may
