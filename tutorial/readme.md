@@ -4,18 +4,18 @@ Types of data
 Data tools deals primarily with three types of data, all of which are read from
 STDIN:
     
-1. Distribution data or X-data is simply a single column of values.  These may
+1. Distribution data or __X-data__ is simply a single column of values.  These may
    represent samples drawn from a probability distribution, for example.
 
-2. XY-data consists of two columns of values (of the same length).  These may
+2. __XY-data__ consists of two columns of values (of the same length).  These may
    be plotted directly to make a scatter plot.  There may be multiple (X,Y)
    pairs that have the same X-value, if multiple measurements were performed
    for a given x-value, for example.  In fact, dealing with this situation
    (averaging all Y-values for each given X-value) is one of the most useful
    features of datatools (see `aver`).
 
-3. Edgelists also consist of two columns, but these represent the edges of a
-   graph or network.  For example:
+3. __Edgelists__ also consist of two columns, but these represent the edges of an
+   undirected graph or network.  For example:
     
         node1  node2
         node2  node3
@@ -25,8 +25,8 @@ STDIN:
    `el2info` and `el2dd`, which print a number of network summary statistics and
    compute the degree distribution, respectively.
 
- If one has more involved data, multiple columns for example, tools such as awk
- or sed may be used to extract relevant subsets of data.  This makes datatools
+ If one has more involved data, multiple columns for example, tools such as `awk`
+ or `sed` may be used to extract relevant subsets of data.  This makes datatools
  quite flexible.
 
 
@@ -35,7 +35,7 @@ Simple statistics from X-data
 
 One can compute simple statistics by piping a column of numbers, sampled from a
 probability distribution for example, into `min`, `max`, `sum`, `mean`, and
-`stdv`. 
+`stdv`.  A nice overview of the data can be displayed using `summary`.
 
 
 Transforming data
@@ -59,7 +59,7 @@ one can plot this data using `plot`, `logplot`, `logxplot`, and `logyplot`.
 Sample data
 ===========
 
-This directory contains some example data files to experiment with.
+This directory contains some example data files to experiment with.  Try:
 
     $ cat xy.dat | aver 100 | plot
     $ cat x.dat | mean
