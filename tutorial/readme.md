@@ -95,4 +95,5 @@ returns:
     Example:
     cat tutorial/xy.dat | aver | plot
 
-All help strings can be accessed using `-h` or `--help` from the command line.
+All help strings can be accessed using the `-h` or `--help` flags from the
+command line.
