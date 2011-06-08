@@ -26,15 +26,21 @@ import numpy
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [-u|--uniq|--unique] [-l|--log] [-e|--errorbars] [number of bins] 
+"""Usage: %s [options] [number of bins] 
 
-Average/smooth XY-data received from STDIN by binning the X-values then, for
-  each x-bin, compute the mean of all the y-values within that bin.  Using -u,
-  --uniq, or --unique will compute the mean of all corresponding y-values for
-  each unique x-value.  This is useful for integer-valued x-data, for example,
-  where binning isn't necessary. Use -l or --log for logarithmically-spaced
-  x-bins.  Use -e or --errorbars to include a third column containing the
-  standard deviation of each x bin's y-values.
+Average or smooth XY-data received from STDIN by first binning the X-values
+  then, for each x-bin, compute the mean of all the y-values within that bin. 
+
+Options:
+  -u | --uniq | --unique : Use each unique X-value, instead of binning the X-
+                           data.  Handy for integer-valued X-data.
+  -l | --log             : Use logarithmically increasing bin widths for the X-
+                           data.  The unique option overrides this flag.
+  -e | --errorbars       : Return a third column containing the standard 
+                           deviation of Y-values in each corresponding X-bin.
+  number of bins         : An integer giving the number of linearly- or 
+                           logarithmically-spaced bins to apply to the X-data.
+                           Ignored if unique option is used.
 
 Example:
   cat tutorial/xy.dat | %s | plot """ % (name,name)
