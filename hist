@@ -17,7 +17,7 @@
 
 usage(){
     name=`basename $0`
-    echo -e "Usage: $name "
+    echo -e "Usage: $name [number of bins]"
     echo -e ""
     echo -e "A shortcut for \`bin | plot\`.\n"
     echo -e "Example:\n  cat x.dat | $name"
@@ -35,4 +35,4 @@ do
 done
 
 # this is the whole thing:
-bin | plot
+bin $1 | plot
