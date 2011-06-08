@@ -29,7 +29,8 @@ usage = \
 """Usage: %s [options] [number of bins] 
 
 Average or smooth XY-data received from STDIN by first binning the X-values
-  then, for each x-bin, compute the mean of all the y-values within that bin. 
+  then, for each X-bin, compute the mean of all Y-data whose corresponding
+  X-value is found within that X-bin.
 
 Options:
   -u | --uniq | --unique : Use each unique X-value, instead of binning the X-
