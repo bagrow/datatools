@@ -48,7 +48,7 @@ if __name__ == '__main__':
     except ValueError:
         sys.exit(error)
     
-    data = [ float(x) for x in sys.stdin.readlines() if float(x) > 0 ]
+    data = [ float(x) for x in sys.stdin.readlines() if x.strip() and float(x) > 0 ]
     
     if num_bins is None:
         from math import sqrt
