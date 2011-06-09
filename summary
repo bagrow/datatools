@@ -42,8 +42,8 @@ END {
     print "    LEN:", NR;
     printf "    MIN: %0.8g\n", min;
     printf "    MAX: %0.8g\n", max;
-    print "    SUM:", sum;
     print "    AVG:", sum/NR;
     print "    STD:", sqrt(sumsq/NR-(sum/NR)**2);
+    print "    SUM:", sum;
 }'
 

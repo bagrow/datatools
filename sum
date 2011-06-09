@@ -17,19 +17,34 @@
 
 usage(){
     name=`basename $0`
-    echo -e "Usage: $name "
+    echo -e "Usage: $name [options]"
     echo -e ""
-    echo -e "Compute the sum of the data received from STDIN."
+    echo -e "Compute the sum of data received from STDIN."
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  -r | --rows : Compute the sum row-wise (for multi-column data)."
+    echo -e "                Returns the standard deviation of all values on"
+    echo -e "                each row.  Especially handy for \"ragged\" data."
+    echo -e ""
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }
 
+ROWWISE=false
 while [ "$1" != "" ]; do
     case $1 in
         -h | --help ) usage;;
+        -r | --rows ) ROWWISE=true;;
     esac
     shift
 done
 
-awk '{sum+=$1} END {print sum}'
+# this is the whole command:
+if $ROWWISE ; then
+    awk '{sum=0; for(i=1; i<=NF; i++){sum+=$i}; print sum}'
+else
+    awk '{sum+=$1} END {print sum}'
+fi
+
+
 
