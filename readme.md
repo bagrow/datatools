@@ -12,9 +12,9 @@ Examples
     $ cat data.txt | mean
     $ python gen_xy.py | plot
     $ cat ages.txt | count | plot
-    $ cat xy.data.txt | aver | plot -c "set title xy" -l "w p"
+    $ cat xy.data.txt | aver | plot -c "set title xy" -p "w p"
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
-    $ cat samples.txt | ccdf | logplot -l 'w l, x**-1'
+    $ cat samples.txt | ccdf | logplot -p 'w l, x**-1'
 
 See `tutorial/` for more information.
 
