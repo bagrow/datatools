@@ -18,24 +18,24 @@
 
 usage(){
     name=`basename $0`
-    echo -e "Usage: $name [-c \"gnuplot command(s)\"] [-l \"gnuplot plot option(s)\"]"
+    echo -e "Usage: $name [-c \"gnuplot command(s)\"] [-p \"gnuplot plot option(s)\"]"
     echo -e ""
     echo -e "Read xy data from STDIN and plot."
-    echo -e "  Flags -c and -l allow commands to be passed to gnuplot. They must be"
+    echo -e "  Flags -c and -p allow commands to be passed to gnuplot. They must be"
     echo -e "  valid gnuplot strings. The -c string is run just before the plot"
-    echo -e "  command, while the -l string is run at the end of the plot command.\n"
-    echo -e "Example:\n  cat f.txt | $name -c \"set xlabel 'x';set ylabel 'y'\" -l \"w lines\" "
+    echo -e "  command, while the -p string is run with the plot command.\n"
+    echo -e "Example:\n  cat f.txt | $name -c \"set xlabel 'x';set ylabel 'y'\" -p \"w lines\" "
 	exit 1
 }
 
 
 PRECMD=''
 LINCMD='w lp pt 4'
-while getopts "c:l:h -help" flag
+while getopts "c:p:h -help" flag
 do
     case "$flag"  in
         c) PRECMD=$OPTARG;;
-        l) LINCMD=$OPTARG;;
+        p) LINCMD=$OPTARG;;
         h) usage;;
     -help) usage;;
       [?]) usage;;
