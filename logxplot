@@ -30,7 +30,7 @@ usage(){
 
 
 PRECMD=''
-LINCMD='w lp pt 6'
+LINCMD='w lp pt 4'
 while getopts "c:l:h -help" flag
 do
     case "$flag"  in

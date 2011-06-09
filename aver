@@ -29,19 +29,19 @@ usage = \
 """Usage: %s [options] [number of bins] 
 
 Average or smooth XY-data received from STDIN by first binning the X-values
-  then, for each X-bin, compute the mean of all Y-data whose corresponding
-  X-value is found within that X-bin.
+then, for each X-bin, compute the mean of all Y-data whose corresponding
+X-value is found within that X-bin.
 
 Options:
   -u | --uniq | --unique : Use each unique X-value, instead of binning the X-
                            data.  Handy for integer-valued X-data.
   -l | --log             : Use logarithmically increasing bin widths for the X-
-                           data.  The unique option overrides this flag.
+                           data.  The --unique option overrides this flag.
   -e | --errorbars       : Return a third column containing the standard 
                            deviation of Y-values in each corresponding X-bin.
   number of bins         : An integer giving the number of linearly- or 
                            logarithmically-spaced bins to apply to the X-data.
-                           Ignored if unique option is used.
+                           Ignored if --unique is used.
 
 Example:
   cat tutorial/xy.dat | %s | plot """ % (name,name)
