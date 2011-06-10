@@ -19,7 +19,7 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name"
     echo -e ""
-    echo -e "Compute the median of the data received from STDIN."
+    echo -e "Compute the median of data received from STDIN."
     echo -e "Example:\n  cat vals.txt | $name"
 	exit 1
 }
@@ -31,47 +31,4 @@ while [ "$1" != "" ]; do
     shift
 done
 
-awk '
-{ nums[n++] = $1; }
- 
-END {
-    nums[n] = nums[0];
-    heapsort(n, nums);
-    
-    mid = int(n/2)+1;
-    median = (n % 2) ? nums[mid] : (nums[mid] + nums[mid-1])/2;
-    
-    print median;
-} 
-
-function heapsort (n, ra) {
-    l = int(0.5+n/2) + 1
-    ir = n;
-    for (;;) {
-        if (l > 1) {
-            rra = ra[--l];
-        } else {
-            rra = ra[ir];
-            ra[ir] = ra[1];
-            if (--ir == 1) {
-                ra[1] = rra;
-                return;
-            }
-        }
-        i = l;
-        j = l * 2;
-        while (j <= ir) {
-            if (j < ir && ra[j] < ra[j+1]) { ++j; }
-            if (rra < ra[j]) {
-                ra[i] = ra[j];
-                j += (i = j);
-            } else {
-                j = ir + 1;
-            }
-        }
-        ra[i] = rra;
-    }
-}
-'
-
-# The above awk command was adapted from http://dada.perl.it/shootout/moments.gawk.html
+sort -n | awk '{a[NR]=$1} END { if (NR%2==1) print a[(NR+1)/2]; else print (a[NR/2]+a[NR/2+1])/2}'
