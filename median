@@ -31,4 +31,4 @@ while [ "$1" != "" ]; do
     shift
 done
 
-sort -n | awk '{a[NR]=$1} END { if (NR%2==1) print a[(NR+1)/2]; else print (a[NR/2]+a[NR/2+1])/2}'
+sort -n | awk '{a[NR]=$1} END {if (NR%2==1) print a[(NR+1)/2]; else print (a[NR/2]+a[NR/2+1])/2}'
