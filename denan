@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name "
+    echo -e ""
+    echo -e "Removes from STDIN any lines that contain any nan's or inf's."
+    echo -e "Example:\n  cat ages.txt | $name"
+	exit 1
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help ) usage;;
+    esac
+    shift
+done
+
+python -c "
+import sys
+from math import isnan,isinf
+
+for l in sys.stdin.readlines():
+    if not l.strip(): # skip blanks
+        continue
+    try:
+        D = map(float, l.strip().split())
+    except ValueError:
+        continue
+    if any( isnan(v) or isinf(v) for v in D ):
+        continue
+    print( l.strip() )
+"
