@@ -42,7 +42,7 @@ if __name__ == '__main__':
     elif len(sys.argv) > 1:
         sys.exit(error)
     
-    edges = [ get_edge(line) for line in sys.stdin.readlines() if line.strip() ]
+    edges = [ get_edge(line) for line in sys.stdin if line.strip() ]
     
     n2k = {}
     for ni,nj in edges:

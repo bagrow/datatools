@@ -61,7 +61,7 @@ def uniq_binning(errorbars=False):
         F = _mean_stdv
     
     # data is assumed to be two columns:
-    data = [ x.strip().split() for x in sys.stdin.readlines() if x.strip() ]
+    data = [ x.strip().split() for x in sys.stdin if x.strip() ]
     
     x2listy = {}
     for x,y in data:
@@ -88,7 +88,7 @@ def aver_binning(num_bins, log=False, errorbars=False):
         F = _mean_stdv
     
     # data is assumed to be two columns:
-    data = [ map(float, x.strip().split()) for x in sys.stdin.readlines() if x.strip() ]
+    data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
     X,Y = zip(*data)
     
     if num_bins is None:

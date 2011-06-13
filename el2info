@@ -45,7 +45,7 @@ if __name__ == '__main__':
         sys.exit(error)
     
     # read edgelist from stdin:
-    edges = [ get_edge(line) for line in sys.stdin.readlines() if line.strip() ]
+    edges = [ get_edge(line) for line in sys.stdin if line.strip() ]
     
     G = networkx.Graph() # only unweighted, undirected graphs are supported...
     G.add_edges_from( edges )

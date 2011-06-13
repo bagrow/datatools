@@ -19,7 +19,8 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name "
     echo -e ""
-    echo -e "Removes from STDIN any lines that contain any nan's or inf's."
+    echo -e "Removes from STDIN any lines that contain any nan's, inf's,"
+    echo -e "  blank lines, or non-floats."
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }
@@ -44,5 +45,5 @@ for l in sys.stdin:
         continue
     if any( isnan(v) or isinf(v) for v in D ):
         continue
-    print( l.strip() )
+    print l.strip()
 "

@@ -37,7 +37,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         sys.exit(usage)
     
-    data = [ float(x) for x in sys.stdin.readlines() if x.strip() ]
+    data = [ float(x) for x in sys.stdin if x.strip() ]
     N = len(data)
     
     Y = [ 1.0*(x+1)/N for x in range(N) ]
