@@ -35,7 +35,7 @@ python -c "
 import sys
 from math import isnan,isinf
 
-for l in sys.stdin.readlines():
+for l in sys.stdin:
     if not l.strip(): # skip blanks
         continue
     try:
