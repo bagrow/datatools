@@ -41,7 +41,7 @@ Requirements
 * bash
 * awk
 * gnuplot (and X11 terminal)
-* python
+* python 2.x (probably 2.5+)
     - numpy (version with fixed histogram normalization)
     - [networkx][] (only for `el2info` and `el2draw`)
     - [matplotlib][] (only for `el2draw`)
@@ -51,6 +51,8 @@ Todo
 
 * Fix (c)cdf to only plot unique values.
 * Support dumb terminal if x11 is not available?
+* Eliminate numpy dependency?
+* Unit tests?
 
 License
 =======
