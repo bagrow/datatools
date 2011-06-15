@@ -99,15 +99,15 @@ def bin(data, numbins=None):
 
 def cdf(data):
     """docstring for cdf"""
-    N = len(data)
-    Y = [ 1.0*(x+1)/N for x in range(N) ]
+    N = 1.0*len(data)
+    Y = [ (x+1)/N for x in xrange(N) ]
     return sorted(data), Y
 
 
 def ccdf(data):
     """docstring for ccdf"""
-    N = len(data)
-    Y = [ 1.0-1.0*(x+1)/N for x in range(N) ]
+    N = 1.0*len(data)
+    Y = [ 1.0-(x+1)/N for x in xrange(N) ]
     return sorted(data), Y
 
 

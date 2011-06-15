@@ -33,10 +33,16 @@ while [ "$1" != "" ]; do
     shift
 done
 
-cat /dev/stdin | sort -g > /tmp/fileCCDF.tmp
-N=`cat /tmp/fileCCDF.tmp | wc -l`
-cat /tmp/fileCCDF.tmp  | awk "{print \$1, 1.0*NR/$N}"
+#cat /dev/stdin | sort -g > /tmp/fileCDF.tmp
+#N=`cat /tmp/fileCDF.tmp | wc -l`
+#cat /tmp/fileCDF.tmp  | awk "{print \$1, 1.0*NR/$N}"
+#rm -f /tmp/fileCDF.tmp
 
-rm -f /tmp/fileCCDF.tmp
-
+python -c '
+import sys
+data = [ float(l) for l in sys.stdin if l.strip() ] # gotta be in memory :(
+data.sort()
+N = 1.0*len(data)
+sys.stdout.write("\n".join( "%f %f" % (x,(n+1)/N) for n,x in enumerate(data) ))
+'
 
