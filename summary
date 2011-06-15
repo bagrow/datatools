@@ -19,7 +19,7 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name"
     echo -e ""
-    echo -e "Print a number of basic summary statistics about data read from STDIN."
+    echo -e "Print a number of basic summary statistics about data read from STDIN.\n"
     echo -e "Example:\n  cat distribution.txt | $name"
 	exit 1
 }

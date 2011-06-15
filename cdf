@@ -20,7 +20,7 @@ usage(){
     echo -e "Usage: $name "
     echo -e ""
     echo -e "Compute the empirical cumulative distribution function of date received"
-    echo -e "  from STDIN."
+    echo -e "  from STDIN.\n"
     echo -e "Example:"
     echo -e "  cat vals.txt | $name | plot -c \"set xlabel 'x'; set ylabel 'Pr(X<x)';\""
 	exit 1

@@ -20,7 +20,7 @@ usage(){
     echo -e "Usage: $name "
     echo -e ""
     echo -e "Compute the empirical complementary cumulative distribution function of "
-    echo -e "  date received from STDIN."
+    echo -e "  date received from STDIN.\n"
     echo -e "Example:"
     echo -e "  cat vals.txt | $name | plot -c \"set xlabel 'x'; set ylabel 'Pr(X>x)';\""
 	exit 1

@@ -20,7 +20,7 @@ usage(){
     echo -e "Usage: $name [-n]"
     echo -e ""
     echo -e "Read data from STDIN and count number of occurrences of each unique value."
-    echo -e "  Use -n to return the number of occurrences and not the fraction."
+    echo -e "  Use -n to return the number of occurrences and not the fraction.\n"
     echo -e "Example:\n  cat ages.txt | $name | plot -c \"set xlabel 'age';set ylabel '# people'\""
 	exit 1
 }

@@ -19,7 +19,7 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name "
     echo -e ""
-    echo -e "Compute the maximum of the data received from STDIN."
+    echo -e "Compute the maximum of the data received from STDIN.\n"
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }

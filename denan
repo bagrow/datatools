@@ -20,7 +20,7 @@ usage(){
     echo -e "Usage: $name "
     echo -e ""
     echo -e "Removes from STDIN any lines that contain any nan's, inf's,"
-    echo -e "  blank lines, or non-numerics."
+    echo -e "  blank lines, or non-numerics.\n"
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }
