@@ -44,5 +44,6 @@ data = [ float(l) for l in sys.stdin if l.strip() ] # gotta be in memory :(
 data.sort()
 N = 1.0*len(data)
 sys.stdout.write("\n".join( "%f %f" % (x,(n+1)/N) for n,x in enumerate(data) ))
+sys.stdout.write("\n")
 '
 
