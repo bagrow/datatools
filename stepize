@@ -14,12 +14,10 @@ Removes "vertically duplicate" first-column data received from STDIN.  In other
   words, it only prints lines of STDIN where the first field (X-value) differs
   from that of either the previous line or the subsequent line.  This is useful
   after computing the (c)ccdf since it removes the duplicated points that stack
-  up vertically at each unique X_value.
+  up vertically at each unique X-value.
 
 Example:
   cat vals.txt | ccdf | %s | plot """ % (name,name)
-
-error = "Number of bins must be an integer, run `%s --help` for info." % name
 
 if __name__ == '__main__':
     if "-h" in sys.argv or "--help" in sys.argv:
@@ -41,9 +39,4 @@ if __name__ == '__main__':
         p_l  = line
     
     print p_l
-        
-
-
-
-
 
