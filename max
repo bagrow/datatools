@@ -19,17 +19,29 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name "
     echo -e ""
-    echo -e "Compute the maximum of the data received from STDIN.\n"
+    echo -e "Compute the maximum of the X-data received from STDIN.\n"
+    echo -e "Options:"
+    echo -e "  -r | --rows : Compute the maximum row-wise (for multi-column data)."
+    echo -e "                Returns the maximum of all values on each row."
+    echo -e "                Especially handy for \"ragged\" data."
+    echo -e ""
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }
 
+ROWWISE=false
 while [ "$1" != "" ]; do
     case $1 in
         -h | --help ) usage;;
-    esac
+        -r | --rows ) ROWWISE=true;;
+esac
     shift
 done
 
 # this is the whole command:
-awk '{if(max==""){max=$1}; if($1>max) {max=$1}; } END {print max}'
+if $ROWWISE ; then
+    awk '{ max=$1; for (i=1; i<=NF; i++){if ($i > max) max=$i}; print max; }'
+else
+    awk '{ if(max=="")max=$1; if($1>max) {max=$1}; } END {print max}'
+fi
+

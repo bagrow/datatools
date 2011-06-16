@@ -19,12 +19,12 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name [options]"
     echo -e ""
-    echo -e "Compute the sum of data received from STDIN."
+    echo -e "Compute the sum of X-data received from STDIN."
     echo -e ""
     echo -e "Options:"
     echo -e "  -r | --rows : Compute the sum row-wise (for multi-column data)."
-    echo -e "                Returns the standard deviation of all values on"
-    echo -e "                each row.  Especially handy for \"ragged\" data."
+    echo -e "                Returns the sum of all values on each row."
+    echo -e "                Especially handy for \"ragged\" data."
     echo -e ""
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1

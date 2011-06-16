@@ -19,17 +19,30 @@ usage(){
     name=`basename $0`
     echo -e "Usage: $name "
     echo -e ""
-    echo -e "Compute the minimum of the data received from STDIN.\n"
+    echo -e "Compute the minimum of the X-data received from STDIN."
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  -r | --rows : Compute the minimum row-wise (for multi-column data)."
+    echo -e "                Returns the minimum of all values on each row."
+    echo -e "                Especially handy for \"ragged\" data."
+    echo -e ""
     echo -e "Example:\n  cat ages.txt | $name"
 	exit 1
 }
 
+ROWWISE=false
 while [ "$1" != "" ]; do
     case $1 in
         -h | --help ) usage;;
-    esac
+        -r | --rows ) ROWWISE=true;;
+esac
     shift
 done
 
 # this is the whole command:
-awk '{if(min==""){min=$1}; if($1<min) {min=$1}; } END {print min}'
+if $ROWWISE ; then
+    awk '{ min=$1; for (i=1; i<=NF; i++){if ($i < min) min=$i}; print min; }'
+else
+    awk '{ if(min=="")min=$1; if($1<min) {min=$1}; } END { print min }'
+fi
+
