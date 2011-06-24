@@ -39,7 +39,6 @@ error = "Number of bins must be an integer, run `%s --help` for info." % name
 
 if __name__ == '__main__':
     
-    # eventually make this take a file and num_bins (bin width?)
     if "-h" in sys.argv or "--help" in sys.argv:
         sys.exit(usage)
     try:
