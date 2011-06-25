@@ -21,6 +21,10 @@ Options:
                    valid gnuplot.  The command will be run before gnuplot's 
                    plot is executed.  For example,
                    -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -e   | --error : Shorthand for using errorbars.  The plot string 'with 
+                   yerrorlines' is used.  This overrides any string given 
+                   using -p. Note that gnuplot requires three or four columns
+                   of input to render errorbars.
   -lx  | --logx  : Use logarithmic x-axis.
   -ly  | --logy  : Use logarithmic y-axis.
   -lxy | --logxy : Use double logarithmic axes.
@@ -54,6 +58,8 @@ if __name__ == '__main__':
             pstr = argv[i+1]
         if arg == "-c":
             cstr = argv[i+1]
+    if '-e' in A or '--error' in A:
+        pstr = 'w yerrorlines'
     
     
     fout = open("/tmp/file.tmp", 'w')
