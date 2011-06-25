@@ -1,57 +1,81 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-#  This file is part of Datatools.
-#  
-#  Datatools is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#  
-#  Datatools is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+# plot
+# Jim Bagrow
+# Last Modified: 2011-06-23
 
+import sys, os
 
-usage(){
-    name=`basename $0`
-    echo -e "Usage: $name [-c \"gnuplot command(s)\"] [-p \"gnuplot plot option(s)\"]"
-    echo -e ""
-    echo -e "Read xy data from STDIN and plot."
-    echo -e "  Flags -c and -p allow commands to be passed to gnuplot. They must be"
-    echo -e "  valid gnuplot strings. The -c string is run just before the plot"
-    echo -e "  command, while the -p string is run with the plot command.\n"
-    echo -e "Example:\n  cat f.txt | $name -c \"set xlabel 'x';set ylabel 'y'\" -p \"w lines\" "
-	exit 1
-}
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options]
 
+Plot XY-data received from STDIN.
 
-PRECMD=''
-LINCMD='w lp pt 4'
-while getopts "c:p:h -help" flag
-do
-    case "$flag"  in
-        c) PRECMD=$OPTARG;;
-        p) LINCMD=$OPTARG;;
-        h) usage;;
-    -help) usage;;
-      [?]) usage;;
-    esac
-done
+Options:
+  -p             : Passes a string to gnuplot's plot directive.  The
+                   subsequent arg must be valid gnuplot.  For example 
+                   -p 'with lines' will plot the XY-data using lines instead
+                   of linespoints.
+  -c             : Passes a command to gnuplot.  The subsequent arg must be 
+                   valid gnuplot.  The command will be run before gnuplot's 
+                   plot is executed.  For example,
+                   -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -lx  | --logx  : Use logarithmic x-axis.
+  -ly  | --logy  : Use logarithmic y-axis.
+  -lxy | --logxy : Use double logarithmic axes.
+  -l   | --log   : Shortcut for -lxy / --logxy.
+  -m   | --multi : [not implemented]
+
+Example:
+  cat tutorial/xy.dat | %s -c 'set xr [0:1]' """ % (name,name)
 
 
-cat /dev/stdin > /tmp/file.tmp
-
-gnuplot << EOF
-set term x11 enhanced persist
-unset key
-
-$PRECMD
-plot '/tmp/file.tmp' $LINCMD
-EOF
-
-rm -f /tmp/file.tmp
+if __name__ == '__main__':
+    
+    # parse args:
+    argv = [ s.lower() for s in sys.argv[1:] ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    A = set(argv)
+    
+    logX,logY = False,False
+    if "-lx" in A or "--logx" in A:
+        logX = True
+    if "-ly" in A or "--logy" in A:
+        logY = True
+    if set(["-l","-lxy","--log","--logxy"]) & A:
+        logX,logY = True,True
+    
+    cstr=''
+    pstr='w lp pt 4'
+    for i,arg in enumerate(argv):
+        if arg == "-p":
+            pstr = argv[i+1]
+        if arg == "-c":
+            cstr = argv[i+1]
+    
+    
+    fout = open("/tmp/file.tmp", 'w')
+    fout.write( "".join(l for l in sys.stdin) )
+    fout.close()
+    
+    logstr = ""
+    if logX and logY:
+        logstr = "set log xy"
+    elif logX and not logY:
+        logstr = "set log x"
+    elif logY and not logX:
+        logstr = "set log y"
+    
+    cmd = """gnuplot << EOF
+    set term x11 enhanced persist
+    unset key
+    %s
+    %s
+    plot '/tmp/file.tmp' %s
+    """ % (logstr, cstr, pstr)
+    
+    os.system( cmd )
+    os.system( "rm -f /tmp/file.tmp" )
 
