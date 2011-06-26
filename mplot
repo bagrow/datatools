@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+
+# mplot
+# Jim Bagrow
+# Last Modified: 2011-06-26
+
+import sys, os
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] [files]
+
+Plot XY-data from multiple files on the same axes.
+
+Options:
+  -p             : Passes a string to gnuplot's plot directive.  The
+                   subsequent arg must be valid gnuplot.  For example 
+                   -p 'with lines' will plot the XY-data using lines instead
+                   of linespoints.
+  -c             : Passes a command to gnuplot.  The subsequent arg must be 
+                   valid gnuplot.  The command will be run before gnuplot's 
+                   plot is executed.  For example,
+                   -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -e   | --error : Shorthand for using errorbars.  The plot string 'with 
+                   yerrorlines' is used.  This overrides any string given 
+                   using -p. Note that gnuplot requires three or four columns
+                   of input to render errorbars.
+  -lx  | --logx  : Use logarithmic x-axis.
+  -ly  | --logy  : Use logarithmic y-axis.
+  -lxy | --logxy : Use double logarithmic axes.
+  -l   | --log   : Shortcut for -lxy / --logxy.
+
+Example:
+  %s -c 'set xr [0:1]' file1.txt file2.txt """ % (name,name)
+
+if __name__ == '__main__':
+    
+    # parse args:
+    argv = sys.argv[1:]
+    largv = [ s.lower() for s in argv ]
+    if '-h' in largv or '--help' in largv:
+        sys.exit( usage )
+    
+    list_files = []
+    cstr=''
+    pstr='w lp pt 4'
+    logX,logY = False,False
+    while argv:
+        A = argv.pop(0)
+        a = A.lower()
+        if   a == '-lx' or a == '--logx':
+            logX = True
+        elif a == '-ly' or a == '--logy':
+            logY = True
+        elif a == '-l' or a == '-lxy' or a == '--log' or a == '--logxy':
+            logX,logY, = True,True
+        elif a == '-p':
+            pstr = argv.pop(0)
+        elif a == '-c':
+            cstr = argv.pop(0)
+        elif a == '-e' or a == '--error':
+            pstr = 'w yerrorlines'
+        elif os.path.exists(A): # is a file
+            list_files.append(A)
+    
+    if not list_files:
+        sys.exit("Error: No plottable files found!")
+    
+    
+    plotstr = "plot "
+    for f in list_files:
+        plotstr += "'%s' %s, " % (f, pstr)
+    plotstr = plotstr[:-2]
+    
+    logstr = ""
+    if logX and logY:
+        logstr = "set log xy"
+    elif logX and not logY:
+        logstr = "set log x"
+    elif logY and not logX:
+        logstr = "set log y"
+    
+    
+    cmd = """gnuplot << EOF
+    set term x11 enhanced persist
+    unset key
+    %s
+    %s
+    %s
+    """ % (logstr, cstr, plotstr)
+    
+    os.system( cmd )
+
+
