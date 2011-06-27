@@ -13,23 +13,26 @@ usage = \
 Plot XY-data received from STDIN.
 
 Options:
-  -p             : Passes a string to gnuplot's plot directive.  The
-                   subsequent arg must be valid gnuplot.  For example 
-                   -p 'with lines' will plot the XY-data using lines instead
-                   of linespoints.
-  -c             : Passes a command to gnuplot.  The subsequent arg must be 
-                   valid gnuplot.  The command will be run before gnuplot's 
-                   plot is executed.  For example,
-                   -c 'set xlabel "x"; set ylabel "y"' will label the graph.
-  -e   | --error : Shorthand for using errorbars.  The plot string 'with 
-                   yerrorlines' is used.  This overrides any string given 
-                   using -p. Note that gnuplot requires three or four columns
-                   of input to render errorbars.
-  -lx  | --logx  : Use logarithmic x-axis.
-  -ly  | --logy  : Use logarithmic y-axis.
-  -lxy | --logxy : Use double logarithmic axes.
-  -l   | --log   : Shortcut for -lxy / --logxy.
-  -m   | --multi : [not implemented]
+  -p              : Passes a string to gnuplot's plot directive.  The
+                    subsequent arg must be valid gnuplot.  For example 
+                    -p 'with lines' will plot the XY-data using lines instead
+                    of linespoints.
+  -c              : Passes a command to gnuplot.  The subsequent arg must be 
+                    valid gnuplot.  The command will be run before gnuplot's 
+                    plot is executed.  For example,
+                    -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -e   | --errors : Shorthand for using errorbars.  The plot string 'with 
+                    yerrorlines' is used.  This overrides any string given 
+                    using -p. Note that gnuplot requires three or four columns
+                    of input to render errorbars.
+  -lx  | --logx   : Use logarithmic x-axis.
+  -ly  | --logy   : Use logarithmic y-axis.
+  -lxy | --logxy  : Use double logarithmic axes.
+  -l   | --log    : Shortcut for -lxy / --logxy.
+  -s   | --shared : Plot multiple curves that share the same X-values. This 
+                    assumes that each line of the data received from STDIN is
+                    of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
+                    'x1 y2, ...', ... can be displayed on a single plot.
 
 Example:
   cat tutorial/xy.dat | %s -c 'set xr [0:1]' """ % (name,name)
@@ -44,12 +47,15 @@ if __name__ == '__main__':
     A = set(argv)
     
     logX,logY = False,False
+    shared = False
     if "-lx" in A or "--logx" in A:
         logX = True
     if "-ly" in A or "--logy" in A:
         logY = True
     if set(["-l","-lxy","--log","--logxy"]) & A:
         logX,logY = True,True
+    if "-s" in A or "--shared" in A:
+        shared = True
     
     cstr=''
     pstr='w lp pt 4'
@@ -61,8 +67,8 @@ if __name__ == '__main__':
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
     
-    
-    fout = open("/tmp/file.tmp", 'w')
+    fileout = "/tmp/file.tmp"
+    fout = open(fileout, 'w')
     fout.write( "".join(l for l in sys.stdin) )
     fout.close()
     
@@ -74,14 +80,21 @@ if __name__ == '__main__':
     elif logY and not logX:
         logstr = "set log y"
     
+    plotstr = "plot '%s' %s" % (fileout,pstr)
+    if shared:
+        N = len( open(fileout).readline().strip().split() )-1
+        for i in xrange(1,N):
+            plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
+    print plotstr
+
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
     unset key
     %s
     %s
-    plot '/tmp/file.tmp' %s
-    """ % (logstr, cstr, pstr)
+    %s
+    """ % (logstr, cstr, plotstr)
     
     os.system( cmd )
-    os.system( "rm -f /tmp/file.tmp" )
+    os.system( "rm -f %s" % fileout )
 
