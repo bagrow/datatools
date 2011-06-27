@@ -35,7 +35,7 @@ Options:
                     'x1 y2, ...', ... can be displayed on a single plot.
 
 Example:
-  cat tutorial/xy.dat | %s -c 'set xr [0:1]' """ % (name,name)
+  cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
 
 
 if __name__ == '__main__':
@@ -85,7 +85,6 @@ if __name__ == '__main__':
         N = len( open(fileout).readline().strip().split() )-1
         for i in xrange(1,N):
             plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
-    print plotstr
 
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
