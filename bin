@@ -47,7 +47,7 @@ if __name__ == '__main__':
         sys.exit(usage)
     
     normed = True
-    if argv[0] in ['-n', '--number']:
+    if argv and argv[0] in ['-n', '--number']:
         normed = False
         argv.pop(0)
     try:
