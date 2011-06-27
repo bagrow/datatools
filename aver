@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-06-08
+# Last Modified: 2011-06-27
 
 """
     This file is part of Datatools.
@@ -100,7 +100,7 @@ def aver_binning(num_bins, log=False, errorbars=False):
         maxVal = numpy.log10(max(X)+1e-8)
         bin_edges = numpy.logspace( minVal, maxVal, num_bins+1 )
     else:
-        bin_edges = numpy.linspace( min(X),max(X), num_bins+1 )
+        bin_edges = numpy.linspace( min(X), max(X), num_bins+1 )
     
     bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
     for x,y in sorted(data):
@@ -117,18 +117,17 @@ if __name__ == '__main__':
     if '-h' in sys.argv or '--help' in sys.argv:
         sys.exit( usage )
     
-    # check if u or uniq or unique is a commandline arg:
-    args = set( a.lower().replace('-','') for a in sys.argv[1:] )
-    
+    # parse commandline arg:
+    args = set( a.lower() for a in sys.argv[1:] )
     errorbars = False
-    if set(['e','error','errorbars']) & args:
+    if set(['-e','--error','--errorbars']) & args:
         errorbars = True
     
-    if set(['u','uniq','unique']) & args:
+    if set(['-u','--uniq','--unique']) & args:
         uniq_binning(errorbars=errorbars)
     else:
         log = False
-        if set(['l','log']) & args:
+        if set(['-l','--log']) & args:
             log = True
         try:
             num_bins = int(sys.argv[-1])

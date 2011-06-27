@@ -2,7 +2,7 @@
 
 # bin
 # Jim Bagrow
-# Last Modified: 2011-05-29
+# Last Modified: 2011-06-27
 
 """
     This file is part of Datatools.
@@ -26,11 +26,14 @@ import warnings
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [number of bins]
+"""Usage: %s [options] [number of bins]
 
 Compute the histogram of the data received from STDIN using linearly spaced
   bins.  If the number of bins is unspecified, an estimate is used based on the
   number of data points.
+
+Options:
+  -n | --number : Return number of occurrences in each bin, not fraction.
 
 Example:
   cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
@@ -39,10 +42,16 @@ error = "Number of bins must be an integer, run `%s --help` for info." % name
 
 if __name__ == '__main__':
     
-    if "-h" in sys.argv or "--help" in sys.argv:
+    argv = [s.lower() for s in sys.argv[1:]]
+    if "-h" in argv or "--help" in argv:
         sys.exit(usage)
+    
+    normed = True
+    if argv[0] in ['-n', '--number']:
+        normed = False
+        argv.pop(0)
     try:
-        num_bins = int(sys.argv[1])
+        num_bins = int(argv[0])
     except IndexError:
         num_bins = None
     except ValueError:
@@ -55,7 +64,7 @@ if __name__ == '__main__':
         num_bins = int(sqrt(len(data)))
     
     warnings.simplefilter("ignore", Warning)
-    hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=True)
+    hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=normed)
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
     #print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
     
