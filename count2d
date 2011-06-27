@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+# count2d.py
+# Jim Bagrow
+# Last Modified: 2011-06-27
+
+import sys, os
+import numpy
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] [number of bins]
+
+### DO REAL USAGE STRING ###
+Compute the histogram of the data received from STDIN using linearly spaced
+  bins.  If the number of bins is unspecified, an estimate is used based on the
+  number of data points.
+
+Example:
+  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
+
+if __name__ == '__main__':
+    
+    if "-h" in sys.argv or "--help" in sys.argv:
+        sys.exit(usage)
+    
+    logscale = True if "-l" in sys.argv or "--log"    in sys.argv else False
+    raw      = True if "-n" in sys.argv or "--number" in sys.argv else False # raw counts
+    
+    ij2num = {}
+    for line in sys.stdin:
+        if not line.strip(): # skip blank lines
+            continue
+        try:
+            i,j = map(int, line.strip().split()[:2])
+        except ValueError:
+            sys.exit("Input data not integer-valued, aborting!")
+        
+        try:
+            ij2num[i,j] += 1
+        except KeyError:
+            ij2num[i,j] = 1
+    
+    all_i, all_j = zip(*ij2num.keys())
+    list_i = range( min(all_i), max(all_i)+1 )
+    list_j = range( min(all_j), max(all_j)+1 )
+    
+    if not raw: # normalize
+        oN = 1.0 / sum( ij2num.values() )
+        for ij in ij2num:
+            ij2num[ij] = ij2num[ij] * oN
+    if logscale:
+        from math import log
+        for ij in ij2num:
+            ij2num[ij] = log( ij2num[ij] )
+    
+    # print output for plot2d:
+    missing_val = 0 # float('nan')
+    for i in list_i:
+        for j in list_j:
+            vij = ij2num.get( (i,j), missing_val)
+            print i,j, vij
+        print
+
+
+

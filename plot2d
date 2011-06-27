@@ -1,0 +1,71 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name [-c \"gnuplot command(s)\"]"
+    echo -e ""
+    echo -e "Read xy data from STDIN and plot."
+    echo -e "  Flags -c and -p allow commands to be passed to gnuplot. They must be"
+    echo -e "  valid gnuplot strings. The -c string is run just before the plot"
+    echo -e "  command, while the -p string is run with the plot command.\n"
+    echo -e "Example:\n  cat f.txt | $name -c \"set xlabel 'x';set ylabel 'y'\" -p \"w lines\" "
+	exit 1
+}
+
+
+PRECMD=''
+while getopts "c:h -help" flag
+do
+    case "$flag"  in
+        c) PRECMD=$OPTARG;;
+        h) usage;;
+    -help) usage;;
+      [?]) usage;;
+    esac
+done
+
+
+cat /dev/stdin > /tmp/file.tmp
+
+gnuplot << EOF
+set term x11 enhanced persist
+unset key
+
+set pm3d map
+#set pm3d at b      # draw on bottom, not as 3d surface
+#set view map       # don't do a 3-d looking plot
+#set dgrid 100,100  # grid of 100x100 pixels
+
+set palette defined (0 0.0 0.0 0.5, \
+                     1 0.0 0.0 1.0, \
+                     2 0.0 0.5 1.0, \
+                     3 0.0 1.0 1.0, \
+                     4 0.5 1.0 0.5, \
+                     5 1.0 1.0 0.0, \
+                     6 1.0 0.5 0.0, \
+                     7 1.0 0.0 0.0, \
+                     8 0.5 0.0 0.0 )
+
+#set size square
+$PRECMD
+splot '/tmp/file.tmp' w pm3d
+EOF
+
+rm -f /tmp/file.tmp
+
