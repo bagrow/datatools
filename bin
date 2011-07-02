@@ -2,7 +2,7 @@
 
 # bin
 # Jim Bagrow
-# Last Modified: 2011-06-27
+# Last Modified: 2011-07-02
 
 """
     This file is part of Datatools.
@@ -23,12 +23,14 @@
 
 import sys, os, numpy
 import warnings
+warnings.simplefilter("ignore", Warning)
 
 name = os.path.basename(sys.argv[0])
+tstr = "logarithmically" if name == "logbin" else "linearly"
 usage = \
 """Usage: %s [options] [number of bins]
 
-Compute the histogram of the data received from STDIN using linearly spaced
+Compute the histogram of the data received from STDIN using %s spaced
   bins.  If the number of bins is unspecified, an estimate is used based on the
   number of data points.
 
@@ -36,7 +38,7 @@ Options:
   -n | --number : Return number of occurrences in each bin, not fraction.
 
 Example:
-  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
+  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,tstr,name)
 
 error = "Number of bins must be an integer, run `%s --help` for info." % name
 
@@ -45,6 +47,7 @@ if __name__ == '__main__':
     argv = [s.lower() for s in sys.argv[1:]]
     if "-h" in argv or "--help" in argv:
         sys.exit(usage)
+    name = os.path.basename(sys.argv[0])
     
     normed = True
     if argv and argv[0] in ['-n', '--number']:
@@ -57,14 +60,26 @@ if __name__ == '__main__':
     except ValueError:
         sys.exit(error)
     
-    data = [ float(x) for x in sys.stdin if x.strip() ]
+    if name == "logbin":
+        data = [ float(x) for x in sys.stdin if x.strip() and float(x) > 0 ]
+    else:
+        data = [ float(x) for x in sys.stdin if x.strip() ]
     
     if num_bins is None:
         from math import sqrt
         num_bins = int(sqrt(len(data)))
     
-    warnings.simplefilter("ignore", Warning)
-    hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=normed)
+    if name == "logbin":
+        min_data,max_data = min(data),max(data)
+        bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins+1 )
+        
+        try: # deal with deprecated numpy behavior :(
+            hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=normed, density=normed)
+        except TypeError:
+            hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=normed)
+    else:
+        hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=normed)
+    
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
     #print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
     
