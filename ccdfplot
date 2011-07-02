@@ -30,12 +30,14 @@ Options:
 Example:
   cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
 
-def write_ccdf(data,filename):
-    #data = [ d for d in data if d ] # r
+def write(data,filename):
     data.sort()
     N = 1.0*len(data)
     f = open(filename, 'w')
-    f.write("\n".join( "%f %f" % (x,1.0-(n+1)/N) for n,x in enumerate(data) ))
+    if name == "ccdfplot":
+        f.write("\n".join( "%f %f" % (x,1.0-(n+1)/N) for n,x in enumerate(data) ))
+    else:
+        f.write("\n".join( "%f %f" % (x,(n+1)/N    ) for n,x in enumerate(data) ))
     f.write("\n")
     f.close()
 
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     
     files = [ "/tmp/file%i.tmp" % i for i in xrange(num_curves) ]
     for data,f in izip(L,files):
-        write_ccdf(list(data), f)
+        write(list(data), f)
     
     
     # build gnuplot strings:

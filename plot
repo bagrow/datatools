@@ -2,7 +2,7 @@
 
 # plot
 # Jim Bagrow
-# Last Modified: 2011-06-27
+# Last Modified: 2011-07-01
 
 import sys, os
 
@@ -46,14 +46,15 @@ if __name__ == '__main__':
         sys.exit( usage )
     A = set(argv)
     
-    logX,logY = False,False
+    logX,logY = "",""
     shared = False
-    if "-lx" in A or "--logx" in A:
-        logX = True
-    if "-ly" in A or "--logy" in A:
-        logY = True
+    if set(["-lx","--logx"]) & A:
+        logX = "set log x"
+    if set(["-ly","--logy"]) & A:
+        logY = "set log y"
     if set(["-l","-lxy","--log","--logxy"]) & A:
-        logX,logY = True,True
+        logX,logY = "set log x","set log y"
+
     if "-s" in A or "--shared" in A:
         shared = True
     
@@ -72,27 +73,20 @@ if __name__ == '__main__':
     fout.write( "".join(l for l in sys.stdin) )
     fout.close()
     
-    logstr = ""
-    if logX and logY:
-        logstr = "set log xy"
-    elif logX and not logY:
-        logstr = "set log x"
-    elif logY and not logX:
-        logstr = "set log y"
-    
     plotstr = "plot '%s' %s" % (fileout,pstr)
     if shared:
         N = len( open(fileout).readline().strip().split() )-1
         for i in xrange(1,N):
             plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
-
+    
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
     unset key
     %s
     %s
     %s
-    """ % (logstr, cstr, plotstr)
+    %s
+    """ % (logX,logY, cstr, plotstr)
     
     os.system( cmd )
     os.system( "rm -f %s" % fileout )
