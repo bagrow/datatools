@@ -15,14 +15,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
+NAME=`basename $0`
+if [[ $NAME == "ccdf" ]]; then
+    SNIPPET="1.0-"
+    STRING="complementary "
+fi
+
 usage(){
-    name=`basename $0`
-    echo -e "Usage: $name "
+    echo -e "Usage: $NAME "
     echo -e ""
-    echo -e "Compute the empirical complementary cumulative distribution function of "
+    echo -e "Compute the empirical ${STRING}cumulative distribution function of "
     echo -e "  date received from STDIN.\n"
     echo -e "Example:"
-    echo -e "  cat vals.txt | $name | plot -c \"set xlabel 'x'; set ylabel 'Pr(X>x)';\""
+    echo -e "  cat vals.txt | $NAME | plot -c \"set xlabel 'x'; set ylabel 'Pr(X>x)';\""
 	exit 1
 }
 
@@ -33,18 +38,13 @@ while [ "$1" != "" ]; do
     shift
 done
 
-#cat /dev/stdin | sort -g > /tmp/fileCCDF.tmp
-#N=`cat /tmp/fileCCDF.tmp | wc -l`
-#cat /tmp/fileCCDF.tmp  | awk "{print \$1, 1.0-1.0*NR/$N}"
-#rm -f /tmp/fileCCDF.tmp
-
-python -c '
+python -c "
 import sys
 data = [ float(l) for l in sys.stdin if l.strip() ] # gotta be in memory :(
 data.sort()
 N = 1.0*len(data)
-sys.stdout.write("\n".join( "%f %f" % (x,1.0-(n+1)/N) for n,x in enumerate(data) ))
-sys.stdout.write("\n")
-'
+sys.stdout.write(\"\n\".join( \"%f %f\" % (x,$SNIPPET(n+1)/N) for n,x in enumerate(data) ))
+sys.stdout.write(\"\n\")
+"
 
 

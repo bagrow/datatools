@@ -48,15 +48,13 @@ if __name__ == '__main__':
     
     logX,logY = "",""
     shared = False
-    if set(["-lx","--logx"]) & A:
+    if (set(["-lx","--logx"]) & A) or name == "logxplot":
         logX = "set log x"
-    if set(["-ly","--logy"]) & A:
+    if set(["-ly","--logy"]) & A   or name == "logyplot":
         logY = "set log y"
-    if set(["-l","-lxy","--log","--logxy"]) & A:
+    if set(["-l","-lxy","--log","--logxy"]) & A or name == "logplot":
         logX,logY = "set log x","set log y"
-
-    if "-s" in A or "--shared" in A:
-        shared = True
+    
     
     cstr=''
     pstr='w lp pt 4'
