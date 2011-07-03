@@ -65,6 +65,8 @@ if __name__ == '__main__':
             cstr = argv[i+1]
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
+    if name == "splot": # scatter plot
+        pstr = 'w p pt 4'
     
     fileout = "/tmp/file.tmp"
     fout = open(fileout, 'w')
