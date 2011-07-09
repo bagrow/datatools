@@ -54,6 +54,8 @@ if __name__ == '__main__':
         logY = "set log y"
     if set(["-l","-lxy","--log","--logxy"]) & A or name == "logplot":
         logX,logY = "set log x","set log y"
+    if '-s' in A or '--shared' in A:
+        shared = True
     
     
     cstr=''
