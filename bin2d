@@ -2,7 +2,7 @@
 
 # bin2d
 # Jim Bagrow
-# Last Modified: 2011-06-25
+# Last Modified: 2011-07-09
 
 """
     This file is part of Datatools.
@@ -27,15 +27,19 @@ from math import log
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [options] [number of bins]
+"""Usage: %s [options] <number of bins>
 
-### DO REAL USAGE STRING ###
-Compute the histogram of the data received from STDIN using linearly spaced
-  bins.  If the number of bins is unspecified, an estimate is used based on the
-  number of data points.
+Compute the 2D histogram (matrix) of XY-data received from STDIN using linearly
+  spaced bins.  The number of bins must be specified, and holds for both the X
+  and the Y directions.
+
+Options:
+  -l | --log    : Take the log of the value for each bin, useful for
+                  logarithmic color scales.
+  -n | --number : Return number of occurrences in each bin, not fraction.
 
 Example:
-  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
+  cat vals.txt | %s 200 | plot2d""" % (name,name)
 
 error = "Number of bins must be an integer, run `%s --help` for info." % name
 
