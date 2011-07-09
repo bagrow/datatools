@@ -9,15 +9,20 @@ import numpy
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [options] [number of bins]
+"""Usage: %s [options]
 
-### DO REAL USAGE STRING ###
-Compute the histogram of the data received from STDIN using linearly spaced
-  bins.  If the number of bins is unspecified, an estimate is used based on the
-  number of data points.
+Compute the 2D histogram (matrix) of XY-data received from STDIN using linearly
+  spaced bins.  The data is not binned, instead counts of the number of each
+  unique pair of (x,y) values is returned.
+
+Options:
+  -l | --log    : Take the log of the value for each bin, useful for
+                  logarithmic color scales.
+  -n | --number : Return number of occurrences in each bin, not fraction.
 
 Example:
-  cat vals.txt | %s 200 | plot -c "set xlabel 'x'; set ylabel 'Pr(x)';" """ % (name,name)
+  cat vals.txt | %s 200 | plot2d""" % (name,name)
+
 
 if __name__ == '__main__':
     

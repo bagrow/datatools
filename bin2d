@@ -52,7 +52,10 @@ if __name__ == '__main__':
     
     logscale = True  if "-l" in sys.argv or "--log"    in sys.argv else False
     normed   = False if "-n" in sys.argv or "--number" in sys.argv else True
-    num_bins = int(sys.argv[-1])
+    try:
+        num_bins = int(sys.argv[-1])
+    except (IndexError,ValueError):
+        sys.exit(error)
     
     
     data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
