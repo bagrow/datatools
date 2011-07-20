@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+# polyfit.py
+# Jim Bagrow
+# Last Modified: 2011-07-16
+
+import sys, os, numpy
+from itertools import izip
+#import warnings
+#warnings.simplefilter("ignore", Warning)
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] [polynomial degree]
+
+Fit polynomial to XY-data received from STDIN. The default is a linear
+polynomial, other degrees can be specified.  Returned are the coefficients
+{p} for the polynomial: y = p_1 x^n + p_2 x^(n-1) + ... + p_n x + p_{n+1}.
+
+Options:
+  -r  : Include R^2 goodness-of-fit (as the final value, after the last
+        polynomial coefficient).
+  -v  : Return XY-data for the fitted equation (polyval), instead of the
+        polynomial coefficients.
+  -vs : Same as -v except that the original XY-data is included.  Ie,
+        the output is (x1,y1,y1fit), (x2,y2,y2fit), ....
+
+Example:
+  cat tutorial/xy.dat | %s -v | plot -p 'w l' 
+  cat tutorial/xy.dat | %s -vs 4 | plot -s""" % (name,name,name)
+
+
+if __name__ == '__main__':
+    
+    # parse args:
+    argv = [ s.lower() for s in sys.argv[1:] ]
+    known_args = set(["-h","--help","-r","-v", '-vs']) 
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    do_rsqrd = False
+    if '-r' in argv:
+        do_rsqrd = True
+    do_polyval = False
+    do_shared  = False
+    if '-v' in argv:
+        do_polyval = True
+    if '-vs' in argv:
+        do_polyval = True
+        do_shared  = True
+    degree = 1
+    other_args = [a for a in argv if a not in known_args]
+    if other_args:
+        for a in other_args:
+            try:
+                degree = int(a) # match first integer
+                break
+            except ValueError:
+                continue
+    
+    # read XY-data from STDIN: (data is assumed to be two columns)
+    data = [ map(float, x.strip().split())[:2] for x in sys.stdin if x.strip() ]
+    X,Y = zip(*data)
+    
+    z = numpy.polyfit(X,Y,degree)
+    if do_polyval:
+        Yout = numpy.polyval(z, X)
+        if do_shared:
+            sys.stdout.write( "\n".join("%f %f %f" % (x,y,yf) for x,y,yf in izip(X,Y,Yout)) )
+        else:
+            sys.stdout.write( "\n".join("%f %f"    % (x,  yf) for x,  yf in izip(X,  Yout)) )
+    elif do_rsqrd:
+        Yout = numpy.polyval(z,X)
+        ymean = numpy.mean(Y)
+        SStot = sum( (yi-ymean)**2 for yi    in Y            )
+        SSerr = sum( (yi-fi   )**2 for yi,fi in izip(Y,Yout) )
+        R2 = 1.0 - SSerr/SStot
+        sys.stdout.write( " ".join(map(str,z)) )
+        sys.stdout.write( " %f" % R2 )
+    else:
+        sys.stdout.write( " ".join(map(str,z)) )
+    sys.stdout.write( "\n" )
+    
