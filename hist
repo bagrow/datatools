@@ -1,45 +1,160 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-#  This file is part of Datatools.
-#  
-#  Datatools is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#  
-#  Datatools is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+# hist.py
+# Jim Bagrow
+# Last Modified: 2011-07-21
 
-NAME=`basename $0`
-BIN="bin"
-PLT="plot"
-if [[ $NAME == "loghist" ]]; then
-    BIN="logbin"
-    PLT="plot --log"
-fi
+import sys, os
+import numpy
+from itertools import izip
+import warnings
+warnings.simplefilter("ignore", Warning)
 
-usage(){
-    echo -e "Usage: $NAME [number of bins]"
-    echo -e ""
-    echo -e "A shortcut for \`$BIN | $PLT\`.\n"
-    echo -e "Example:\n  cat x.dat | $NAME"
-    echo -e "is equivalent to:\n  cat x.dat | $BIN | $PLT"
-	exit 1
-}
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] [number of bins]
 
-while getopts "h -help" flag
-do
-    case "$flag"  in
-        h) usage;;
-    -help) usage;;
-      [?]) usage;;
-    esac
-done
+Plot histogram of X-data received from STDIN.  Multiple histograms can be
+plotted by either passing multiple columns of X-data through STDIN (assuming
+each distribution has the same number of datapoints) or by giving a list of
+files each containing X-data.
 
-# this is the whole thing:
-$BIN $1 | $PLT
+Options:
+  -p              : Passes a string to gnuplot's plot directive.  The
+                    subsequent arg must be valid gnuplot.  For example 
+                    -p 'with lines' will plot the XY-data using lines instead
+                    of linespoints.
+  -c              : Passes a command to gnuplot.  The subsequent arg must be 
+                    valid gnuplot.  The command will be run before gnuplot's 
+                    plot is executed.  For example,
+                    -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -n   | --number : Return number of occurrences in each bin, not fraction.
+  -f   | --files  : Specify list of files (following this argument) that each
+                    contain X-data to plot.  Data is not read from STDIN.
+  -lx  | --logx   : Use logarithmic x-axis.
+  -ly  | --logy   : Use logarithmic y-axis.
+  -lxy | --logxy  : Use double logarithmic axes.
+  -l   | --log    : Shortcut for -lxy / --logxy.
+  -k   | --key    : Shortcut for gnuplot to show the key (legend).
+
+Example:
+  cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
+
+def write(data,filename, num_bins=None):
+    if num_bins is None:
+        from math import sqrt
+        num_bins = int(sqrt(len(data)))
+    
+    if name == "loghist":
+        min_data,max_data = min(data),max(data)
+        bin_edges = numpy.logspace( numpy.log10(min_data), numpy.log10(max_data), num_bins+1 )
+        try: # deal with deprecated numpy behavior :(
+            hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=normed, density=normed)
+        except TypeError:
+            hist,bin_edges = numpy.histogram(data, bins=bin_edges, normed=normed)
+    else:
+        hist,bin_edges = numpy.histogram(data, bins=num_bins, normed=normed)
+    
+    bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
+    
+    f = open(filename, 'w') 
+    for b,h in zip(bin_centers, hist):
+        f.write("%f %f\n" % (b, h))
+    f.close()
+
+
+if __name__ == '__main__':
+    
+    # parse args:
+    argv = [ s.lower() for s in sys.argv[1:] ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    A = set(argv)
+    
+    logX,logY = "",""
+    if set(["-lx","--logx"]) & A:
+        logX = "set log x"
+    if set(["-ly","--logy"]) & A:
+        logY = "set log y"
+    if set(["-l","-lxy","--log","--logxy"]) & A:
+        logX,logY = "set log x","set log y"
+    if name == "loghist" and logX == logY == "":
+        logX,logY = "set log x","set log y"
+    
+    force_key = False
+    if "-k" in A or "---key" in A:
+        force_key = True
+    normed = True
+    if '-n' in A or  '--number' in A:
+        normed = False
+    
+    cstr=''
+    pstr='w lp pt 4'
+    list_infiles = None
+    for i,arg in enumerate(argv):
+        if os.path.exists(arg): # is a file
+            continue
+        if arg == "-p":
+            pstr = argv[i+1]
+        if arg == "-c":
+            cstr = argv[i+1]
+        if arg == "-f" or arg == "--files":
+            list_infiles = [ f for f in argv[(i+1):] if os.path.exists(f) ]
+            if not list_infiles:
+                sys.exit( "Error: input files were specified, but none found.")
+        if not os.path.exists(arg): # not a file
+            try:
+                num_bins = int(arg)
+            except ValueError:
+                num_bins = None # IMPLEMENT
+    
+    
+    # read data:
+    if list_infiles: # from files
+        L = []
+        for f in list_infiles:
+            if name == "loghist":
+                L.append( [float(l.strip()) for l in open(f) if l.strip() and float(l) > 0] )
+            else:
+                L.append( [float(l.strip()) for l in open(f) if l.strip()] )
+        list_titles = [l.replace("_","\_") for l in list_infiles] # since enhanced
+    else:            # from stdin
+        if name == "loghist":
+            D = [ map(float, l.strip().split()) for l in sys.stdin if l.strip() and float(l) > 0 ]
+        else:
+            D = [ map(float, l.strip().split()) for l in sys.stdin if l.strip()                  ]
+        try:
+            L = zip(*D) # transpose
+        except:
+            sys.exit("Data malformed, check input.")
+        list_titles = ["column %i" for i in range(1,len(L)+1)]
+    num_curves = len(L)
+    
+    files = [ "/tmp/file%i.tmp" % i for i in xrange(num_curves) ]
+    for data,f in izip(L,files):
+        write(list(data), f, num_bins=num_bins)
+    
+    
+    # build gnuplot strings:
+    kstr = "set key" if force_key else ""
+    plotstr = "plot '%s' %s title '%s'" % (files[0], pstr,list_titles[0])
+    for i in xrange(1,num_curves):
+        plotstr += ", '%s' %s title '%s'" % (files[i], pstr, list_titles[i])
+    
+    
+    cmd = """gnuplot << EOF
+    set term x11 enhanced persist
+    unset key
+    %s
+    %s
+    %s
+    %s
+    %s
+    """ % (logX,logY, cstr,kstr, plotstr)
+    
+    # run gnuplot and clean up:
+    os.system( cmd )
+    for f in files:
+        os.system( "rm -f %s" % f )
+
+
