@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+# iqr
+# Jim Bagrow
+# Last Modified: 2011-07-20
+
+import sys, os
+import math
+
+def percentile(N, p):
+    """
+    Find the percentile of a list of values.
+    
+    N - is a list of values. Note N MUST BE already sorted.
+    p - a float value from 0.0 to 1.0.
+    
+    Return the percentile of the values in N.
+    
+    Adapted from: http://code.activestate.com/recipes/511478/ (r1)
+    """
+    if not N:
+        return None
+    k = (len(N)-1) * p
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return N[int(k)]
+    d0 = N[int(f)] * (c-k)
+    d1 = N[int(c)] * (k-f)
+    return d0 + d1
+
+if __name__ == '__main__':
+    
+    data = [ float(x) for x in sys.stdin if x.strip() ]
+    data.sort()
+    
+    median = percentile(data, 0.50)
+    lower  = percentile(data, 0.25)
+    upper  = percentile(data, 0.75)
+    sys.stdout.write( "%f %f %f\n" % (median, lower, upper) )
+    sys.stdout.flush()
