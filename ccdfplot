@@ -2,7 +2,7 @@
 
 # ccdfplot
 # Jim Bagrow
-# Last Modified: 2011-06-30
+# Last Modified: 2011-07-21
 
 import sys, os
 from itertools import izip
@@ -11,7 +11,10 @@ name = os.path.basename(sys.argv[0])
 usage = \
 """Usage: %s [options]
 
-Plot ccdf X-data received from STDIN.
+Plot empirical (complementary) cumulative distribution of X-data received from
+STDIN.  Multiple (c)cds can be plotted by passing multiple columns of X-data
+through STDIN (assuming each distribution has the same number of datapoints) or
+by giving a list of files each containing X-data.
 
 Options:
   -p              : Passes a string to gnuplot's plot directive.  The
@@ -22,10 +25,13 @@ Options:
                     valid gnuplot.  The command will be run before gnuplot's 
                     plot is executed.  For example,
                     -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -f   | --files  : Specify list of files (following this argument) that each
+                    contain X-data to plot.  Data is not read from STDIN.
   -lx  | --logx   : Use logarithmic x-axis.
   -ly  | --logy   : Use logarithmic y-axis.
   -lxy | --logxy  : Use double logarithmic axes.
   -l   | --log    : Shortcut for -lxy / --logxy.
+  -k   | --key    : Shortcut for gnuplot to show the key (legend).
 
 Example:
   cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
@@ -51,6 +57,7 @@ if __name__ == '__main__':
     A = set(argv)
     
     logX,logY = "",""
+    force_key = False
     if set(["-lx","--logx"]) & A:
         logX = "set log x"
     if set(["-ly","--logy"]) & A:
@@ -58,21 +65,38 @@ if __name__ == '__main__':
     if set(["-l","-lxy","--log","--logxy"]) & A:
         logX,logY = "set log x","set log y"
     
+    if "-k" in A or "---key" in A:
+        force_key = True
+    
     cstr=''
     pstr='w lp pt 4'
+    list_infiles = []
     for i,arg in enumerate(argv):
+        if os.path.exists(arg): # is a file
+            continue
         if arg == "-p":
             pstr = argv[i+1]
         if arg == "-c":
             cstr = argv[i+1]
+        if arg == "-f" or arg == "--files":
+            list_infiles = [ f for f in argv[(i+1):] if os.path.exists(f) ]
+            if not list_infiles:
+                sys.exit( "Error: input files were specified, but none found.")
     
     
-    # read data stdin:
-    D = [ map(float, l.strip().split()) for l in sys.stdin if l.strip() ]
-    try:
-        L = zip(*D) # transpose
-    except:
-        sys.exit("Data malformed, check input.")
+    # read data:
+    if list_infiles: # from files
+        L = []
+        for f in list_infiles:
+            L.append( [float(l.strip()) for l in open(f) if l.strip()] )
+        list_titles = [l.replace("_","\_") for l in list_infiles] # since enhanced
+    else:            # from stdin
+        D = [ map(float, l.strip().split()) for l in sys.stdin if l.strip() ]
+        try:
+            L = zip(*D) # transpose
+        except:
+            sys.exit("Data malformed, check input.")
+        list_titles = ["column %i" for i in range(1,len(L)+1)]
     num_curves = len(L)
     
     files = [ "/tmp/file%i.tmp" % i for i in xrange(num_curves) ]
@@ -81,9 +105,11 @@ if __name__ == '__main__':
     
     
     # build gnuplot strings:
-    plotstr = "plot '%s' %s title 'column 1'" % (files[0], pstr)
+    kstr = "set key" if force_key else ""
+    plotstr = "plot '%s' %s title '%s'" % (files[0], pstr,list_titles[0])
     for i in xrange(1,num_curves):
-        plotstr += ", '%s' %s title 'column %i'" % (files[i], pstr, i+1)
+        plotstr += ", '%s' %s title '%s'" % (files[i], pstr, list_titles[i])
+    
     
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
@@ -92,7 +118,8 @@ if __name__ == '__main__':
     %s
     %s
     %s
-    """ % (logX,logY, cstr, plotstr)
+    %s
+    """ % (logX,logY, cstr,kstr, plotstr)
     
     # run gnuplot and clean up:
     os.system( cmd )
