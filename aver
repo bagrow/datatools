@@ -39,6 +39,13 @@ Options:
                            data.  The --unique option overrides this flag.
   -e | --errorbars       : Return a third column containing the standard 
                            deviation of Y-values in each corresponding X-bin.
+  -r | --rows            : Assumes the data format is not two long columns of
+                           XY-data.  Instead each row contains a distribution
+                           of Y-values for a given X-value, which is the first
+                           point.  Ie, x y1 y2 ....  Each row's Y-values are
+                           used so that aver plots points x mean(y). Rows do 
+                           not have to be the same length and X-values may be
+                           repeated.
   number of bins         : An integer giving the number of linearly- or 
                            logarithmically-spaced bins to apply to the X-data.
                            Ignored if --unique is used.
@@ -54,32 +61,45 @@ def _mean_only(data):
     return "%f" % numpy.mean(data)
 
 
-def uniq_binning(errorbars=False):
+def uniq_binning(errorbars=False, rows=False):
     """for each unique x-value, print the mean of all y-values"""
     F = _mean_only
     if errorbars:
         F = _mean_stdv
     
-    # data is assumed to be two columns:
-    data = [ x.strip().split() for x in sys.stdin if x.strip() ]
-    
     x2listy = {}
-    for x,y in data:
-        try:
-            x = int(x)    # is x an int?
-        except ValueError:
-            pass          # nope, keep it a string...
-        y = float(y)
-        try:
-            x2listy[x].append(y)
-        except KeyError:
-            x2listy[x] = [y]
+    if rows:
+        for l in sys.stdin:
+            if not l.strip():
+                continue
+            L = l.strip().split()
+            x = L[0]
+            try:
+                x = int(x)    # is x an int?
+            except ValueError:
+                pass          # nope, keep it a string...
+            try:
+                x2listy[x].extend( map(float,L[1:]) )
+            except KeyError:
+                x2listy[x] = map(float,L[1:])
+    else: # data is assumed to be two columns:
+        data = [ x.strip().split() for x in sys.stdin if x.strip() ]
+        for x,y in data:
+            try:
+                x = int(x)    # is x an int?
+            except ValueError:
+                pass          # nope, keep it a string...
+            y = float(y)
+            try:
+                x2listy[x].append(y)
+            except KeyError:
+                x2listy[x] = [y]
     
     for x in sorted(x2listy.keys()):
         print x, F(x2listy[x])
 
 
-def aver_binning(num_bins, log=False, errorbars=False):
+def aver_binning(num_bins, log=False, errorbars=False, rows=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
@@ -87,13 +107,21 @@ def aver_binning(num_bins, log=False, errorbars=False):
     if errorbars:
         F = _mean_stdv
     
-    # data is assumed to be two columns:
-    data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
+    data =[]
+    if rows:
+        for l in sys.stdin:
+            if not l.strip(): continue
+            L = map(float, l.strip().split())
+            x = L[0]
+            for y in L[1:]:
+                data.append( (x,y) )
+    else: # data is assumed to be two columns:
+        data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
     X,Y = zip(*data)
     
     if num_bins is None:
         from math import sqrt
-        num_bins = int(sqrt(len(data))) + 1
+        num_bins = int(sqrt(len(X))) + 1
     
     if log:
         minVal = numpy.log10(min(X)-1e-8) # safe?
@@ -104,6 +132,7 @@ def aver_binning(num_bins, log=False, errorbars=False):
     
     bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
     for x,y in sorted(data):
+        #print x,y, bL,bR, data_in_bin
         if x > bR: # this x,y is in next bin, so finish off current bin
             print 0.5*(bL+bR), F( data_in_bin ) # is this safe with log bin?
             b += 1
@@ -122,9 +151,12 @@ if __name__ == '__main__':
     errorbars = False
     if set(['-e','--error','--errorbars']) & args:
         errorbars = True
+    rows = False
+    if set(['-r','--rows']) & args:
+        rows = True
     
     if set(['-u','--uniq','--unique']) & args:
-        uniq_binning(errorbars=errorbars)
+        uniq_binning(errorbars=errorbars, rows=rows)
     else:
         log = False
         if set(['-l','--log']) & args:
@@ -133,5 +165,5 @@ if __name__ == '__main__':
             num_bins = int(sys.argv[-1])
         except ValueError:
             num_bins = None
-        aver_binning(num_bins, log=log, errorbars=errorbars)
+        aver_binning(num_bins, log=log, errorbars=errorbars, rows=rows)
     
