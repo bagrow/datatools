@@ -91,6 +91,7 @@ if __name__ == '__main__':
     cstr=''
     pstr='w lp pt 4'
     list_infiles = None
+    num_bins = None
     for i,arg in enumerate(argv):
         if os.path.exists(arg): # is a file
             continue
@@ -106,8 +107,7 @@ if __name__ == '__main__':
             try:
                 num_bins = int(arg)
             except ValueError:
-                num_bins = None # IMPLEMENT
-    
+                pass
     
     # read data:
     if list_infiles: # from files
