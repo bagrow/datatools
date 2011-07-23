@@ -2,7 +2,7 @@ Datatools
 =========
 
 A collection of small scripts for quickly plotting and munging data from the
-command line.  Supports basic statistics, histograms, and CDFs.  An importable
+command line.  Supports basic statistics, histograms, and [CDFs][].  An importable
 python module is also available: see `python/` for more.
 
 
@@ -40,11 +40,15 @@ Requirements
 
 * bash
 * awk
-* gnuplot (and X11 terminal)
-* python 2.x (probably 2.5+)
+* [gnuplot][] (and X11 terminal)
+* [python][] 2.x (probably 2.5+)
     - numpy (version with fixed histogram normalization)
     - [networkx][] (only for `el2info` and `el2draw`)
     - [matplotlib][] (only for `el2draw`)
+
+Recent versions of OS X include everything but gnuplot, networkx, and
+matplotlib.  Some knowledge of gnuplot is very helpful for customizing plot
+appearance.
 
 Todo
 ====
@@ -72,5 +76,9 @@ License
     You should have received a copy of the GNU General Public License
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
-[networkx]: http://networkx.lanl.gov
+[CDFs]:       http://en.wikipedia.org/wiki/Empirical_distribution_function
+[numpy]:      http://numpy.scipy.org/
+[python]:     http://python.org/
+[gnuplot]:    http://www.gnuplot.info/
+[networkx]:   http://networkx.lanl.gov
 [matplotlib]: http://matplotlib.sourceforge.net
