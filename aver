@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-06-27
+# Last Modified: 2011-07-22
 
 """
     This file is part of Datatools.
@@ -26,7 +26,7 @@ import numpy
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s [options] [number of bins] 
+"""Usage: %s [options] [number of bins]
 
 Average or smooth XY-data received from STDIN by first binning the X-values
 then, for each X-bin, compute the mean of all Y-data whose corresponding
@@ -55,9 +55,13 @@ Example:
 
 
 def _mean_stdv(data):
+    if not data:
+        return "0.0 0.0"
     return "%f %f" % (numpy.mean(data),numpy.std(data))
 
 def _mean_only(data):
+    if not data:
+        return "0.0"
     return "%f" % numpy.mean(data)
 
 
@@ -128,17 +132,22 @@ def aver_binning(num_bins, log=False, errorbars=False, rows=False):
         maxVal = numpy.log10(max(X)+1e-8)
         bin_edges = numpy.logspace( minVal, maxVal, num_bins+1 )
     else:
-        bin_edges = numpy.linspace( min(X), max(X), num_bins+1 )
+        bin_edges = numpy.linspace( min(X)-1e-8, max(X)+1e-8, num_bins+1 )
     
     bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
-    for x,y in sorted(data):
-        #print x,y, bL,bR, data_in_bin
-        if x > bR: # this x,y is in next bin, so finish off current bin
-            print 0.5*(bL+bR), F( data_in_bin ) # is this safe with log bin?
-            b += 1
-            bL, bR = bin_edges[b], bin_edges[b+1]
-            data_in_bin = []
-        data_in_bin.append( y )
+    data.sort()
+    while data:
+        x,y = data.pop(0)
+        in_bin = False
+        while not in_bin:
+            if bL <= x < bR:
+                data_in_bin.append( y )
+                in_bin = True
+            elif x >= bR:
+                print 0.5*(bL+bR), F( data_in_bin ) # print current bin
+                b += 1                              # go to next bin, same x,y
+                bL, bR = bin_edges[b], bin_edges[b+1] # careful about IndexError
+                data_in_bin = []
     print 0.5*(bL+bR), F( data_in_bin ) # don't forget last bin!
 
 
