@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2011-07-22
+# Last Modified: 2011-07-23
 
 """
     This file is part of Datatools.
@@ -43,7 +43,7 @@ Options:
                            XY-data.  Instead each row contains a distribution
                            of Y-values for a given X-value, which is the first
                            point.  Ie, x y1 y2 ....  Each row's Y-values are
-                           used so that aver plots points x mean(y). Rows do 
+                           used so that aver plots points (x, mean(y)). Rows do
                            not have to be the same length and X-values may be
                            repeated.
   number of bins         : An integer giving the number of linearly- or 
@@ -107,7 +107,7 @@ def aver_binning(num_bins, log=False, errorbars=False, rows=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
-    F = _mean_only
+    F = _mean_only # function to apply to the Y-values of each X-bin
     if errorbars:
         F = _mean_stdv
     
@@ -121,7 +121,10 @@ def aver_binning(num_bins, log=False, errorbars=False, rows=False):
                 data.append( (x,y) )
     else: # data is assumed to be two columns:
         data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
-    X,Y = zip(*data)
+    try:
+        X,Y = zip(*data) # other columns ignored...
+    except ValueError:
+        sys.exit("Error: bad data (too many columns?)")
     
     if num_bins is None:
         from math import sqrt
@@ -145,8 +148,8 @@ def aver_binning(num_bins, log=False, errorbars=False, rows=False):
                 in_bin = True
             elif x >= bR:
                 print 0.5*(bL+bR), F( data_in_bin ) # print current bin
-                b += 1                              # go to next bin, same x,y
-                bL, bR = bin_edges[b], bin_edges[b+1] # careful about IndexError
+                b += 1                              # go to next bin, but with same x,y
+                bL, bR = bin_edges[b], bin_edges[b+1] # careful about IndexError...
                 data_in_bin = []
     print 0.5*(bL+bR), F( data_in_bin ) # don't forget last bin!
 
