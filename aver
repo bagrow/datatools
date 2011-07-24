@@ -43,9 +43,9 @@ Options:
                            XY-data.  Instead each row contains a distribution
                            of Y-values for a given X-value, which is the first
                            point.  Ie, x y1 y2 ....  Each row's Y-values are
-                           used so that aver plots points (x, mean(y)). Rows do
-                           not have to be the same length and X-values may be
-                           repeated.
+                           used so that aver computes points (x, mean(y)). Rows
+                           do not have to be the same length and X-values may
+                           be repeated.
   number of bins         : An integer giving the number of linearly- or 
                            logarithmically-spaced bins to apply to the X-data.
                            Ignored if --unique is used.
@@ -55,13 +55,11 @@ Example:
 
 
 def _mean_stdv(data):
-    if not data:
-        return "0.0 0.0"
+    if not data: return "0.0 0.0"
     return "%f %f" % (numpy.mean(data),numpy.std(data))
 
 def _mean_only(data):
-    if not data:
-        return "0.0"
+    if not data: return "0.0"
     return "%f" % numpy.mean(data)
 
 
@@ -122,7 +120,7 @@ def aver_binning(num_bins, log=False, errorbars=False, rows=False):
     else: # data is assumed to be two columns:
         data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
     try:
-        X,Y = zip(*data) # other columns ignored...
+        X,Y = zip(*data)
     except ValueError:
         sys.exit("Error: bad data (too many columns?)")
     
