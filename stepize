@@ -13,8 +13,9 @@ usage = \
 Removes "vertically duplicate" first-column data received from STDIN.  In other
   words, it only prints lines of STDIN where the first field (X-value) differs
   from that of either the previous line or the subsequent line.  This is useful
-  after computing the (c)ccdf since it removes the duplicated points that stack
-  up vertically at each unique X-value.
+  after computing the (c)cdf since it removes the duplicated points that stack
+  up vertically at each unique X-value, while preserving the top and bottom 
+  point so that a proper step can be drawn.
 
 Example:
   cat vals.txt | ccdf | %s | plot """ % (name,name)
