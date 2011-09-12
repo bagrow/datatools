@@ -56,7 +56,7 @@ Example:
 
 def _mean_stdv(data):
     if not data: return "0.0 0.0"
-    return "%f %f" % (numpy.mean(data),numpy.std(data))
+    return "%s %s" % (str(numpy.mean(data)),str(numpy.std(data)))
 
 def _mean_only(data):
     if not data: return "0.0"
