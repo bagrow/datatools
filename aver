@@ -60,7 +60,7 @@ def _mean_stdv(data):
 
 def _mean_only(data):
     if not data: return "0.0"
-    return "%f" % numpy.mean(data)
+    return "%s" % str(numpy.mean(data))
 
 
 def uniq_binning(errorbars=False, rows=False):
