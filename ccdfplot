@@ -2,7 +2,7 @@
 
 # ccdfplot
 # Jim Bagrow
-# Last Modified: 2011-07-21
+# Last Modified: 2011-09-28
 
 import sys, os
 from itertools import izip
@@ -25,6 +25,9 @@ Options:
                     valid gnuplot.  The command will be run before gnuplot's 
                     plot is executed.  For example,
                     -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -x   | --funcs  : A comma-separated list of functions to plot after other
+                    curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
+                    variable should always be 'x'.
   -f   | --files  : Specify list of files (following this argument) that each
                     contain X-data to plot.  Data is not read from STDIN.
   -lx  | --logx   : Use logarithmic x-axis.
@@ -68,6 +71,7 @@ if __name__ == '__main__':
     if "-k" in A or "---key" in A:
         force_key = True
     
+    fstr=''
     cstr=''
     pstr='w lp pt 4'
     list_infiles = []
@@ -78,6 +82,8 @@ if __name__ == '__main__':
             pstr = argv[i+1]
         if arg == "-c":
             cstr = argv[i+1]
+        if arg in ['-x', '--funcs','--functions']:
+            fstr = argv[i+1]
         if arg == "-f" or arg == "--files":
             list_infiles = [ f for f in argv[(i+1):] if os.path.exists(f) ]
             if not list_infiles:
@@ -109,7 +115,8 @@ if __name__ == '__main__':
     plotstr = "plot '%s' %s title '%s'" % (files[0], pstr,list_titles[0])
     for i in xrange(1,num_curves):
         plotstr += ", '%s' %s title '%s'" % (files[i], pstr, list_titles[i])
-    
+    if fstr:
+        plotstr += ","+fstr
     
     cmd = """gnuplot << EOF
     set term x11 enhanced persist

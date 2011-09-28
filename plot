@@ -2,7 +2,7 @@
 
 # plot
 # Jim Bagrow
-# Last Modified: 2011-07-01
+# Last Modified: 2011-09-28
 
 import sys, os
 
@@ -25,10 +25,14 @@ Options:
                     yerrorlines' is used.  This overrides any string given 
                     using -p. Note that gnuplot requires three or four columns
                     of input to render errorbars.
+  -x   | --funcs  : A comma-separated list of functions to plot after other
+                    curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
+                    variable should always be 'x'.
   -lx  | --logx   : Use logarithmic x-axis.
   -ly  | --logy   : Use logarithmic y-axis.
   -lxy | --logxy  : Use double logarithmic axes.
   -l   | --log    : Shortcut for -lxy / --logxy.
+  -k   | --key    : Shortcut for gnuplot to show the key (legend).
   -s   | --shared : Plot multiple curves that share the same X-values. This 
                     assumes that each line of the data received from STDIN is
                     of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
@@ -48,6 +52,7 @@ if __name__ == '__main__':
     
     logX,logY = "",""
     shared = False
+    force_key = False
     if (set(["-lx","--logx"]) & A) or name == "logxplot":
         logX = "set log x"
     if set(["-ly","--logy"]) & A   or name == "logyplot":
@@ -56,8 +61,11 @@ if __name__ == '__main__':
         logX,logY = "set log x","set log y"
     if '-s' in A or '--shared' in A:
         shared = True
+    if "-k" in A or "---key" in A:
+        force_key = True
     
     
+    fstr=''
     cstr=''
     pstr='w lp pt 4'
     for i,arg in enumerate(argv):
@@ -65,6 +73,8 @@ if __name__ == '__main__':
             pstr = argv[i+1]
         if arg == "-c":
             cstr = argv[i+1]
+        if arg in ['-x', '--funcs','--functions']:
+            fstr = argv[i+1]
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
     if name == "splot": # scatter plot
@@ -75,11 +85,14 @@ if __name__ == '__main__':
     fout.write( "".join(l for l in sys.stdin) )
     fout.close()
     
+    kstr = "set key" if force_key else ""
     plotstr = "plot '%s' %s" % (fileout,pstr)
     if shared:
         N = len( open(fileout).readline().strip().split() )-1
         for i in xrange(1,N):
             plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
+    if fstr:
+        plotstr += ","+fstr
     
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
@@ -88,7 +101,8 @@ if __name__ == '__main__':
     %s
     %s
     %s
-    """ % (logX,logY, cstr, plotstr)
+    %s
+    """ % (logX,logY, cstr,kstr, plotstr)
     
     os.system( cmd )
     os.system( "rm -f %s" % fileout )

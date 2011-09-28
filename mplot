@@ -2,7 +2,7 @@
 
 # mplot
 # Jim Bagrow
-# Last Modified: 2011-06-26
+# Last Modified: 2011-09-28
 
 import sys, os
 
@@ -25,10 +25,14 @@ Options:
                    yerrorlines' is used.  This overrides any string given 
                    using -p. Note that gnuplot requires three or four columns
                    of input to render errorbars.
+  -x   | --funcs : A comma-separated list of functions to plot after other
+                   curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
+                   variable should always be 'x'.
   -lx  | --logx  : Use logarithmic x-axis.
   -ly  | --logy  : Use logarithmic y-axis.
   -lxy | --logxy : Use double logarithmic axes.
   -l   | --log   : Shortcut for -lxy / --logxy.
+  -k   | --key   : Shortcut for gnuplot to show the key (legend).
 
 Example:
   %s -c 'set xr [0:1]' file1.txt file2.txt """ % (name,name)
@@ -42,9 +46,11 @@ if __name__ == '__main__':
         sys.exit( usage )
     
     list_files = []
+    fstr=''
     cstr=''
     pstr='w lp pt 4'
     logX,logY = False,False
+    force_key = False
     while argv:
         A = argv.pop(0)
         a = A.lower()
@@ -60,6 +66,10 @@ if __name__ == '__main__':
             cstr = argv.pop(0)
         elif a == '-e' or a == '--error':
             pstr = 'w yerrorlines'
+        elif a == '-x' or a == '--funcs' or a == '--functions':
+            fstr = argv.pop(0)
+        elif a == '-k' or a == '--key':
+            force_key = True
         elif os.path.exists(A): # is a file
             list_files.append(A)
     
@@ -67,10 +77,13 @@ if __name__ == '__main__':
         sys.exit("Error: No plottable files found!")
     
     
+    kstr = "set key" if force_key else ""
     plotstr = "plot "
     for f in list_files:
         plotstr += "'%s' %s, " % (f, pstr)
     plotstr = plotstr[:-2]
+    if fstr:
+        plotstr += ","+fstr
     
     logstr = ""
     if logX and logY:
@@ -87,7 +100,8 @@ if __name__ == '__main__':
     %s
     %s
     %s
-    """ % (logstr, cstr, plotstr)
+    %s
+    """ % (logstr, cstr,kstr, plotstr)
     
     os.system( cmd )
 

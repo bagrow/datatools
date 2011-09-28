@@ -28,9 +28,12 @@ Options:
                     valid gnuplot.  The command will be run before gnuplot's 
                     plot is executed.  For example,
                     -c 'set xlabel "x"; set ylabel "y"' will label the graph.
-  -n   | --number : Return number of occurrences in each bin, not fraction.
+  -x   | --funcs  : A comma-separated list of functions to plot after other
+                    curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
+                    variable should always be 'x'.
   -f   | --files  : Specify list of files (following this argument) that each
                     contain X-data to plot.  Data is not read from STDIN.
+  -n   | --number : Return number of occurrences in each bin, not fraction.
   -lx  | --logx   : Use logarithmic x-axis.
   -ly  | --logy   : Use logarithmic y-axis.
   -lxy | --logxy  : Use double logarithmic axes.
@@ -88,6 +91,7 @@ if __name__ == '__main__':
     if '-n' in A or  '--number' in A:
         normed = False
     
+    fstr=''
     cstr=''
     pstr='w lp pt 4'
     list_infiles = None
@@ -99,6 +103,8 @@ if __name__ == '__main__':
             pstr = argv[i+1]
         if arg == "-c":
             cstr = argv[i+1]
+        if arg in ['-x', '--funcs','--functions']:
+            fstr = argv[i+1]
         if arg == "-f" or arg == "--files":
             list_infiles = [ f for f in argv[(i+1):] if os.path.exists(f) ]
             if not list_infiles:
@@ -140,7 +146,8 @@ if __name__ == '__main__':
     plotstr = "plot '%s' %s title '%s'" % (files[0], pstr,list_titles[0])
     for i in xrange(1,num_curves):
         plotstr += ", '%s' %s title '%s'" % (files[i], pstr, list_titles[i])
-    
+    if fstr:
+        plotstr += ","+fstr
     
     cmd = """gnuplot << EOF
     set term x11 enhanced persist
