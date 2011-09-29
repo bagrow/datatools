@@ -102,7 +102,7 @@ if __name__ == '__main__':
             L = zip(*D) # transpose
         except:
             sys.exit("Data malformed, check input.")
-        list_titles = ["column %i" for i in range(1,len(L)+1)]
+        list_titles = ["column %i" % i for i in range(1,len(L)+1)]
     num_curves = len(L)
     
     files = [ "/tmp/file%i.tmp" % i for i in xrange(num_curves) ]
