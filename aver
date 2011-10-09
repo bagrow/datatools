@@ -21,7 +21,7 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os
+import sys, os, math
 import numpy
 
 name = os.path.basename(sys.argv[0])
@@ -37,8 +37,12 @@ Options:
                            data.  Handy for integer-valued X-data.
   -l | --log             : Use logarithmically increasing bin widths for the X-
                            data.  The --unique option overrides this flag.
-  -e | --errorbars       : Return a third column containing the standard 
-                           deviation of Y-values in each corresponding X-bin.
+  -e | --errorbars       : Return a third column containing the STANDARD 
+                           DEVIATION of Y-values in each corresponding X-bin.
+  -s | --standard        : Use STANDARD ERROR instead of standard deviation for
+                           errorbars.
+  -q | --iqr             : Use MEDIAN and INTERQUARTILE RANGE for each x-bin.
+                           Overrides any other errorbar settings.
   -r | --rows            : Assumes the data format is not two long columns of
                            XY-data.  Instead each row contains a distribution
                            of Y-values for a given X-value, which is the first
@@ -53,6 +57,40 @@ Options:
 Example:
   cat tutorial/xy.dat | %s | plot """ % (name,name)
 
+def percentile(N, p):
+    """
+    Find the percentile of a list of values.
+    
+    N - is a list of values. Note N MUST BE already sorted.
+    p - a float value from 0.0 to 1.0.
+    
+    Return the percentile of the values in N.
+    
+    Adapted from: http://code.activestate.com/recipes/511478/ (r1)
+    """
+    if not N:
+        return None
+    k = (len(N)-1) * p
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return N[int(k)]
+    d0 = N[int(f)] * (c-k)
+    d1 = N[int(c)] * (k-f)
+    return d0 + d1
+
+def _iqr(data):
+    if not data: return "0.0 0.0"
+    data.sort()
+    median = percentile(data, 0.50)
+    lower  = percentile(data, 0.25)
+    upper  = percentile(data, 0.75)
+    return "%f %f %f" % (median, lower, upper)
+
+def _mean_stde(data):
+    if not data: return "0.0 0.0"
+    n = math.sqrt(len(data))
+    return "%s %s" % (str(numpy.mean(data)),str(numpy.std(data)/n))
 
 def _mean_stdv(data):
     if not data: return "0.0 0.0"
@@ -63,11 +101,15 @@ def _mean_only(data):
     return "%s" % str(numpy.mean(data))
 
 
-def uniq_binning(errorbars=False, rows=False):
+def uniq_binning(errorbars=False, standarderror=False, rows=False, iqr=False):
     """for each unique x-value, print the mean of all y-values"""
     F = _mean_only
-    if errorbars:
+    if errorbars and not standarderror:
         F = _mean_stdv
+    elif errorbars and standarderror:
+        F = _mean_stde
+    if iqr:
+        F = _iqr
     
     x2listy = {}
     if rows:
@@ -101,13 +143,17 @@ def uniq_binning(errorbars=False, rows=False):
         print x, F(x2listy[x])
 
 
-def aver_binning(num_bins, log=False, errorbars=False, rows=False):
+def aver_binning(num_bins, log=False, errorbars=False, standarderror=False, iqr=False, rows=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
     F = _mean_only # function to apply to the Y-values of each X-bin
-    if errorbars:
+    if errorbars and not standarderror:
         F = _mean_stdv
+    elif errorbars and standarderror:
+        F = _mean_stde
+    if iqr:
+        F = _iqr
     
     data =[]
     if rows:
@@ -159,14 +205,21 @@ if __name__ == '__main__':
     # parse commandline arg:
     args = set( a.lower() for a in sys.argv[1:] )
     errorbars = False
+    stanerror = False
+    iqr       = False
     if set(['-e','--error','--errorbars']) & args:
         errorbars = True
+    if set(['-s','--standard','--standarderror']) & args:
+        errorbars = True
+        stanerror = True
+    if set(['-q','--iqr']) & args:
+        iqr = True
     rows = False
     if set(['-r','--rows']) & args:
         rows = True
     
     if set(['-u','--uniq','--unique']) & args:
-        uniq_binning(errorbars=errorbars, rows=rows)
+        uniq_binning(errorbars=errorbars, rows=rows, standarderror=stanerror, iqr=iqr)
     else:
         log = False
         if set(['-l','--log']) & args:
@@ -175,5 +228,5 @@ if __name__ == '__main__':
             num_bins = int(sys.argv[-1])
         except ValueError:
             num_bins = None
-        aver_binning(num_bins, log=log, errorbars=errorbars, rows=rows)
+        aver_binning(num_bins, log=log, errorbars=errorbars, rows=rows, standarderror=stanerror, iqr=iqr)
     
