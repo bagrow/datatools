@@ -41,7 +41,10 @@ def get_fit_params(equation):
     s = re.sub('\s+\d+', ' ', s)
     
     list_params = set(s.split())
-    list_params.remove('x') # remove independent variable
+    try:
+        list_params.remove('x') # remove independent variable
+    except KeyError:
+        sys.exit("The independent variable must be 'x'.  Exiting...")
     return sorted(list(list_params))
 
 
@@ -56,7 +59,7 @@ def parse_fit_log(logfile, params):
         if capture and line.strip() and line[0] != "=":
             S.append( line.strip() )
     S = S[1:]
-    p2v = {}
+    p2v = {} # parameter -> fitted value
     for s in S:
         X = s.split()
         p2v[ X[0] ] = X[2]
@@ -79,24 +82,28 @@ def parse_ic(ic,params):
     else:
         L = ic.split()
     L = [x.strip().replace("=","") for x in L]
-    p2ic = dict( (p,1.0) for p in params)
+    p2iv = dict( (p,1.0) for p in params)
     for x in L:
         for p in params:
             if p in x:
-                ic = float(x.replace(p,''))
-                p2ic[p] = ic
+                iv = float(x.replace(p,''))
+                p2iv[p] = iv
                 break
-    return sorted(p2ic.items())
+    return sorted(p2iv.items())
 
+def build_plot_str(equation,params):
+    s = "\\n".join( "%s = %%f" % p for p in params)
+    s = "sprintf(\"\\n\\n%s\", %s)" % (s, ",".join(params))
+    return s
 
 if __name__ == '__main__':
     
     # parse args:
     try:
         equation = sys.argv[1]
+        params = get_fit_params(equation)
     except IndexError:
         sys.exit("No curve specified for fitting.  Exiting...")
-    params = get_fit_params(equation)
     try:
         param_initval = parse_ic(sys.argv[2], params)
     except IndexError:
@@ -111,6 +118,8 @@ if __name__ == '__main__':
     # build parameter-based strings for gnuplot command:
     str_ic  = "; ".join("%s = %f" % (p,iv) for p,iv in param_initval)
     str_via = ", ".join(params)
+    str_lbl = build_plot_str(equation,params)
+    str_lbl = "set label 1 'y = %s'.%s at graph 0.05,0.33 front" % (equation,str_lbl)
     
     # build gnuplot command:
     cmd = """gnuplot << EOF > /dev/null 2>&1
@@ -120,8 +129,9 @@ if __name__ == '__main__':
     f(x) = %s  # define the function to be fit
     %s          # initial guesses for params
     fit f(x) '%s' using 1:2 via %s
+    %s
     plot '%s' w lp title 'data', f(x) w l lw 3 title 'fit'
-    """ % (equation, str_ic, fileout, str_via, fileout)
+    """ % (equation, str_ic, fileout, str_via, str_lbl,fileout)
     
     # run gnuplot:
     os.system( cmd )
