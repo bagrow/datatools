@@ -1,0 +1,137 @@
+#!/usr/bin/env python
+
+# curvefit
+# Jim Bagrow
+# Last Modified: 2011-10-14
+
+import sys, os
+import re
+
+
+gnuplot_funcs_list = [
+    "abs", "acos", "acosh", "arg", "asin",
+    "asinh", "atan", "atan2", "atanh", "besj0",
+    "besj1", "besy0", "besy1", "ceil", "cos",
+    "cosh", "erf", "erfc", "exp", "floor",
+    "gamma", "ibeta", "igamma", "imag", "invnorm",
+    "int", "lgamma", "log", "log10", "norm",
+    "rand", "real", "sgn", "sin", "sinh",
+    "sqrt", "tan", "tanh"
+]
+
+gnuplot_spec_chars_list = [
+    "*", "/", "%", "+", "-",
+    "!", "<", ">", "&", "^",
+    "|", "&", "|", "=", ",",
+    ".", "(", ")", "[", "]"
+]
+
+
+def get_fit_params(equation):
+    # remove special/math characters:
+    s = " " + equation
+    for char in gnuplot_spec_chars_list:
+        s = s.replace(char, " ")
+    
+    # remove functions:
+    for func in gnuplot_funcs_list:
+        s = s.replace(func, " ")
+    
+    # remove numbers (unless part of variable):
+    s = re.sub('\s+\d+', ' ', s)
+    
+    list_params = set(s.split())
+    list_params.remove('x') # remove independent variable
+    return sorted(list(list_params))
+
+
+def parse_fit_log(logfile, params):
+    S = []
+    capture = False
+    for line in open(logfile):
+        if line.startswith("Final set of parameters"):
+            capture = True
+        if line.startswith("correlation matrix of the fit"):
+            capture = False
+        if capture and line.strip() and line[0] != "=":
+            S.append( line.strip() )
+    S = S[1:]
+    p2v = {}
+    for s in S:
+        X = s.split()
+        p2v[ X[0] ] = X[2]
+    if len(p2v) != len(params):
+        sys.exit("Error")
+    p,v = zip(*[ (p,p2v[p]) for p in params])
+    return v
+
+
+def sub_vals_into_equation(equation, params, values):
+    S = equation
+    for p,v in zip(params,values):
+        S = S.replace(p,v)
+    return S
+
+
+def parse_ic(ic,params):
+    if "," in ic: # assume comma-separated
+        L = ic.split(",")
+    else:
+        L = ic.split()
+    L = [x.strip().replace("=","") for x in L]
+    p2ic = dict( (p,1.0) for p in params)
+    for x in L:
+        for p in params:
+            if p in x:
+                ic = float(x.replace(p,''))
+                p2ic[p] = ic
+                break
+    return sorted(p2ic.items())
+
+
+if __name__ == '__main__':
+    
+    # parse args:
+    try:
+        equation = sys.argv[1]
+    except IndexError:
+        sys.exit("No curve specified for fitting.  Exiting...")
+    params = get_fit_params(equation)
+    try:
+        param_initval = parse_ic(sys.argv[2], params)
+    except IndexError:
+        param_initval = ( (p,1.0) for p in params )
+    
+    # redirect STDIN to tmp file:
+    fileout = "/tmp/file.tmp"
+    fout = open(fileout, 'w')
+    fout.write( "".join(l for l in sys.stdin) )
+    fout.close()
+    
+    # build parameter-based strings for gnuplot command:
+    str_ic  = "; ".join("%s = %f" % (p,iv) for p,iv in param_initval)
+    str_via = ", ".join(params)
+    
+    # build gnuplot command:
+    cmd = """gnuplot << EOF > /dev/null 2>&1
+    set term x11 persist
+    #unset key
+    set fit logfile '/tmp/file.fit.log'
+    f(x) = %s  # define the function to be fit
+    %s          # initial guesses for params
+    fit f(x) '%s' using 1:2 via %s
+    plot '%s' w lp title 'data', f(x) w l lw 3 title 'fit'
+    """ % (equation, str_ic, fileout, str_via, fileout)
+    
+    # run gnuplot:
+    os.system( cmd )
+    
+    # retrieve output:
+    values = parse_fit_log("/tmp/file.fit.log", params)
+    output = sub_vals_into_equation(equation, params, values)
+    print "y =", output
+    
+    # clean up:
+    os.system( "rm -f /tmp/file.fit.log" )
+    os.system( "rm -f %s" % fileout )
+
