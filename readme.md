@@ -12,7 +12,7 @@ Examples
 Compute summary statistics:
 
     $ cat data.txt | mean
-    # cat data.txt | stdv
+    $ cat data.txt | stdv
     $ cat data.txt | summary
 
 Plot data generated from script:
