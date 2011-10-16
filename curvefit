@@ -12,11 +12,11 @@ usage = \
 """Usage: %s FUNCTION [INITIAL VALUES] [options] [plot options]
 
 Fit a curve specified by FUNCTION to XY-data received from STDIN.  The
-independent variable is 'x' and initial values of some or all fit parameters
-may be specified.  If FUNCTION contains spaces or parentheses, it must be
-quoted.  INITIAL VALUES for parameters default to 1.0 unless specified.  Note
-that the choice of initial values can be crucial for nonlinear fits; trial and
-error is often necessary.
+independent variable must be 'x' and initial values of some or all fit
+parameters may be specified.  If FUNCTION contains spaces or parentheses, it
+must be quoted.  INITIAL VALUES for parameters default to 1.0 unless specified.
+Note that the choice of initial values can be crucial for nonlinear fits; trial
+and error is often necessary.
 
 The XY-data and fitted function are passed to `plot` for display (unless
 --noplot is used, see below).  Most arguments supported by `plot` can be given
@@ -52,6 +52,11 @@ gnuplot_spec_chars_list = [
 
 
 def get_fit_params(equation):
+    """Parse string `equation` to get all parameters (variables) that are not
+    special functions, math operators, or digits.  Parameter names containing
+    numbers, such as `x0` are supported.  The equation must have `x` as its
+    independent variable.
+    """
     # remove special/math characters:
     s = " " + equation
     for char in gnuplot_spec_chars_list:
@@ -73,6 +78,9 @@ def get_fit_params(equation):
 
 
 def parse_fit_log(logfile, params):
+    """Read gnuplot's fit log saved to file `logfile` for the final fitted
+    parameter values.
+    """
     S = []
     capture = False
     for line in open(logfile):
@@ -102,13 +110,18 @@ def sub_vals_into_equation(equation, params, values):
 
 
 def parse_ic(ic,params):
+    """Takes strings like 'A=3,B=-0.5' or 'x0-9 x187' and a list of known
+    parameter names like ['A','B'] or ['x0','x1'] and makes tuples of
+    (parameters,values) like [('A',3.0),('B',-0.5)] or
+    [('x0',-9.0),('x1',87.0)]
+    """
     p2iv = dict( (p,1.0) for p in params) # default values
     if ic == None:
         return sorted(p2iv.items())
     
-    if "," in ic: # assume comma-separated
+    if "," in ic: # assume list of initial values is entirely comma-separated
         L = ic.split(",")
-    else:
+    else:         # otherwise assume space-separated
         L = ic.split()
     L = [x.strip().replace("=","") for x in L]
     for x in L:
@@ -121,21 +134,25 @@ def parse_ic(ic,params):
 
 
 def build_plot_str(equation,param_val):
+    """Takes the fit function and fitted parameter values to build a label to
+    show on the gnuplot window.
+    """
     params,vals = zip(*param_val)
     s = "\\n".join( "%s = %s" % (p,v) for (p,v) in param_val)
     return s
 
 
 def parse_args(args):
-    """Return tuple: equation,initial_values,options,plot_options.
+    """Args is a list of strings, usually args = sys.argv[1:].  Returns tuple:
+    equation,initial_values,options,plot_options.
     """
     equation,initial_values,options,plot_options = "","","",""
     
     # get equation to fit:
     if len(args) < 1:
         sys.exit("Error: No function specified for fitting.  Exiting...")
-    equation = args[0]
-    args.pop(0) # remove equation
+    equation = args[0] # assume first arg is equation!
+    args.pop(0) # remove equation from list
     
     if len(args) > 0:
         # is second arg ic?:
@@ -154,13 +171,14 @@ def parse_args(args):
             argsl.remove(o)
         options = " ".join(options)
         
-        # remove bad plot options:
+        # remove unsupported plot options:
         for bad_opt in ["-e",'--error','-s','--shared']:
             try:
                 argsl.remove(bad_opt)
             except ValueError: # not present
                 continue
         # did the user try to send other functions to plot:
+        # TODO: append fit function to user function(s), instead of replacing
         func_ind = None
         for i,opt in enumerate(argsl):
             if opt == '-x' or opt == '--funcs':
