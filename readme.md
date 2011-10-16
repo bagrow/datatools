@@ -68,7 +68,7 @@ Requirements
     - [networkx][] (only if using `el2info` and `el2draw`)
     - [matplotlib][] (only if using `el2draw`)
 
-Recent versions of OS X include everything but gnuplot, networkx, and
+Recent versions of, e.g., OS X include everything but gnuplot, networkx, and
 matplotlib.  Some knowledge of gnuplot is very helpful for customizing plot
 appearance as the `-p` and `-c` options use valid gnuplot code.
 
