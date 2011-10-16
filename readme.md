@@ -36,8 +36,8 @@ Fit a (nonlinear) function to data:
 
 All functions have help strings:
 
-    $ plot -h
-    $ curvefit --help
+    $ mplot -h
+    $ el2info --help
 
 See `tutorial/` for more information.
 
