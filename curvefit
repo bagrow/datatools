@@ -2,7 +2,7 @@
 
 # curvefit
 # Jim Bagrow
-# Last Modified: 2011-10-15
+# Last Modified: 2011-10-16
 
 import sys, os
 import re
