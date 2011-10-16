@@ -76,7 +76,7 @@ appearance as the `-p` and `-c` options use valid gnuplot code.
 Todo
 ====
 
-* ~~Fix (c)cdf to only plot unique values.~~ Send data through `stepize`
+* ~~Fix (c)cdf to only plot unique values.~~ First send data through `stepize`.
 * Support dumb terminal if x11 is not available?
 * Eliminate numpy dependency?
 * Unit tests?
