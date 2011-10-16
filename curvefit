@@ -2,11 +2,35 @@
 
 # curvefit
 # Jim Bagrow
-# Last Modified: 2011-10-14
+# Last Modified: 2011-10-15
 
 import sys, os
 import re
 
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s FUNCTION [INITIAL VALUES] [options] [plot options]
+
+Fit a curve specified by FUNCTION to XY-data received from STDIN.  The
+independent variable is 'x' and initial values of some or all fit parameters
+may be specified.  If FUNCTION contains spaces or parentheses, it must be
+quoted.  INITIAL VALUES for parameters default to 1.0 unless specified.  Note
+that the choice of initial values can be crucial for nonlinear fits; trial and
+error is often necessary.
+
+The XY-data and fitted function are passed to `plot` for display (unless
+--noplot is used, see below).  Most arguments supported by `plot` can be given
+here; the exceptions are -x (--funcs), -e (--errors), and -s (--shared).  If
+given, these are ignored.
+
+Options:
+  -n   | --noplot    : Do not pass data and function to `plot`.
+  -v   | --verbose   : Print function and fitted parameters to STDOUT.
+  -vv  | --vverbose  : Print full gnuplot fit log to STDOUT.
+  -vvv | --vvverbose : Holy cow, you want to see everything!
+
+Example:
+  cat tutorial/xy.dat | %s "A*sin(x/B)+C" A=3,B=6""" % (name,name)
 
 gnuplot_funcs_list = [
     "abs", "acos", "acosh", "arg", "asin",
@@ -16,7 +40,7 @@ gnuplot_funcs_list = [
     "gamma", "ibeta", "igamma", "imag", "invnorm",
     "int", "lgamma", "log", "log10", "norm",
     "rand", "real", "sgn", "sin", "sinh",
-    "sqrt", "tan", "tanh"
+    "sqrt", "tan", "tanh", "fac"
 ]
 
 gnuplot_spec_chars_list = [
@@ -64,7 +88,7 @@ def parse_fit_log(logfile, params):
         X = s.split()
         p2v[ X[0] ] = X[2]
     if len(p2v) != len(params):
-        sys.exit("Error")
+        sys.exit("Error: Fit parameters missing, did fit converge?  Exiting...")
     p,v = zip(*[ (p,p2v[p]) for p in params])
     return v
 
@@ -73,16 +97,20 @@ def sub_vals_into_equation(equation, params, values):
     S = equation
     for p,v in zip(params,values):
         S = S.replace(p,v)
+    S = S.replace('--','-') # safe?
     return S
 
 
 def parse_ic(ic,params):
+    p2iv = dict( (p,1.0) for p in params) # default values
+    if ic == None:
+        return sorted(p2iv.items())
+    
     if "," in ic: # assume comma-separated
         L = ic.split(",")
     else:
         L = ic.split()
     L = [x.strip().replace("=","") for x in L]
-    p2iv = dict( (p,1.0) for p in params)
     for x in L:
         for p in params:
             if p in x:
@@ -91,26 +119,89 @@ def parse_ic(ic,params):
                 break
     return sorted(p2iv.items())
 
-def build_plot_str(equation,params):
-    s = "\\n".join( "%s = %%f" % p for p in params)
-    s = "sprintf(\"\\n\\n%s\", %s)" % (s, ",".join(params))
+
+def build_plot_str(equation,param_val):
+    params,vals = zip(*param_val)
+    s = "\\n".join( "%s = %s" % (p,v) for (p,v) in param_val)
     return s
+
+
+def parse_args(args):
+    """Return tuple: equation,initial_values,options,plot_options.
+    """
+    equation,initial_values,options,plot_options = "","","",""
+    
+    # get equation to fit:
+    if len(args) < 1:
+        sys.exit("Error: No function specified for fitting.  Exiting...")
+    equation = args[0]
+    args.pop(0) # remove equation
+    
+    if len(args) > 0:
+        # is second arg ic?:
+        if args[0][0] == "-": # arg not ic:
+            initial_values = ""
+        else:
+            initial_values = args[0]
+            args.pop(0) # remove ic
+        
+        argsl = [ a.lower() for a in args ]
+        # any curvefit options:
+        cfopts = set(["-n","--noplot","-v","-vv","-vvv",
+                  "-verbose", "-vverbose","-vvverbose"])
+        options = list( set(argsl) & cfopts )
+        for o in options:
+            argsl.remove(o)
+        options = " ".join(options)
+        
+        # remove bad plot options:
+        for bad_opt in ["-e",'--error','-s','--shared']:
+            try:
+                argsl.remove(bad_opt)
+            except ValueError: # not present
+                continue
+        # did the user try to send other functions to plot:
+        func_ind = None
+        for i,opt in enumerate(argsl):
+            if opt == '-x' or opt == '--funcs':
+                func_ind = i
+        if func_ind is not None:
+            argsl.pop(func_ind) # first remove -x or --funcs
+            argsl.pop(func_ind) # now remove the functions themselves!
+        # add quotes back around plot args:
+        new_argsl = []
+        for a in argsl:
+            if a[0] != '-':
+                a = "\"%s\"" % a
+            new_argsl.append(a)
+        if len(new_argsl) > 0:
+            plot_options = " ".join(new_argsl)
+    return equation,initial_values,options,plot_options
+
+
+def remove_all(*list_files):
+    for f in list_files:
+        os.system("rm -f %s" % f )
+
 
 if __name__ == '__main__':
     
     # parse args:
-    try:
-        equation = sys.argv[1]
-        params = get_fit_params(equation)
-    except IndexError:
-        sys.exit("No curve specified for fitting.  Exiting...")
-    try:
-        param_initval = parse_ic(sys.argv[2], params)
-    except IndexError:
-        param_initval = ( (p,1.0) for p in params )
+    args = sys.argv[1:]
+    argv = [ s.lower() for s in args ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    
+    equation,initial_values, options, plot_options = parse_args( args )
+    params        = get_fit_params(equation)
+    param_initval = parse_ic(initial_values, params)
+    
+    # get files ready:
+    fileout = "/tmp/file_fit.tmp"
+    logfout = "/tmp/file_fit.fit.log"
+    remove_all(fileout,logfout)
     
     # redirect STDIN to tmp file:
-    fileout = "/tmp/file.tmp"
     fout = open(fileout, 'w')
     fout.write( "".join(l for l in sys.stdin) )
     fout.close()
@@ -118,30 +209,46 @@ if __name__ == '__main__':
     # build parameter-based strings for gnuplot command:
     str_ic  = "; ".join("%s = %f" % (p,iv) for p,iv in param_initval)
     str_via = ", ".join(params)
-    str_lbl = build_plot_str(equation,params)
-    str_lbl = "set label 1 'y = %s'.%s at graph 0.05,0.33 front" % (equation,str_lbl)
+    str_vvv = "" if "-vvv" in options or '-vvverbose' in options else "> /dev/null 2>&1"
     
-    # build gnuplot command:
-    cmd = """gnuplot << EOF > /dev/null 2>&1
-    set term x11 persist
-    #unset key
-    set fit logfile '/tmp/file.fit.log'
+    # build gnuplot fit command:
+    cmd_fit = """gnuplot << EOF %s
+    fac(x) = (int(x)==0) ? 1.0 : int(x) * fac(int(x)-1.0)
+    set fit logfile '%s'
     f(x) = %s  # define the function to be fit
-    %s          # initial guesses for params
+    %s         # initial guesses for params
     fit f(x) '%s' using 1:2 via %s
-    %s
-    plot '%s' w lp title 'data', f(x) w l lw 3 title 'fit'
-    """ % (equation, str_ic, fileout, str_via, str_lbl,fileout)
+    """ % (str_vvv,logfout,equation, str_ic, fileout, str_via)
     
-    # run gnuplot:
-    os.system( cmd )
+    # run gnuplot fit:
+    os.system( cmd_fit )
     
-    # retrieve output:
-    values = parse_fit_log("/tmp/file.fit.log", params)
-    output = sub_vals_into_equation(equation, params, values)
-    print "y =", output
+    # retrieve fitted equation:
+    values = parse_fit_log(logfout, params)
+    fitted_function = sub_vals_into_equation(equation, params, values)
+    
+    # print output, if desired: (except for -vvv, which is controlled in cmd_fit)
+    if '-vv' in options or '-vverbose' in options: # print the fit.log file
+        os.system( "cat %s" % logfout )
+    elif '-v' in options or '-verbose' in options: # print the fitted formula
+        print "y =", fitted_function
+    
+    
+    # plot data and fit, if desired:
+    if '-n' not in options and '--noplot' not in options:
+        # add fitted function to plot options:
+        plot_options += " -p \"w lp title 'data'\"" # hardwired
+        plot_options += " --funcs \"%s w l lw 3 lc rgb 'black' title 'fit'\"" % fitted_function
+        
+        # add fit label to plot options:
+        str_lbl = build_plot_str( equation, zip(params,values) )
+        str_lbl = "set label 98 \\\"y = %s\\n%s\\\" at graph 0.05,0.33 front" % (equation,str_lbl)
+        plot_options += " -c \"%s\"" % str_lbl
+        
+        # run the plot:
+        os.system("cat %s | plot %s" % (fileout,plot_options))
+    
     
     # clean up:
-    os.system( "rm -f /tmp/file.fit.log" )
-    os.system( "rm -f %s" % fileout )
+    remove_all(fileout,logfout)
 
