@@ -45,7 +45,8 @@ Example:
 if __name__ == '__main__':
     
     # parse args:
-    argv = [ s.lower() for s in sys.argv[1:] ]
+    #argv = [ s.lower() for s in sys.argv[1:] ]
+    argv = [ s for s in sys.argv[1:] ]
     if '-h' in argv or '--help' in argv:
         sys.exit( usage )
     A = set(argv)
@@ -72,7 +73,7 @@ if __name__ == '__main__':
         if arg == "-p":
             pstr = argv[i+1]
         if arg == "-c":
-            cstr = argv[i+1]
+            cstr += argv[i+1]+"; "
         if arg in ['-x', '--funcs','--functions']:
             fstr = argv[i+1]
     if '-e' in A or '--error' in A:
