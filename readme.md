@@ -29,9 +29,10 @@ Compute cumulative distribution of data and plot:
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
     $ cat samples.txt | ccdf | logplot -p 'w l, x**-1'
 
-Fit a curve to data:
+Fit a (nonlinear) function to data:
 
-    $ cat tutorial/xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose
+    $ cat current_voltage.dat | curvefit "a0*exp(a1*x)"
+    $ cat xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose
 
 See `tutorial/` for more information.
 
