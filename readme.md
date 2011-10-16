@@ -26,8 +26,8 @@ Bin data and then plot:
 
 Compute cumulative distribution of data and plot:
 
-    $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
-    $ cat samples.txt | ccdf | logplot -p 'w l, x**-1'
+    $ cat samples.txt | ccdf | plot
+    $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot --funcs 'x**-1'
 
 Fit a (nonlinear) function to data:
 
