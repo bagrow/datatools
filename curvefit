@@ -148,7 +148,7 @@ def parse_args(args):
         argsl = [ a.lower() for a in args ]
         # any curvefit options:
         cfopts = set(["-n","--noplot","-v","-vv","-vvv",
-                  "-verbose", "-vverbose","-vvverbose"])
+                  "--verbose", "--vverbose","--vvverbose"])
         options = list( set(argsl) & cfopts )
         for o in options:
             argsl.remove(o)
