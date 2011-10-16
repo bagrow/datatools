@@ -9,11 +9,13 @@ python module is also available: see `python/` for more.
 Examples
 ========
 
-Compute statistics:
+Compute summary statistics:
 
     $ cat data.txt | mean
+    # cat data.txt | stdv
+    $ cat data.txt | summary
 
-Plot data:
+Plot data generated from script:
 
     $ python gen_xy.py | plot
 
