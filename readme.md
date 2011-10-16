@@ -61,8 +61,7 @@ in your `bashrc`.
 Requirements
 ============
 
-* bash
-* awk
+* bash and awk (very common)
 * [gnuplot][] (and X11 terminal)
 * [python][] 2.x (probably 2.5+)
     - numpy (version with fixed histogram normalization, around 1.6)
