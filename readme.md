@@ -34,6 +34,11 @@ Fit a (nonlinear) function to data:
     $ cat current_voltage.dat | curvefit "a0*exp(a1*x)"
     $ cat xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose
 
+All functions have help strings:
+
+    $ plot -h
+    $ curvefit --help
+
 See `tutorial/` for more information.
 
 Install
