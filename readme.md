@@ -65,18 +65,18 @@ Requirements
 * awk
 * [gnuplot][] (and X11 terminal)
 * [python][] 2.x (probably 2.5+)
-    - numpy (version with fixed histogram normalization)
-    - [networkx][] (only for `el2info` and `el2draw`)
-    - [matplotlib][] (only for `el2draw`)
+    - numpy (version with fixed histogram normalization, around 1.6)
+    - [networkx][] (only if using `el2info` and `el2draw`)
+    - [matplotlib][] (only if using `el2draw`)
 
 Recent versions of OS X include everything but gnuplot, networkx, and
 matplotlib.  Some knowledge of gnuplot is very helpful for customizing plot
-appearance.
+appearance as the `-p` and `-c` options use valid gnuplot code.
 
 Todo
 ====
 
-* Fix (c)cdf to only plot unique values.
+* ~~Fix (c)cdf to only plot unique values.~~ Send data through `stepize`
 * Support dumb terminal if x11 is not available?
 * Eliminate numpy dependency?
 * Unit tests?
