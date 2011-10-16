@@ -10,16 +10,25 @@ Examples
 ========
 
 Compute statistics:
+
     $ cat data.txt | mean
+
 Plot data:
+
     $ python gen_xy.py | plot
+
 Bin data and then plot:
+
     $ cat ages.txt | count | plot
     $ cat xy.data.txt | aver | plot -c "set title xy" -p "w p"
+
 Compute cumulative distribution of data and plot:
+
     $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot
     $ cat samples.txt | ccdf | logplot -p 'w l, x**-1'
+
 Fit a curve to data:
+
     $ cat tutorial/xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose
 
 See `tutorial/` for more information.
