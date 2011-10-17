@@ -123,7 +123,7 @@ def parse_ic(ic,params):
         L = ic.split(",")
     else:         # otherwise assume space-separated
         L = ic.split()
-    L = [x.strip().replace("=","") for x in L]
+    L = [x.strip().replace("=","") for x in L] # equals is actually optional
     for x in L:
         for p in params:
             if p in x:
