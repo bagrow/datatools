@@ -71,9 +71,9 @@ if __name__ == '__main__':
     pstr='w lp pt 4'
     for i,arg in enumerate(argv):
         if arg == "-p":
-            pstr = argv[i+1]
+            pstr = argv[i+1]       # replace
         if arg == "-c":
-            cstr += argv[i+1]+"; "
+            cstr += argv[i+1]+"; " # update
         if arg in ['-x', '--funcs','--functions']:
             fstr = argv[i+1]
     if '-e' in A or '--error' in A:

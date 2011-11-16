@@ -2,10 +2,10 @@
 
 # curvefit
 # Jim Bagrow
-# Last Modified: 2011-10-16
+# Last Modified: 2011-10-19
 
 import sys, os
-import re
+import re, math
 
 name = os.path.basename(sys.argv[0])
 usage = \
@@ -202,6 +202,26 @@ def remove_all(*list_files):
         os.system("rm -f %s" % f )
 
 
+def good_number(s):
+    """s is a string that (hopefully) is a float."""
+    try:              # not two numbers
+        x,y = s.strip().split()[:2]
+    except TypeError:
+        return False
+    try:              # string not a float
+        x = float(x)
+    except ValueError:
+        return False
+    try:              # string not a float
+        y = float(y)
+    except ValueError:
+        return False
+                      # either number is inf or nan
+    if any( math.isnan(v) or math.isinf(v) for v in [x,y] ):
+        return False
+    
+    return True       # passed all tests!
+    
 if __name__ == '__main__':
     
     # parse args:
@@ -221,7 +241,7 @@ if __name__ == '__main__':
     
     # redirect STDIN to tmp file:
     fout = open(fileout, 'w')
-    fout.write( "".join(l for l in sys.stdin) )
+    fout.write( "".join(l for l in sys.stdin if good_number(l)) )
     fout.close()
     
     # build parameter-based strings for gnuplot command:
@@ -264,6 +284,7 @@ if __name__ == '__main__':
         plot_options += " -c \"%s\"" % str_lbl
         
         # run the plot:
+        #print plot_options
         os.system("cat %s | plot %s" % (fileout,plot_options))
     
     
