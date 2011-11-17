@@ -12,7 +12,7 @@ usage = \
 """Usage: %s [options]
 
 Plot empirical (complementary) cumulative distribution of X-data received from
-STDIN.  Multiple (c)cds can be plotted by passing multiple columns of X-data
+STDIN.  Multiple (c)cdfs can be plotted by passing multiple columns of X-data
 through STDIN (assuming each distribution has the same number of datapoints) or
 by giving a list of files each containing X-data.
 
