@@ -80,6 +80,8 @@ if __name__ == '__main__':
         pstr = 'w yerrorlines'
     if name == "splot": # scatter plot
         pstr = 'w p pt 4'
+    elif name == "lplot": # line plot
+        pstr = 'w l'
     
     fileout = "/tmp/file.tmp"
     fout = open(fileout, 'w')
