@@ -33,6 +33,8 @@ Options:
   -lxy | --logxy : Use double logarithmic axes.
   -l   | --log   : Shortcut for -lxy / --logxy.
   -k   | --key   : Shortcut for gnuplot to show the key (legend).
+         --lbl   : Shortcut to label the graph axes.  --lbl "x;y" is
+                   equivalent to -c 'set xlabel "x"; set ylabel "y"'.
 
 Example:
   %s -c 'set xr [0:1]' file1.txt file2.txt """ % (name,name)
@@ -64,6 +66,13 @@ if __name__ == '__main__':
             pstr = argv.pop(0)
         elif a == '-c':
             cstr = argv.pop(0)
+        elif a == "--lbl" or a == "-lbl":
+            xy = argv.pop(0) 
+            xy = tuple(xy.split(";"))
+            if len(xy) == 2:
+                cstr += "set xlabel \"%s\"; set ylabel \"%s\"; " % xy
+            else:
+                cstr += "set xlabel \"%s\"; " % xy
         elif a == '-e' or a == '--error':
             pstr = 'w yerrorlines'
         elif a == '-x' or a == '--funcs' or a == '--functions':

@@ -33,6 +33,8 @@ Options:
   -lxy | --logxy  : Use double logarithmic axes.
   -l   | --log    : Shortcut for -lxy / --logxy.
   -k   | --key    : Shortcut for gnuplot to show the key (legend).
+         --lbl    : Shortcut to label the graph axes.  --lbl "x;y" is
+                    equivalent to -c 'set xlabel "x"; set ylabel "y"'.
   -s   | --shared : Plot multiple curves that share the same X-values. This 
                     assumes that each line of the data received from STDIN is
                     of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
@@ -76,6 +78,12 @@ if __name__ == '__main__':
             cstr += argv[i+1]+"; " # update
         if arg in ['-x', '--funcs','--functions']:
             fstr = argv[i+1]
+        if arg == "--lbl" or arg == "-lbl":
+            xy = tuple(argv[i+1].split(";"))
+            if len(xy) == 2:
+                cstr += "set xlabel \"%s\"; set ylabel \"%s\"; " % xy
+            else:
+                cstr += "set xlabel \"%s\"; " % xy
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
     if name == "splot": # scatter plot
