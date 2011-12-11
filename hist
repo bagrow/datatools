@@ -2,7 +2,7 @@
 
 # hist.py
 # Jim Bagrow
-# Last Modified: 2011-07-21
+# Last Modified: 2011-12-11
 
 import sys, os
 import numpy
