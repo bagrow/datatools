@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name"
+    echo -e ""
+    echo -e "Transpose rows and columns (space-separated)."
+    echo -e ""
+    echo -e "Example:\n  cat rows.txt | $name > cols.txt"
+	exit 1
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help )   usage;;
+                [?] )   usage;;
+    esac
+    shift
+done
+
+awk '
+{ 
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {    
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}'
+# from: http://stackoverflow.com/a/1729980
