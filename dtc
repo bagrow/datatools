@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name [options]"
+    echo -e ""
+    echo -e "Cut out column(s) of the data received from STDIN."
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  comma- or space-separated list of columns, starting from 1."
+    echo -e ""
+    echo -e "Default is to cut out first column only."
+    echo -e ""
+    echo -e "Example:\n  cat ages.txt | $name 1,2,5"
+    echo -e "  (yes, this is just a shortcut for awk '{print \$1,\$2,\$5}')"
+    echo -e "The name stands for 'datatools cut'"
+	exit 1
+}
+
+ARGSTR="$*" # store args before they're consumed
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help )   usage;;
+                [?] )   usage;;
+    esac
+    shift
+done
+
+# process columns string:
+COLSTR=`echo $ARGSTR | tr -s ',' ' ' | sed 's/^/\$/g; s/ /,\$/g'`
+
+
+#echo $COLSTR
+awk "{print $COLSTR}"
+
+
+
