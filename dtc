@@ -26,7 +26,7 @@ usage(){
     echo -e ""
     echo -e "Default is to cut out first column only."
     echo -e ""
-    echo -e "Example:\n  cat ages.txt | $name 1,2,5"
+    echo -e "Example:\n  cat ages.txt | $name 1 2 5"
     echo -e "  (yes, this is just a shortcut for awk '{print \$1,\$2,\$5}')"
     echo -e "The name stands for 'datatools cut'"
 	exit 1
