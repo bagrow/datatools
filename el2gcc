@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+# el2dd
+# Jim Bagrow
+# Last Modified: 2011-04-07
+
+import sys, os
+try:
+    import networkx
+except ImportError:
+    sys.exit("networkx is required, see http://networkx.lanl.gov/")
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+        
+Compute the Giant Connected Component (GCC) for the network whose edgelist was
+  received from STDIN.  Edgelist delimiter must be tab or space. An example
+  edgelist is provided: <DATATOOLS>/tutorial/karate.edgelist.  The edgelist for
+  the GCC is printed to STDOUT.  Only undirected networks currently supported.
+
+Example:
+  cat edgelist.txt | %s > edgelist_gcc.txt""" % (name,name)
+
+error = "%s takes no arguments, run `%s --help` for info." % (name,name)
+
+def get_edge(line):
+    """first try to split with tab, then with space, no other delimiters are
+    currently supported...
+    """
+    L = line.strip().split("\t")[:2]
+    if len(L) == 2:
+        return L
+    return line.strip().split(" ")[:2]
+
+
+if __name__ == '__main__':
+    if '-h' in sys.argv or '--help' in sys.argv:
+        sys.exit(usage)
+    elif len(sys.argv) > 1:
+        sys.exit(error)
+    
+    edges = [ get_edge(line) for line in sys.stdin if line.strip() ]
+    G = networkx.Graph()
+    G.add_edges_from(edges)
+    
+    # get the giant component
+    Ggcc = networkx.connected_component_subgraphs(G)[0]
+    
+    # print edgelist to STDOUT:
+    for ni,nj in Ggcc.edges():
+        print ni, nj
+
