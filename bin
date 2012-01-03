@@ -47,7 +47,6 @@ if __name__ == '__main__':
     argv = [s.lower() for s in sys.argv[1:]]
     if "-h" in argv or "--help" in argv:
         sys.exit(usage)
-    name = os.path.basename(sys.argv[0])
     
     normed = True
     if argv and argv[0] in ['-n', '--number']:
