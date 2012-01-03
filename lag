@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+# lag.py
+# Jim Bagrow
+# Last Modified: 2011-12-20
+
+
+"""
+    This file is part of Datatools.
+    
+    Datatools is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    Datatools is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys, os, math
+from itertools import izip
+import numpy
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] [lag step k]
+
+Lag X-data received from STDIN by shifting (or rotating) a copy of the X-data
+by k steps.  If k=1 (the default), you are making XY-data of the form:
+    (X(1),X(0)), (X(2),X(1)), ...., (X(n),X(n-1))
+
+Options:
+  -p | --periodic : Rotate the data instead of shifting it.  This ensures that
+                    all n points are used.  When not rotating, the first k 
+                    points are lost.
+  lag step k      : Number of steps to shift by (default k=1)
+
+Example:
+  cat tutorial/x.dat | %s | plot """ % (name,name)
+
+error = "Lag step k must be an integer, run `%s --help` for info." % name
+
+if __name__ == '__main__':
+    
+    argv = [s.lower() for s in sys.argv[1:]]
+    if "-h" in argv or "--help" in argv:
+        sys.exit(usage)
+    
+    periodic = False
+    if argv and argv[0] in ['-p', '--periodic']:
+        periodic = True
+        argv.pop(0)
+    try:
+        k = int(argv[0])
+    except IndexError:
+        k = 1
+    except ValueError:
+        sys.exit(error)
+    
+    data = [ float(x) for x in sys.stdin if x.strip() ]
+    
+    if not periodic:
+        X = data[k:]
+        Y = data[:-k]
+    else:
+        X = data
+        Y = data[k:] + data[:k]
+    
+    for x,y in izip(X,Y):
+        print x,y
+    
