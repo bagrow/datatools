@@ -280,7 +280,7 @@ if __name__ == '__main__':
         
         # add fit label to plot options:
         str_lbl = build_plot_str( equation, zip(params,values) )
-        str_lbl = "set label 98 \\\"y = %s\\n%s\\\" at graph 0.05,0.33 front" % (equation,str_lbl)
+        str_lbl = "set label 98 \\\"y = %s\\n%s\\\" at graph 0.015,0.97 front" % (equation,str_lbl)
         plot_options += " -c \"%s\"" % str_lbl
         
         # run the plot:
