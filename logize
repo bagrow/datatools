@@ -20,7 +20,7 @@ usage(){
     echo -e "Usage: $name [base]"
     echo -e ""
     echo -e "Compute the log-transform of XY-data received from STDIN."
-    echo -e "Equivalent to: cat XY.dat | awk '{print log($1), log($2)}'"
+    echo -e "Equivalent to: cat XY.dat | awk '{print log(\$1), log(\$2)}'"
     echo -e "except for the base and that negative data are ignored."
     echo -e ""
     echo -e "  base - the base of the logarithm.  Default is base-ten"
