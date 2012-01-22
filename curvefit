@@ -285,7 +285,7 @@ if __name__ == '__main__':
             plot_options += " -c \"%s\"" % str_lbl
             
         # run the plot:
-        print plot_options
+        #print plot_options
         os.system("cat %s | plot %s" % (fileout,plot_options))
     
     
