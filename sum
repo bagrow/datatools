@@ -41,9 +41,9 @@ done
 
 # this is the whole command:
 if $ROWWISE ; then
-    awk '{sum=0; for(i=1; i<=NF; i++){sum+=$i}; print sum}'
+    awk '{sum=0.0; for(i=1; i<=NF; i++){sum+=$i}; print sum}'
 else
-    awk '{sum+=$1} END {print sum}'
+    awk '{sum+=$1} END {printf("%f\n",sum)}'
 fi
 
 
