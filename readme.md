@@ -66,7 +66,7 @@ Requirements
 * [gnuplot][] (and X11 terminal)
 * [python][] 2.x (probably 2.5+)
     - numpy (version with fixed histogram normalization, around 1.6)
-    - [networkx][] (only if using `el2info` and `el2draw`)
+    - [networkx][] (only if using `el2info`, `el2gcc`, or `el2draw`)
     - [matplotlib][] (only if using `el2draw`)
 
 Recent versions of, e.g., OS X include everything but gnuplot, networkx, and
