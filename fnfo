@@ -111,7 +111,7 @@ def file_contents(filename, delimiter, comment):
 
 def fmt_int(i, threshold=10000):
     # works for python <= 2.7:
-    if i >= int(1e4):
+    if i >= threshold:
         return locale.format('%d', i, 1)
     return str(i)
 
