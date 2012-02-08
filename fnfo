@@ -1,0 +1,176 @@
+#!/usr/bin/env python
+
+# fnfo
+# Jim Bagrow
+# Last Modified: 2012-02-08
+
+import sys, os, stat, time
+from datetime import datetime
+import subprocess
+import locale
+locale.setlocale(locale.LC_ALL, '')
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [options] filename1 [filename2, filename3, ...]
+
+Return information about file(s) such as content type, access dates,
+permissions, if the file is numeric, if a numeric file is a matrix (all rows
+the same length) or if it is 'ragged', etc.
+
+Options:
+  -c | --comment   : Skip lines that begin with comment string. For example
+                     `-c "#"` skips any lines that start with a '#'.
+  -d | --delimiter : Indicate character to separate columns. Use -d "," for a
+                     CSV file, for example. The literal string "\\t" can
+                     be used for a tab. Default any whitespace.
+
+Example:
+  %s tutorial/*.dat""" % (name,name)
+
+
+def get_args(argv):
+    delimiter, comment = None, None
+    args_to_kill = set()
+    for i,Arg in enumerate(argv):
+        if os.path.exists(Arg): # is a file
+            continue
+        arg = Arg.lower()
+        if arg == "-c" or arg == "--comment":
+            try:
+                comment = argv[i+1]
+                args_to_kill.update([argv[i],argv[i+1]])
+            except IndexError:
+                sys.exit("Comment indicated, but no comment string given. See help.")
+        if arg == "-d" or arg == "--delimiter":
+            try:
+                delimiter = argv[i+1]
+                arg = "\t" if arg == "\\t" else arg # specialize for tab
+                args_to_kill.update([argv[i],argv[i+1]])
+            except IndexError:
+                sys.exit("Delimiter indicated, but no delimiter string given. See help.")
+    
+    list_files = [ Arg for Arg in argv if Arg not in args_to_kill ]
+    return delimiter, comment, list_files
+
+
+def get_permissions(path):
+    permstr = ""
+    if os.access(path, os.R_OK):
+        permstr = permstr + "read, "
+    if os.access(path, os.W_OK):
+        permstr = permstr + "write, "
+    if os.access(path, os.X_OK):
+        permstr = permstr + "execute"
+    if permstr.endswith(", "):
+        return permstr[:-2]
+    return permstr
+
+
+def convert_bytes(num_bytes):
+    """Adapted from http://www.5dollarwhitebox.org/drupal/node/84"""
+    num_bytes = float(num_bytes)
+    if num_bytes >= 1099511627776.0:
+        size = '%.2f TB' % (num_bytes/1099511627776.0)
+    elif num_bytes >= 1073741824.0:
+        size = '%.2f GB' % (num_bytes/1073741824.0)
+    elif num_bytes >= 1048576.0:
+        size = '%.2f MB' % (num_bytes/1048576.0)
+    elif num_bytes >= 1024.0:
+        size = '%.2f kB' % (num_bytes/1024.0)
+    else:
+        size = '%.2f B' % num_bytes
+    return size
+
+
+def file_contents(filename, delimiter, comment):
+    file_is_numeric = True
+    num_rows        = 0
+    set_numCols     = set()
+    for line in open(filename):
+        if comment and line.startswith(comment): # skip comments
+            continue
+        if not line.strip(): # skip blank lines
+            continue
+        L = line.strip().split(delimiter)
+        if file_is_numeric:
+            try:
+                X = [float(x) for x in L]
+            except ValueError:
+                file_is_numeric = False
+        set_numCols.add( len(L) )
+        num_rows += 1
+    
+    # is the file a matrix (all rows the same length)?
+    file_is_matrix = True if len(set_numCols) == 1 else False
+    dimensions = (num_rows,None)
+    if len(set_numCols) == 1:
+        dimensions = (num_rows, set_numCols.pop())
+    
+    return file_is_numeric, file_is_matrix, dimensions
+
+def fmt_int(i, threshold=10000):
+    # works for python <= 2.7:
+    if i >= int(1e4):
+        return locale.format('%d', i, 1)
+    return str(i)
+
+
+def format_dims(dims):
+    nr,nc = dims
+    if nr == 0: # nc can't be non-zero if nr is 0
+        return "0 lines"
+    if nc is None:
+        if nr > 1:
+            return "%s lines" % fmt_int(nr)
+        return "1 line"
+    else:
+        nr_str = "%s rows"    % fmt_int(nr) if nr > 1 else "1 row"
+        nc_str = "%s columns" % fmt_int(nc) if nc > 1 else "1 column"
+        return "%s x %s" % (nr_str, nc_str)
+
+
+if __name__ == '__main__':
+    
+    args = sys.argv[1:]
+    argv = [ s.lower() for s in args ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    
+    # parse command line args:
+    delimiter, comment, files = get_args( sys.argv[1:] )
+    
+    if not files:
+        sys.exit("No files given. Exiting...")
+    
+    for i,f in enumerate(files):
+        file_stats = os.stat(f)
+        fsize = file_stats[stat.ST_SIZE]
+        flmod = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats[stat.ST_MTIME]))
+        flacc = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats[stat.ST_ATIME]))
+        
+        print f
+        #print "    Location      =", os.path.dirname( os.path.abspath(f) )
+        
+        try:
+            fileout = subprocess.Popen("/usr/bin/file -b %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
+            mime = subprocess.Popen("/usr/bin/file -b --mime %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
+            print "    Type          = %s (%s)" % (fileout.strip(), mime.strip())
+        except:
+            continue
+        
+        print "    Size          =", "%s"  % convert_bytes(fsize)
+        print "    Last modified =", "%s"  % flmod
+        print "    Last accessed =", "%s"  % flacc
+        print "    Permissions   =", get_permissions(f)
+        
+        if not os.path.isdir(f):
+            isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
+            print "    Contents      =", "numeric (%s)" % ("matrix" if isMatrix else "ragged") if isNumeric else "alphanumeric"
+            nr_nc = format_dims(dims)
+            print "    Dimensions    =", nr_nc
+        
+        if i < len(files)-1:
+            print
+    
+
