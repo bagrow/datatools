@@ -50,6 +50,8 @@ Options:
                            used so that aver computes points (x, mean(y)). Rows
                            do not have to be the same length and X-values may
                            be repeated.
+     | --sum             : Return sum of all Y-data in each X-bin, instead of the
+                           mean.  If given, error bars will not be computed.
   number of bins         : An integer giving the number of linearly- or 
                            logarithmically-spaced bins to apply to the X-data.
                            Ignored if --unique is used.
@@ -100,16 +102,23 @@ def _mean_only(data):
     if not data: return "0.0"
     return "%s" % str(numpy.mean(data))
 
+def _sum_only(data):
+    if not data: return "0.0"
+    return "%s" % str(sum(data))
 
-def uniq_binning(errorbars=False, standarderror=False, rows=False, iqr=False):
+
+def uniq_binning(errorbars=False, standarderror=False, rows=False, sums=False, iqr=False):
     """for each unique x-value, print the mean of all y-values"""
     F = _mean_only
-    if errorbars and not standarderror:
-        F = _mean_stdv
-    elif errorbars and standarderror:
-        F = _mean_stde
-    if iqr:
-        F = _iqr
+    if sums:
+        F = _sum_only
+    else:
+        if errorbars and not standarderror:
+            F = _mean_stdv
+        elif errorbars and standarderror:
+            F = _mean_stde
+        if iqr:
+            F = _iqr
     
     x2listy = {}
     if rows:
@@ -143,17 +152,20 @@ def uniq_binning(errorbars=False, standarderror=False, rows=False, iqr=False):
         print x, F(x2listy[x])
 
 
-def aver_binning(num_bins, log=False, errorbars=False, standarderror=False, iqr=False, rows=False):
+def aver_binning(num_bins, log=False, errorbars=False, standarderror=False, iqr=False, rows=False, sums=False):
     """bin the y-values into linear bins by x, print bin center
     and mean of all y values within that bin.
     """
     F = _mean_only # function to apply to the Y-values of each X-bin
-    if errorbars and not standarderror:
-        F = _mean_stdv
-    elif errorbars and standarderror:
-        F = _mean_stde
-    if iqr:
-        F = _iqr
+    if sums:
+        F = _sum_only
+    else:
+        if errorbars and not standarderror:
+            F = _mean_stdv
+        elif errorbars and standarderror:
+            F = _mean_stde
+        if iqr:
+            F = _iqr
     
     data =[]
     if rows:
@@ -207,6 +219,8 @@ if __name__ == '__main__':
     errorbars = False
     stanerror = False
     iqr       = False
+    rows      = False
+    sums      = False
     if set(['-e','--error','--errorbars']) & args:
         errorbars = True
     if set(['-s','--standard','--standarderror']) & args:
@@ -214,12 +228,13 @@ if __name__ == '__main__':
         stanerror = True
     if set(['-q','--iqr']) & args:
         iqr = True
-    rows = False
     if set(['-r','--rows']) & args:
         rows = True
+    if "--sum" in args:
+        sums = True
     
     if set(['-u','--uniq','--unique']) & args:
-        uniq_binning(errorbars=errorbars, rows=rows, standarderror=stanerror, iqr=iqr)
+        uniq_binning(errorbars=errorbars, rows=rows, sums=sums, standarderror=stanerror, iqr=iqr)
     else:
         log = False
         if set(['-l','--log']) & args:
@@ -228,5 +243,5 @@ if __name__ == '__main__':
             num_bins = int(sys.argv[-1])
         except ValueError:
             num_bins = None
-        aver_binning(num_bins, log=log, errorbars=errorbars, rows=rows, standarderror=stanerror, iqr=iqr)
+        aver_binning(num_bins, log=log, errorbars=errorbars, rows=rows, sums=sums, standarderror=stanerror, iqr=iqr)
     
