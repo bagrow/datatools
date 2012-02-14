@@ -130,6 +130,13 @@ def format_dims(dims):
         return "%s x %s" % (nr_str, nc_str)
 
 
+def hash_it_up(filename):
+    try:
+        return subprocess.Popen("git hash-object %s" % filename, shell=True, stdout=subprocess.PIPE).communicate()[0]
+    except:
+        return
+
+
 if __name__ == '__main__':
     
     args = sys.argv[1:]
@@ -152,12 +159,17 @@ if __name__ == '__main__':
         print f
         #print "    Location      =", os.path.dirname( os.path.abspath(f) )
         
+        #try:
+            #print "    "+hash_it_up(f).strip()
+        #except:
+            #pass
+        
         try:
             fileout = subprocess.Popen("/usr/bin/file -b %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
             mime = subprocess.Popen("/usr/bin/file -b --mime %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
             print "    Type          = %s (%s)" % (fileout.strip(), mime.strip())
         except:
-            continue
+            pass
         
         print "    Size          =", "%s"  % convert_bytes(fsize)
         print "    Last modified =", "%s"  % flmod
