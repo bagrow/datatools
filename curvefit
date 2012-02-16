@@ -209,6 +209,8 @@ def good_number(s):
         x,y = s.strip().split()[:2]
     except TypeError:
         return False
+    except ValueError:
+        return False
     try:              # string not a float
         x = float(x)
     except ValueError:
