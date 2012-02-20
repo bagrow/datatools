@@ -37,9 +37,14 @@ Options:
   -k   | --key    : Shortcut for gnuplot to show the key (legend).
          --lbl    : Shortcut to label the graph axes.  --lbl "x;y" is
                     equivalent to -c 'set xlabel "x"; set ylabel "y"'.
+  -xr  | --xrange : Set the range of the x-axis.  For example, -xr 0:1, limits
+                    the x-axis to between 0 and 1.  An endpoint of the range
+                    may be omitted, e.g. -xr :1 will only force the right end
+                    of the axis to stop at 1.
+  -yr  | --yrange : Same as xrange but for the y-axis.
 
 Example:
-  cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
+  cat tutorial/x.dat | %s -c 'set xr [1:10]' """ % (name,name)
 
 def write(data,filename):
     data.sort()
@@ -92,6 +97,14 @@ if __name__ == '__main__':
                 cstr += "set xlabel \"%s\"; " % xy
         if arg in ['-x', '--funcs','--functions']:
             fstr = argv[i+1]
+        if arg in ["-xr", "--xrange"]:
+            xrstr = argv[i+1]
+            xrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr += "set xrange [%s]; " % xrstr
+        if arg in ["-yr", "--yrange"]: # two or more, use a for
+            yrstr = argv[i+1]
+            yrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr +=  "set yrange [%s]; " % yrstr
         if arg == "-f" or arg == "--files":
             list_infiles = [ f for f in argv[(i+1):] if os.path.exists(f) ]
             if not list_infiles:
@@ -134,7 +147,7 @@ if __name__ == '__main__':
     %s
     %s
     %s
-    """ % (logX,logY, cstr,kstr, plotstr)
+    """ % (logX,logY, cstr,kstr plotstr)
     
     # run gnuplot and clean up:
     os.system( cmd )

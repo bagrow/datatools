@@ -35,6 +35,11 @@ Options:
   -k   | --key    : Shortcut for gnuplot to show the key (legend).
          --lbl    : Shortcut to label the graph axes.  --lbl "x;y" is
                     equivalent to -c 'set xlabel "x"; set ylabel "y"'.
+  -xr  | --xrange : Set the range of the x-axis.  For example, -xr 0:1, limits
+                    the x-axis to between 0 and 1.  An endpoint of the range
+                    may be omitted, e.g. -xr :1 will only force the right end
+                    of the axis to stop at 1.
+  -yr  | --yrange : Same as xrange but for the y-axis.
   -s   | --shared : Plot multiple curves that share the same X-values. This 
                     assumes that each line of the data received from STDIN is
                     of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
@@ -84,6 +89,14 @@ if __name__ == '__main__':
                 cstr += "set xlabel \"%s\"; set ylabel \"%s\"; " % xy
             else:
                 cstr += "set xlabel \"%s\"; " % xy
+        if arg in ["-xr", "--xrange"]:
+            xrstr = argv[i+1]
+            xrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr += "set xrange [%s]; " % xrstr
+        if arg in ["-yr", "--yrange"]: # two or more, use a for
+            yrstr = argv[i+1]
+            yrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr +=  "set yrange [%s]; " % yrstr
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
     if name == "splot": # scatter plot

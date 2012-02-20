@@ -13,28 +13,33 @@ usage = \
 Plot XY-data from multiple files on the same axes.
 
 Options:
-  -p             : Passes a string to gnuplot's plot directive.  The
-                   subsequent arg must be valid gnuplot.  For example 
-                   -p 'with lines' will plot the XY-data using lines instead
-                   of linespoints.
-  -c             : Passes a command to gnuplot.  The subsequent arg must be 
-                   valid gnuplot.  The command will be run before gnuplot's 
-                   plot is executed.  For example,
-                   -c 'set xlabel "x"; set ylabel "y"' will label the graph.
-  -e   | --error : Shorthand for using errorbars.  The plot string 'with 
-                   yerrorlines' is used.  This overrides any string given 
-                   using -p. Note that gnuplot requires three or four columns
-                   of input to render errorbars.
-  -x   | --funcs : A comma-separated list of functions to plot after other
-                   curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
-                   variable should always be 'x'.
-  -lx  | --logx  : Use logarithmic x-axis.
-  -ly  | --logy  : Use logarithmic y-axis.
-  -lxy | --logxy : Use double logarithmic axes.
-  -l   | --log   : Shortcut for -lxy / --logxy.
-  -k   | --key   : Shortcut for gnuplot to show the key (legend).
-         --lbl   : Shortcut to label the graph axes.  --lbl "x;y" is
-                   equivalent to -c 'set xlabel "x"; set ylabel "y"'.
+  -p              : Passes a string to gnuplot's plot directive.  The
+                    subsequent arg must be valid gnuplot.  For example 
+                    -p 'with lines' will plot the XY-data using lines instead
+                    of linespoints.
+  -c              : Passes a command to gnuplot.  The subsequent arg must be 
+                    valid gnuplot.  The command will be run before gnuplot's 
+                    plot is executed.  For example,
+                    -c 'set xlabel "x"; set ylabel "y"' will label the graph.
+  -e   | --error  : Shorthand for using errorbars.  The plot string 'with 
+                    yerrorlines' is used.  This overrides any string given 
+                    using -p. Note that gnuplot requires three or four columns
+                    of input to render errorbars.
+  -x   | --funcs  : A comma-separated list of functions to plot after other
+                    curves are drawn.  For example: -x 'x**0.5,cos(x)'.  The
+                    variable should always be 'x'.
+  -lx  | --logx   : Use logarithmic x-axis.
+  -ly  | --logy   : Use logarithmic y-axis.
+  -lxy | --logxy  : Use double logarithmic axes.
+  -l   | --log    : Shortcut for -lxy / --logxy.
+  -k   | --key    : Shortcut for gnuplot to show the key (legend).
+         --lbl    : Shortcut to label the graph axes.  --lbl "x;y" is
+                    equivalent to -c 'set xlabel "x"; set ylabel "y"'.
+  -xr  | --xrange : Set the range of the x-axis.  For example, -xr 0:1, limits
+                    the x-axis to between 0 and 1.  An endpoint of the range
+                    may be omitted, e.g. -xr :1 will only force the right end
+                    of the axis to stop at 1.
+  -yr  | --yrange : Same as xrange but for the y-axis.
 
 Example:
   %s -c 'set xr [0:1]' file1.txt file2.txt """ % (name,name)
@@ -73,6 +78,14 @@ if __name__ == '__main__':
                 cstr += "set xlabel \"%s\"; set ylabel \"%s\"; " % xy
             else:
                 cstr += "set xlabel \"%s\"; " % xy
+        elif a in ["-xr", "--xrange"]:
+            xrstr = argv.pop(0)
+            xrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr += "set xrange [%s]; " % xrstr
+        elif a in ["-yr", "--yrange"]: # two or more, use a for
+            yrstr = argv.pop(0)
+            yrstr.replace(",",":").replace(";",":").replace("_",":")
+            cstr +=  "set yrange [%s]; " % yrstr
         elif a == '-e' or a == '--error':
             pstr = 'w yerrorlines'
         elif a == '-x' or a == '--funcs' or a == '--functions':
