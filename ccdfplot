@@ -147,7 +147,7 @@ if __name__ == '__main__':
     %s
     %s
     %s
-    """ % (logX,logY, cstr,kstr plotstr)
+    """ % (logX,logY, cstr,kstr, plotstr)
     
     # run gnuplot and clean up:
     os.system( cmd )
