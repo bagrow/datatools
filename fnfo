@@ -24,6 +24,7 @@ Options:
   -d | --delimiter : Indicate character to separate columns. Use -d "," for a
                      CSV file, for example. The literal string "\\t" can
                      be used for a tab. Default any whitespace.
+  -s | --summary   : only print one line for each file.
 
 Example:
   %s tutorial/*.dat""" % (name,name)
@@ -31,6 +32,7 @@ Example:
 
 def get_args(argv):
     delimiter, comment = None, None
+    summary_only = False
     args_to_kill = set()
     for i,Arg in enumerate(argv):
         if os.path.exists(Arg): # is a file
@@ -49,9 +51,12 @@ def get_args(argv):
                 args_to_kill.update([argv[i],argv[i+1]])
             except IndexError:
                 sys.exit("Delimiter indicated, but no delimiter string given. See help.")
+        if arg == "-s" or arg == "--summary":
+            summary_only = True
+            args_to_kill.add( argv[i] )
     
     list_files = [ Arg for Arg in argv if Arg not in args_to_kill ]
-    return delimiter, comment, list_files
+    return delimiter, comment, summary_only, list_files
 
 
 def get_permissions(path):
@@ -145,25 +150,31 @@ if __name__ == '__main__':
         sys.exit( usage )
     
     # parse command line args:
-    delimiter, comment, files = get_args( sys.argv[1:] )
+    delimiter, comment, summary, files = get_args( sys.argv[1:] )
     
     if not files:
         sys.exit("No files given. Exiting...")
     
+    fwidth = max(len(ff) for ff in files)
     for i,f in enumerate(files):
         file_stats = os.stat(f)
         fsize = file_stats[stat.ST_SIZE]
         flmod = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats[stat.ST_MTIME]))
         flacc = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file_stats[stat.ST_ATIME]))
         
+        if summary:
+            fpretty = f.rjust( fwidth )
+            if os.path.isdir(f):
+                print "%s:" % fpretty, "directory"
+                continue
+            isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
+            nr_nc = format_dims(dims).replace(" ","").replace("s", "")
+            nr_nc = nr_nc.replace("row", "").replace("column", "").replace("line","")
+            contents = ("" if isMatrix else "lines (ragged)") if isNumeric else "lines (alphanumeric)"
+            print "%s:" % fpretty, nr_nc, contents
+            continue
+        
         print f
-        #print "    Location      =", os.path.dirname( os.path.abspath(f) )
-        
-        #try:
-            #print "    "+hash_it_up(f).strip()
-        #except:
-            #pass
-        
         try:
             fileout = subprocess.Popen("/usr/bin/file -b %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
             mime = subprocess.Popen("/usr/bin/file -b --mime %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
