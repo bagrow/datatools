@@ -23,7 +23,8 @@ usage(){
     echo -e "Equivalent to: cat XY.dat | awk '{print log(\$1), log(\$2)}'"
     echo -e "except for the base and that negative data are ignored."
     echo -e ""
-    echo -e "  base - the base of the logarithm.  Default is base-ten"
+    echo -e "  base - the base of the logarithm.  Default is base-ten."
+    echo -e "         Can use 'e' for natural log."
     echo -e ""
     echo -e "Example:\n  cat XY.txt | $name"
 	exit 1
@@ -32,6 +33,9 @@ usage(){
 BASE=10.0
 if [ "$1" != "" ]; then
     BASE=$1
+fi
+if [ $BASE = 'e' ]; then
+    BASE='2.71828183'
 fi
 
 while [ "$1" != "" ]; do
