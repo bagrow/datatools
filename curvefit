@@ -11,16 +11,16 @@ name = os.path.basename(sys.argv[0])
 usage = \
 """Usage: %s FUNCTION [INITIAL VALUES] [options] [plot options]
 
-Fit a curve specified by FUNCTION to XY-data received from STDIN.  The
+Fit a curve specified by FUNCTION to XY-data received from STDIN. The
 independent variable must be 'x' and initial values of some or all fit
-parameters may be specified.  If FUNCTION contains spaces or parentheses, it
-must be quoted.  INITIAL VALUES for parameters default to 1.0 unless specified.
+parameters may be specified. If FUNCTION contains spaces or parentheses, it
+must be quoted. INITIAL VALUES for parameters default to 1.0 unless specified.
 Note that the choice of initial values can be crucial for nonlinear fits; trial
 and error is often necessary.
 
 The XY-data and fitted function are passed to `plot` for display (unless
---noplot is used, see below).  Most arguments supported by `plot` can be given
-here; the exceptions are -x (--funcs), -e (--errors), and -s (--shared).  If
+--noplot is used, see below). Most arguments supported by `plot` can be given
+here; the exceptions are -x (--funcs), -e (--errors), and -s (--shared). If
 given, these are ignored.
 
 Options:
@@ -74,7 +74,9 @@ def get_fit_params(equation):
     try:
         list_params.remove('x') # remove independent variable
     except KeyError:
-        sys.exit("The independent variable must be 'x'.  Exiting...")
+        sys.exit("The independent variable must be 'x'. Exiting...")
+    if not list_params:
+        sys.exit("No fit parameters given. (Check the fit function?) Exiting...")
     return sorted(list(list_params))
 
 
