@@ -252,7 +252,7 @@ if __name__ == '__main__':
     # build parameter-based strings for gnuplot command:
     str_ic  = "; ".join("%s = %f" % (p,iv) for p,iv in param_initval)
     str_via = ", ".join(params)
-    str_vvv = "" if "-vvv" in options or '-vvverbose' in options else "> /dev/null 2>&1"
+    str_vvv = "" if "-vvv" in options or '--vvverbose' in options else "> /dev/null 2>&1"
     
     # build gnuplot fit command:
     cmd_fit = """gnuplot << EOF %s
@@ -271,9 +271,9 @@ if __name__ == '__main__':
     fitted_function = sub_vals_into_equation(equation, params, values)
     
     # print output, if desired: (except for -vvv, which is controlled in cmd_fit)
-    if '-vv' in options or '-vverbose' in options: # print the fit.log file
+    if '-vv' in options or '--vverbose' in options: # print the fit.log file
         os.system( "cat %s" % logfout )
-    elif '-v' in options or '-verbose' in options: # print the fitted formula
+    elif '-v' in options or '--verbose' in options: # print the fitted formula
         print "y =", fitted_function
     
     # plot data and fit, if desired:
