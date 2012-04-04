@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name [-n] boolean"
+    echo -e ""
+    echo -e "Print fraction of X-DATA read from STDIN where 'boolean' was true."
+    echo -e "Yes, this is just a shortcut for an awk one-liner, but it's a one-"
+    echo -e "liner that I'm sick of typing.\n"
+    echo -e "Options:"
+    echo -e "  -n : Return the number of occurrences and not the fraction.\n" 
+    echo -e "Example:\n  cat p_values.txt | $name 'x <= 0.05'"
+	exit 1
+}
+
+NORMED=true
+while getopts "nNh -help" opt; do
+  case $opt in
+    n | N) NORMED=false;;
+        h) usage;;
+    -help) usage;;
+      [?]) usage;;
+  esac
+done
+
+# get the boolean:
+BOOL="${!#}"
+BOOL=${BOOL/x/\$1}
+
+
+if $NORMED; then
+    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print 1.0*tot/NR; }" | sort -g
+else
+    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print tot; }" | sort -g
+fi
+
+
