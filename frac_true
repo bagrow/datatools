@@ -40,7 +40,7 @@ done
 
 # get the boolean:
 BOOL="${!#}"
-BOOL=${BOOL/x/\$1}
+BOOL=${BOOL//x/\$1}
 
 
 if $NORMED; then
