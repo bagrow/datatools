@@ -26,14 +26,15 @@ Bin data and then plot:
 
 Compute cumulative distribution of data and plot:
 
-    $ cat samples.txt | ccdf | plot
-    $ cat data.txt | awk '{if ($1>0) print $1}' | ccdf | logplot --funcs 'x**-1'
+    $ cat samples.txt | ccdf > samples_ccdf.txt
+    $ cat distrib.dat | ccdfplot
+    $ cat data.txt | awk '$1>0 {print $1}' | ccdfplot --log --funcs 'x**-1'
 
 Fit a (nonlinear) function to data:
 
     $ cat current_voltage.dat | curvefit "a0*exp(a1*x)"
-    $ cat xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose
-    $ cat tutorial/x.dat | bin | curvefit "A*exp(-x**2/B)"
+    $ cat xy.dat | curvefit "A*sin(x/B)+C" B=3 --noplot --verbose  # start parameter B at 3
+    $ cat tutorial/x.dat | bin | curvefit "A*exp(-x**2/B)"  # fit histogram
 
 All functions have help strings (use `-h` or `--help`):
 
