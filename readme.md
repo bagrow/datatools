@@ -21,7 +21,7 @@ Plot data generated from script:
 
 Bin data and then plot:
 
-    $ cat names.txt | count | plot # frequency counts
+    $ cat ages.txt | count | plot # frequency counts
     $ cat xy.data.txt | aver | plot -c "set title 'xy'" -p "with points"  # trendline of xy-data
 
 Compute cumulative distribution of data and plot:
