@@ -2,7 +2,7 @@
 
 # el2info
 # Jim Bagrow
-# Last Modified: 2011-04-07
+# Last Modified: 2012-04-12
 
 import sys, os
 try:
@@ -12,18 +12,42 @@ except ImportError:
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: [-g|--gcc] %s
+"""Usage: %s [options]
 
 Compute a number of statistics for the network whose edgelist was received
   from STDIN.  Edgelist delimiter must be tab or space. An example edgelist is
   provided: <DATATOOLS>/tutorial/karate.edgelist.  Only unweighted, undirected
-  networks are currently supported.  Use -g or -gcc to only examine the
-  giant connected component of the edgelist.
+  networks are currently supported. 
+  
+  By default the user is prompted whether or not to compute the network's
+  diameter, since this can be a slow calculation. If the network is not
+  connected, the diameter of the giant component will be computed.
+
+Options:
+  -g     | --gcc        : Only examine the giant connected component of the
+                          network.
+  -dia   | --diameter   : Compute diameter. No prompt will be given.
+  -nodia | --nodiameter : Do not compute diameter. No prompt will be given.
 
 Example:
   cat edgelist.txt | %s """ % (name,name)
 
-error = "%s takes at most 1 argument, run `%s --help` for info." % (name,name)
+## {{{ http://code.activestate.com/recipes/577058/ (r2)
+def query_yes_no(question):
+    """Ask a yes/no question via raw_input() and return True or False."""
+    valid = {"yes":True, "y":True, "ye":True,
+             "no":False, "n":False}
+    default = "no"
+    
+    while 1:
+        sys.stdout.write(question + " [y/N] ")
+        choice = raw_input().lower()
+        if choice in valid:
+            return valid[choice]
+        else:
+            return valid[default]
+## end of http://code.activestate.com/recipes/577058/ }}}
+
 
 def get_edge(line):
     """First try to split with tab, then with space. No other delimiters are
@@ -36,17 +60,28 @@ def get_edge(line):
 
 
 if __name__ == '__main__':
-    gcc_only = False
+    # parse options:
+    gcc_only        = False
+    prompt_diameter = True
+    skip_diameter   = False
+    force_diameter  = False
     if '-h' in sys.argv or '--help' in sys.argv:
         sys.exit(usage)
     elif '-g' in sys.argv or '--gcc' in sys.argv:
         gcc_only = True
-    elif len(sys.argv) > 2:
-        sys.exit(error)
+    elif '-dia' in sys.argv or '--diameter' in sys.argv:
+        force_diameter  = True
+        prompt_diameter = False
+    elif '-nodia' in sys.argv or '--nodiameter' in sys.argv:
+        skip_diameter = True
+        prompt_diameter = False
     
-    # read edgelist from stdin:
+    if force_diameter and skip_diameter:
+        sys.exit("Mutually exclusive options given. Exiting...")
+    
+    
+    # read edgelist from stdin into networkx Graph:
     edges = [ get_edge(line) for line in sys.stdin if line.strip() ]
-    
     G = networkx.Graph() # only unweighted, undirected graphs are supported...
     G.add_edges_from( edges )
     
@@ -64,9 +99,19 @@ if __name__ == '__main__':
     if hasattr(n2c, 'values'):
         C = 1.0 * sum(n2c.values()) / len(n2c)
     else: # older version of networkx
-        C = 1.0 * sum(n2c) / len(n2c) 
+        C = 1.0 * sum(n2c) / len(n2c)
+    
+    # do the diameter?
+    if not skip_diameter and N_comps > 1 and not gcc_only:
+        Gdia = networkx.connected_component_subgraphs(G)[0]
+    else:
+        Gdia = G
+    if prompt_diameter:
+        sys.stdin = open("/dev/tty") # not portable?
+        prompt_diameter = query_yes_no("Compute the diameter? (slow for large networks)")
     
     
+    # display output:
     flt_fmt = "%0.8f"
     print "       Number of Nodes =", N
     print "       Number of Links =", M
@@ -75,8 +120,12 @@ if __name__ == '__main__':
     print "Clustering Coefficient =", flt_fmt % C
     print "          Transitivity =", flt_fmt % T
     print "  Number of Components =", N_comps
-    if N_comps == 1 or gcc_only is True:
-        print "              Diameter =", networkx.diameter(G)
-    elif gcc_only is False:
+    
+    if prompt_diameter:
+        print "              Diameter =", networkx.diameter(Gdia)
+    elif force_diameter:
+        print "              Diameter =", networkx.diameter(Gdia)
+    
+    if gcc_only is False and N_comps > 1:
         print "       Fraction in GCC =", flt_fmt % (1.0 * len(L[0]) / N)
     
