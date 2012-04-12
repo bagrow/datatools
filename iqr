@@ -2,10 +2,21 @@
 
 # iqr
 # Jim Bagrow
-# Last Modified: 2011-07-20
+# Last Modified: 2012-04-12
 
 import sys, os
 import math
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+
+Compute the median, 25th, and 75th percentiles of X-data received from STDIN.
+Output: median 25th-percentile 75th-percentile
+
+Example:
+  cat tutorial/x.dat | %s""" % (name,name)
+
 
 def percentile(N, p):
     """
@@ -30,6 +41,9 @@ def percentile(N, p):
     return d0 + d1
 
 if __name__ == '__main__':
+    
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        sys.exit( usage )
     
     data = [ float(x) for x in sys.stdin if x.strip() ]
     data.sort()
