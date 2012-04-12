@@ -12,7 +12,7 @@ usage = \
 """Usage: %s
 
 Compute the median, 25th, and 75th percentiles of X-data received from STDIN.
-Output: median 25th-percentile 75th-percentile
+  Output: median 25th-percentile 75th-percentile
 
 Example:
   cat tutorial/x.dat | %s""" % (name,name)
