@@ -44,9 +44,9 @@ BOOL=${BOOL//x/\$1}
 
 
 if $NORMED; then
-    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print 1.0*tot/NR; }" | sort -g
+    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print 1.0*tot/NR; }"
 else
-    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print tot; }" | sort -g
+    awk " NF > 0 && $BOOL { tot = tot + 1}  END { print tot; }"
 fi
 
 
