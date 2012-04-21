@@ -2,7 +2,7 @@
 
 # lag.py
 # Jim Bagrow
-# Last Modified: 2011-12-20
+# Last Modified: 2012-04-12
 
 
 """
@@ -38,7 +38,6 @@ Options:
   -p | --periodic : Rotate the data instead of shifting it.  This ensures that
                     all n points are used.  When not rotating, the first k 
                     points are lost.
-  lag step k      : Number of steps to shift by (default k=1)
 
 Example:
   cat tutorial/x.dat | %s | plot """ % (name,name)
