@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+# to_epoch
+# Jim Bagrow
+# Last Modified: 2012-04-14
+
+import sys, os
+import time
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [time_format]
+
+Convert timestamps read from STDIN to unix time (number of seconds since the
+epoch).
+
+Options:
+  time_format  - Describes how the timestamps are recorded [default:
+                 %%Y-%%m-%%d %%H:%%M:%%S].
+
+Example:
+  cat dates.txt | %s > seconds_since.txt""" % (name,name)
+
+
+
+if __name__ == '__main__':
+    
+    if "-h" in sys.argv[1:] or "--help" in sys.argv[1:]:
+        sys.exit(usage)
+    
+    try:
+        tfmt = sys.argv[1]
+    except IndexError:
+        tfmt = '%Y-%m-%d %H:%M:%S'
+    try:
+        cid = int(sys.argv[2]) - 1
+    except IndexError:
+        cid = 0
+        
+    for x in sys.stdin:
+        x = x.strip()
+        if not x:
+            continue
+        
+        try:
+            e = int(time.mktime(time.strptime(x, tfmt))) - time.timezone
+        except Exception,e_msg:
+            sys.exit("Error: %s" % e_msg)
+        
+        sys.stdout.write("%i\n" % e )
+        
