@@ -88,7 +88,7 @@ if __name__ == '__main__':
         if arg == "-p":
             pstr = argv[i+1]
         if arg == "-c":
-            cstr = argv[i+1]
+            cstr += argv[i+1]+"; "
         if arg == "--lbl" or arg == "-lbl":
             xy = tuple(argv[i+1].split(";"))
             if len(xy) == 2:

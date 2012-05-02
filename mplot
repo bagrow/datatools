@@ -70,7 +70,7 @@ if __name__ == '__main__':
         elif a == '-p':
             pstr = argv.pop(0)
         elif a == '-c':
-            cstr = argv.pop(0)
+            cstr += argv.pop(0)+"; "
         elif a == "--lbl" or a == "-lbl":
             xy = argv.pop(0) 
             xy = tuple(xy.split(";"))
