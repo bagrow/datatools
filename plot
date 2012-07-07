@@ -44,9 +44,11 @@ Options:
                     assumes that each line of the data received from STDIN is
                     of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
                     'x1 y2, ...', ... can be displayed on a single plot.
+  -o   | --output : The plot is saved as a pdf to a filename specified in the
+                    arg following this flag. No plot window is opened.
 
 Example:
-  cat tutorial/xy.dat | %s -c 'set xr [1:10]' """ % (name,name)
+  cat tutorial/x.dat | %s -c 'set xr [1:10]' """ % (name,name)
 
 
 if __name__ == '__main__':
@@ -76,6 +78,7 @@ if __name__ == '__main__':
     fstr=''
     cstr=''
     pstr='w lp pt 4'
+    ostr='set term x11 enhanced persist'
     for i,arg in enumerate(argv):
         if arg == "-p":
             pstr = argv[i+1]       # replace
@@ -97,6 +100,12 @@ if __name__ == '__main__':
             yrstr = argv[i+1]
             yrstr.replace(",",":").replace(";",":").replace("_",":")
             cstr +=  "set yrange [%s]; " % yrstr
+        if arg in ["-o", "--output"]:
+            fname = argv[i+1]
+            if fname[-4:] != ".pdf":
+                fname += ".pdf"
+            ostr = "set term pdf; set output \"%s\" " % fname
+                
     if '-e' in A or '--error' in A:
         pstr = 'w yerrorlines'
     if name == "splot": # scatter plot
@@ -119,14 +128,14 @@ if __name__ == '__main__':
         plotstr += ","+fstr
     
     cmd = """gnuplot << EOF
-    set term x11 enhanced persist
+    %s
     unset key
     %s
     %s
     %s
     %s
     %s
-    """ % (logX,logY, cstr,kstr, plotstr)
+    """ % (ostr, logX,logY, cstr,kstr, plotstr)
     
     os.system( cmd )
     os.system( "rm -f %s" % fileout )
