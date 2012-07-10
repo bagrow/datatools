@@ -70,8 +70,13 @@ def write(data,filename, num_bins=None):
     bin_centers = bin_edges[0:-1] + 0.5*(bin_edges[1:] - bin_edges[0:-1])
     
     f = open(filename, 'w') 
-    for b,h in zip(bin_centers, hist):
-        f.write("%f %f\n" % (b, h))
+    if name == "loghist":
+        for b,h in zip(bin_centers, hist):
+            if h > 0.0:
+                f.write("%f %f\n" % (b, h))
+    else:
+        for b,h in zip(bin_centers, hist):
+            f.write("%f %f\n" % (b, h))
     f.close()
 
 
