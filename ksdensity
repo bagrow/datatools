@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+# ksdensity
+# Jim Bagrow
+# Last Modified: 2012-12-12
+
+import sys, os
+import numpy
+from itertools import izip
+import scipy.stats as stats
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+
+Compute KS-density [1] for PDF of X-data received from STDIN. Returns XY-data
+for the estimated underlying density which may then be plotted.
+
+[1] http://en.wikipedia.org/wiki/Kernel_density_estimation
+
+Example:
+  cat tutorial/x.dat | %s | plot -p 'with lines'""" % (name,name)
+
+if __name__ == '__main__':
+    
+    argv = [ s.lower() for s in sys.argv[1:] ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    
+    try:
+        data = [ float(line.strip()) for line in sys.stdin if line.strip() ]
+    except:
+        sys.exit("Data malformed, check input.")
+    
+    kde = stats.kde.gaussian_kde(data)
+    
+    xmin,xmax = min(data),max(data)
+    X = numpy.linspace(xmin,xmax,100)
+    
+    for x,z in izip(X,list(kde(X))):
+        print x,z
