@@ -67,9 +67,9 @@ Requirements
 * [gnuplot][] (and X11 terminal)
 * [python][] 2.x (probably 2.5+) with packages:
     - [numpy][] (version with fixed histogram normalization, around 1.6+)
-    - [scipy][] (only for kernel density estimation and normality test functions)
-    - [networkx][] (only if using `el2info`, `el2gcc`, or `el2draw`)
-    - [matplotlib][] (only if using `el2draw`)
+    - [scipy][] (only for `ksdensity` and `normaltest`)
+    - [networkx][] (only for `el2info`, `el2gcc`, and `el2draw`)
+    - [matplotlib][] (only for `el2draw`)
 
 Recent versions of, e.g., OS X include everything but gnuplot, networkx, and
 matplotlib.  Some knowledge of gnuplot is very helpful for customizing plot
