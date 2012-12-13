@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+# prctile
+# Jim Bagrow
+# Last Modified: 2012-08-31
+
+import sys, os
+import math
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [percentile(s)]
+
+Compute the percentile(s) of X-data received from STDIN. If no percentiles are given,
+the median (50th percentile) is returned.
+
+Example:
+  cat tutorial/x.dat | %s 5 95""" % (name,name)
+
+
+def percentile(N, p):
+    """
+    Find the percentile of a list of values.
+    
+    N - is a list of values. Note N MUST BE already sorted.
+    p - a float value from 0.0 to 1.0.
+    
+    Return the percentile of the values in N.
+    
+    Adapted from: http://code.activestate.com/recipes/511478/ (r1)
+    """
+    if not N:
+        return None
+    k = (len(N)-1) * p
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return N[int(k)]
+    d0 = N[int(f)] * (c-k)
+    d1 = N[int(c)] * (k-f)
+    return d0 + d1
+
+if __name__ == '__main__':
+    
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        sys.exit( usage )
+    
+    args = sys.argv[1:]
+    if args:
+        list_P = [float(p)/100.0 for p in args]
+    else:
+        list_P = [0.50]
+    
+    data = [ float(x) for x in sys.stdin if x.strip() ]
+    data.sort()
+    
+    prctiles = [ str(percentile(data, p)) for p in list_P ]
+    
+    sys.stdout.write( "%s\n" % " ".join(prctiles) )
+    sys.stdout.flush()
