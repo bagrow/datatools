@@ -157,6 +157,9 @@ def parse_args(args):
     equation = args[0] # assume first arg is equation!
     args.pop(0) # remove equation from list
     
+    if "-p" not in [a[:2] for a in args]: # default style is points...
+        args.append( "-p 'w p'" )
+    
     if len(args) > 0:
         # is second arg ic?:
         if args[0][0] == "-": # arg not ic:
@@ -195,8 +198,10 @@ def parse_args(args):
             if a[0] != '-':
                 a = "\"%s\"" % a
             new_argsl.append(a)
+        
         if len(new_argsl) > 0:
             plot_options = " ".join(new_argsl)
+        
     return equation,initial_values,options,plot_options
 
 
@@ -235,6 +240,9 @@ if __name__ == '__main__':
     if '-h' in argv or '--help' in argv:
         sys.exit( usage )
     
+    if len(args) == 0:
+        args = ["m*x+b"] # default formula is to fit a straight line
+    
     equation,initial_values, options, plot_options = parse_args( args )
     params        = get_fit_params(equation)
     param_initval = parse_ic(initial_values, params)
@@ -256,6 +264,11 @@ if __name__ == '__main__':
     
     # build gnuplot fit command:
     cmd_fit = """gnuplot << EOF %s
+    set style line 2 lc 3 
+    set style line 3 lc 4 
+    set style line 4 lc 5 
+    set style line 5 lc 2 
+    set style increment user 
     fac(x) = (int(x)==0) ? 1.0 : int(x) * fac(int(x)-1.0)
     set fit logfile '%s'
     f(x) = %s  # define the function to be fit
@@ -279,7 +292,7 @@ if __name__ == '__main__':
     # plot data and fit, if desired:
     if '-n' not in options and '--noplot' not in options:
         # add fitted function to plot options:
-        plot_options += " -p \"w lp title 'data'\"" # hardwired
+        #plot_options += " -p \"w lp title 'data'\"" # hardwired
         plot_options += " --funcs \"%s w l lw 3 lc rgb 'black' title 'fit'\"" % fitted_function
         
         # add fit label to plot options:
@@ -290,7 +303,7 @@ if __name__ == '__main__':
             
         # run the plot:
         #print plot_options
-        os.system("cat %s | plot %s" % (fileout,plot_options))
+        os.system("cat %s | plot %s " % (fileout,plot_options))
     
     
     # clean up:
