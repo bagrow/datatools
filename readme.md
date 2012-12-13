@@ -2,8 +2,8 @@ Datatools
 =========
 
 A collection of small scripts for quickly plotting and munging data from the
-command line.  Supports basic statistics, histograms, and [CDFs][].  An importable
-python module is also available: see `python/` for more.
+command line.  Supports basic statistics, histograms, [CDFs][], and more.  An
+importable python module is also available: see `python/` for more.
 
 
 Examples
@@ -65,8 +65,9 @@ Requirements
 
 * bash and awk (very common)
 * [gnuplot][] (and X11 terminal)
-* [python][] 2.x (probably 2.5+)
-    - numpy (version with fixed histogram normalization, around 1.6)
+* [python][] 2.x (probably 2.5+) with packages:
+    - [numpy][] (version with fixed histogram normalization, around 1.6+)
+    - [scipy][] (only for kernel density estimation and normality test functions)
     - [networkx][] (only if using `el2info`, `el2gcc`, or `el2draw`)
     - [matplotlib][] (only if using `el2draw`)
 
@@ -74,17 +75,10 @@ Recent versions of, e.g., OS X include everything but gnuplot, networkx, and
 matplotlib.  Some knowledge of gnuplot is very helpful for customizing plot
 appearance as the `-p` and `-c` options use valid gnuplot code.
 
-Todo
-====
-
-* ~~Fix (c)cdf to only plot unique values.~~ First send data through `stepize`.
-* Support dumb terminal if x11 is not available?
-* Eliminate numpy dependency?
-* Unit tests?
 
 License
 =======
-
+    
     This file is part of Datatools.
     
     Datatools is free software: you can redistribute it and/or modify
@@ -100,8 +94,10 @@ License
     You should have received a copy of the GNU General Public License
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 
+
 [CDFs]:       http://en.wikipedia.org/wiki/Empirical_distribution_function
 [numpy]:      http://numpy.scipy.org/
+[scipy]:      http://www.scipy.org/
 [python]:     http://python.org/
 [gnuplot]:    http://www.gnuplot.info/
 [networkx]:   http://networkx.lanl.gov
