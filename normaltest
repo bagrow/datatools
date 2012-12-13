@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+# normaltest
+# Jim Bagrow
+# Last Modified: 2012-08-22
+
+"""
+    This file is part of Datatools.
+    
+    Datatools is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    Datatools is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys, os
+
+name = os.path.basename(sys.argv[0])
+tstr = "logarithmically" if name == "logbin" else "linearly"
+usage = \
+"""Usage: %s [options]
+
+Test the null hypothesis that X-data received from STDIN was drawn from a
+normal distribution.  It is based on D'Agostino and Pearson's [1,2] test that
+combines skew and kurtosis to produce an omnibus test of normality. Returns a
+p-value for rejecting the null hypothesis that the data could have been sampled
+from a normal distribution.
+
+[1] D'Agostino, R. B.                 (1971), Biometrika, 58, 341-348
+[2] D'Agostino, R. and Pearson, E. S. (1973), Biometrika, 60, 613-622
+
+Options:
+  -s | --score : Return test score as well as p-value.
+
+Example:
+  cat tutorial/x.dat    | %s
+  cat tutorial/x_pl.txt | %s -s""" % (name,name,name)
+
+error = "Something went wrong, is input X-DATA? Run `%s --help` for info." % name
+
+
+try:
+    import scipy.stats as stats
+except:
+    sys.exit("%s requires scipy. Exiting..." % name)
+
+
+if __name__ == '__main__':
+    
+    
+    # parse command-line args:
+    argv = [s.lower() for s in sys.argv[1:]]
+    if "-h" in argv or "--help" in argv:
+        sys.exit( usage )
+    keep_score = False
+    if "-s" in argv or "--score" in argv:
+        keep_score = True
+    
+    
+    # read data from STDIN:
+    try:
+        data = [ float(x) for x in sys.stdin if x.strip() ]
+    except:
+        sys.exit(error)
+    
+    
+    # compute p-value using D'Agostino & Pearson test:
+    k, p = stats.normaltest(data)
+    
+    # display:
+    print "Normality test p-value =", float(p), "(likely non-normal if p << 1)"
+    if keep_score:
+        print "          test score   =", float(k)
