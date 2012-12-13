@@ -86,6 +86,8 @@ if __name__ == '__main__':
             cstr += argv[i+1]+"; " # update
         if arg in ['-x', '--funcs','--functions']:
             fstr = argv[i+1]
+            if "lc" not in fstr and "rgb" not in fstr and "," not in fstr: # messy
+                fstr += " lw 2 lc rgb 'black'"
         if arg == "--lbl" or arg == "-lbl":
             xy = tuple(argv[i+1].split(";"))
             if len(xy) == 2:
@@ -112,6 +114,7 @@ if __name__ == '__main__':
         pstr = 'w p pt 4'
     elif name == "lplot": # line plot
         pstr = 'w l'
+    pstr += " title 'data'" # for legend
     
     fileout = "/tmp/file.tmp"
     fout = open(fileout, 'w')
@@ -128,6 +131,11 @@ if __name__ == '__main__':
         plotstr += ","+fstr
     
     cmd = """gnuplot << EOF
+    set style line 2 lc 3 
+    set style line 3 lc 4 
+    set style line 4 lc 5 
+    set style line 5 lc 2 
+    set style increment user 
     %s
     unset key
     %s

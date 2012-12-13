@@ -125,6 +125,11 @@ if __name__ == '__main__':
     
     
     cmd = """gnuplot << EOF
+    set style line 2 lc 3 
+    set style line 3 lc 4 
+    set style line 4 lc 5 
+    set style line 5 lc 2 
+    set style increment user 
     %s
     unset key
     %s
