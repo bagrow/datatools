@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+# ranksum
+# Jim Bagrow
+# Last Modified: 2013-02-07
+
+import sys, os
+import numpy
+import scipy.stats
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [file0 file1]
+
+Compute the p-value of the two-sided Mann-Whitney U test of the null hypothesis
+that two samples were drawn from the same distribution. If p is small it's
+statistically likely that values from one sample are going to be larger than
+samples from the other. This test corrects for ties and uses a continuity
+correction. Each sample should have more than 20 observations.
+
+Input data are two filenames storing the samples (X-data) for each group, or a
+two-column format read from STDIN, where the first column are the samples and
+each element of the second column is a 0 or 1 indicating which of the
+two groups that row's sample belongs to.""" % (name)
+
+if __name__ == '__main__':
+    
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        sys.exit( usage )
+    elif len(sys.argv[1:]) == 2:
+        f1,f2 = sys.argv[1:]
+        if os.path.exists(f1) and os.path.exists(f2):
+            sample_one = [float(line.strip()) for line in open(f1)]
+            sample_two = [float(line.strip()) for line in open(f2)]
+    else:
+        fmat = lambda x: (float(x[0]),int(x[1]))
+        data = [ fmat(x.strip().split()) for x in sys.stdin if x.strip() ]
+        
+        sample_one = [d[0] for d in data if d[1] == 0]
+        sample_two = [d[0] for d in data if d[1] == 1]
+    
+    #z, p = scipy.stats.ranksums(sample_one, sample_two)
+    u, p_onesided = scipy.stats.mannwhitneyu(sample_one, sample_two)
+    p_twosided = 2*p_onesided
+    
+    print "p =", (2*p_onesided)
+    print "mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one))
+    print "mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two))
+    
+    X1 = numpy.array(sample_one)
+    X2 = numpy.array(sample_two)
+    n1 = len(sample_one)
+    n2 = len(sample_two)
+    m1 = numpy.mean(X1)
+    m2 = numpy.mean(X2)
+    s1 = numpy.std(X1,ddof=1)
+    s2 = numpy.std(X2,ddof=1)
+    
+    s = numpy.sqrt( ((n1-1)*s1**2 + (n2-1)*s2**2)/(n1+n2) )
+    print "Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s
+
