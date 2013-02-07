@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+# rsample
+# Jim Bagrow
+# Last Modified: 2013-02-07
+
+# Code adapted from: http://data-analytics-tools.blogspot.com/2009/09/reservoir-sampling-algorithm-in-perl.html
+
+import sys, os
+import random
+ 
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s num_samples [FILENAME]
+
+Randomly sample num_samples rows from STDIN or FILENAME and pass to STDOUT.
+Sampling is performed using Reservoir Sampling.""" % (name)
+
+error = "Bad input, run `%s --help` for info." % (name)
+
+if __name__ == '__main__':
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        sys.exit( usage )
+    
+    if len(sys.argv) == 3:
+        input = open(sys.argv[2],'r')
+    elif len(sys.argv) == 2:
+        input = sys.stdin;
+    else:
+        sys.exit(error)
+    
+    N = int(sys.argv[1]);
+    sample = [];
+    
+    for i,line in enumerate(input):
+        if i < N:
+            sample.append(line)
+        elif i >= N and random.random() < N/float(i+1):
+            replace = random.randint(0,len(sample)-1)
+            sample[replace] = line
+    
+    for line in sample:
+        sys.stdout.write(line)
