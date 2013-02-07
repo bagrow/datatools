@@ -47,6 +47,8 @@ if __name__ == '__main__':
     
     args = sys.argv[1:]
     if args:
+        if len(args) == 1 and ("," in args[0] or ";" in args[0]):
+            args = args[0].replace(";",",").split(",")
         list_P = [float(p)/100.0 for p in args]
     else:
         list_P = [0.50]
