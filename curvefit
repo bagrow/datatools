@@ -25,6 +25,7 @@ given, these are ignored.
 
 Options:
   -n   | --noplot    : Do not pass data and function to `plot`.
+  -slr | --linear    : Do linear fit, y=mx+b. FUNCTION not needed.
          --nolabel   : Do not annotate plot with fit information.
   -v   | --verbose   : Print function and fitted parameters to STDOUT.
   -vv  | --vverbose  : Print full gnuplot fit log to STDOUT.
@@ -242,6 +243,8 @@ if __name__ == '__main__':
     
     if len(args) == 0:
         args = ["m*x+b"] # default formula is to fit a straight line
+    elif "-slr" in args or "--linear" in args:
+        args = ["m*x+b"] + args
     
     equation,initial_values, options, plot_options = parse_args( args )
     params        = get_fit_params(equation)
