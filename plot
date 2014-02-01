@@ -2,7 +2,7 @@
 
 # plot
 # Jim Bagrow
-# Last Modified: 2012-02-19
+# Last Modified: 2014-02-01
 
 import sys, os
 
@@ -44,6 +44,10 @@ Options:
                     assumes that each line of the data received from STDIN is
                     of the form 'x1 y1 y2 y3 ...' so that curves 'x1 y1, ...',
                     'x1 y2, ...', ... can be displayed on a single plot.
+  -a   | --aver   : Include averaged trend with plot, as per the `aver` command.
+                    Arguments MUST be passed to aver as a quoted string
+                    following this flag. E.g., -a "-u -s". Use -a "" for
+                    default aver args.
   -o   | --output : The plot is saved as a pdf to a filename specified in the
                     arg following this flag. No plot window is opened.
 
@@ -79,22 +83,24 @@ if __name__ == '__main__':
     cstr=''
     pstr='w lp pt 4'
     ostr='set term x11 enhanced persist'
+    do_aver,aver_errorbars = False,False
+    aver_args = ""
     for i,arg in enumerate(argv):
         if arg == "-p":
             pstr = argv[i+1]       # replace
         if arg == "-c":
             cstr += argv[i+1]+"; " # update
-        if arg in ['-x', '--funcs','--functions']:
+        if arg in ['-x', '--funcs','--functions']: # user-specified functions?
             fstr = argv[i+1]
             if "lc" not in fstr and "rgb" not in fstr and "," not in fstr: # messy
                 fstr += " lw 2 lc rgb 'black'"
-        if arg == "--lbl" or arg == "-lbl":
+        if arg == "--lbl" or arg == "-lbl": # axis labels
             xy = tuple(argv[i+1].split(";"))
             if len(xy) == 2:
                 cstr += "set xlabel \"%s\"; set ylabel \"%s\"; " % xy
             else:
                 cstr += "set xlabel \"%s\"; " % xy
-        if arg in ["-xr", "--xrange"]:
+        if arg in ["-xr", "--xrange"]: # manually specify plot xrange
             xrstr = argv[i+1]
             xrstr.replace(",",":").replace(";",":").replace("_",":")
             cstr += "set xrange [%s]; " % xrstr
@@ -102,7 +108,13 @@ if __name__ == '__main__':
             yrstr = argv[i+1]
             yrstr.replace(",",":").replace(";",":").replace("_",":")
             cstr +=  "set yrange [%s]; " % yrstr
-        if arg in ["-o", "--output"]:
+        if arg in ["-a", "--aver"]: # compute and display average trend?
+            do_aver   = True
+            aver_args = argv[i+1]
+            set_aver_args = set(aver_args.split())
+            if set_aver_args & set(["-e","--errorbars","-s","--standard","-q","--iqr"]):
+                aver_errorbars = True
+        if arg in ["-o", "--output"]: # save plot as pdf instead of using x11 term
             fname = argv[i+1]
             if fname[-4:] != ".pdf":
                 fname += ".pdf"
@@ -127,15 +139,20 @@ if __name__ == '__main__':
         N = len( open(fileout).readline().strip().split() )-1
         for i in xrange(1,N):
             plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
-    if fstr:
+    if do_aver: # get trendline if necessary
+        os.system("cat %s | aver %s > /tmp/file_aver.tmp" % (fileout,aver_args))
+        aver_lt = "yerrorlines" if aver_errorbars else "lp"
+        plotstr += ", '/tmp/file_aver.tmp' w %s lw 2 lc rgb 'black' title 'average trend'" % aver_lt
+    if fstr: # add function string(s)
         plotstr += ","+fstr
+    
     
     cmd = """gnuplot << EOF
     set style line 2 lc 3 
     set style line 3 lc 4 
     set style line 4 lc 5 
     set style line 5 lc 2 
-    set style increment user 
+    set style increment user
     %s
     unset key
     %s
@@ -147,4 +164,6 @@ if __name__ == '__main__':
     
     os.system( cmd )
     os.system( "rm -f %s" % fileout )
+    if do_aver:
+        os.system( "rm -f /tmp/file_aver.tmp")
 
