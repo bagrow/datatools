@@ -34,10 +34,11 @@ while getopts "h -help" opt; do
 done
 
 
-awk 'min == "" {min=max=$1}
+awk 'NF==0 {NR-=1; next}
+min == "" {min=max=$1}
 $1 < min  {min = $1}
 $1 > max  {max = $1}
-            {sum+=$1; sumsq+=$1*$1}
+{sum+=$1; sumsq+=$1*$1}
 END {
     print "    LEN:", NR;
     printf "    MIN: %0.8g\n", min;
