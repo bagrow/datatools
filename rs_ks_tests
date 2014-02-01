@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+# kstest2.py
+# Jim Bagrow
+# Last Modified: 2013-02-26
+
+import sys, os, itertools
+import numpy
+import scipy.stats
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [file0 file1]
+
+Perform 2-sample KS test on data. Usage is identical to `ranksum'.
+
+Input data are two filenames storing the values (X-data) for each sample, or a
+two-column format read from STDIN, where the first column are the values and
+each element of the second column is a 0 or 1 indicating which of the
+two samples that row's value belongs to.""" % (name)
+
+def cliff_effect_size(S1,S2):
+    """Too slow..."""
+    n1,n2 = len(S1),len(S2)
+    return 1.0 * sum( numpy.sign(s2-s1) for s1,s2 in itertools.product(S1,S2) ) / n1 / n2
+
+
+if __name__ == '__main__':
+    
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        sys.exit( usage )
+    elif len(sys.argv[1:]) == 2:
+        f1,f2 = sys.argv[1:]
+        if os.path.exists(f1) and os.path.exists(f2):
+            sample_one = [float(line.strip()) for line in open(f1)]
+            sample_two = [float(line.strip()) for line in open(f2)]
+    else:
+        fmat = lambda x: (float(x[0]),int(x[1]))
+        data = [ fmat(x.strip().split()) for x in sys.stdin if x.strip() ]
+        
+        sample_one = [d[0] for d in data if d[1] == 0]
+        sample_two = [d[0] for d in data if d[1] == 1]
+    
+    # ranksum:
+    u, p_onesided = scipy.stats.mannwhitneyu(sample_one, sample_two)
+    p_twosided = 2*p_onesided
+    # ks-test:
+    ksstat, p_value = scipy.stats.ks_2samp(sample_one, sample_two)
+    
+    print "RS p-value =", (2*p_onesided), "*" if 2*p_onesided < 0.05 else ""
+    print "KS p-value =", p_value,        "*" if      p_value < 0.05 else ""
+    print "size(0), size(1)   = %i, %i" % (len(sample_one), len(sample_two))
+    print "mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one))
+    print "mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two))
+    
+    X1 = numpy.array(sample_one)
+    X2 = numpy.array(sample_two)
+    n1 = len(sample_one)
+    n2 = len(sample_two)
+    m1 = numpy.mean(X1)
+    m2 = numpy.mean(X2)
+    s1 = numpy.std(X1,ddof=1)
+    s2 = numpy.std(X2,ddof=1)
+    
+    s = numpy.sqrt( ((n1-1)*s1**2 + (n2-1)*s2**2)/(n1+n2) )
+    print "Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s
+    #print "Estimated Z-factor                 =", 1 - 3.0* (s2+s1) / numpy.abs(m2-m1)
+    print "SSMD                               =", (m2-m1)/numpy.sqrt(s1*s1 + s2*s2)
+    #print "Cliff effect size                  =", cliff_effect_size(sample_one,sample_two)
+
+

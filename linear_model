@@ -1,0 +1,48 @@
+#!/usr/bin/env Rscript
+
+# proc command line:
+args=(commandArgs(trailingOnly=TRUE))
+summary_only = FALSE;
+if (length(args)>0) {
+    if ("-s" %in% args | "summary" %in% args ){
+        summary_only = TRUE;
+    } else if ("-h" %in% args | "help" %in% args ){
+        cat("Usage: linear_model [options]
+            
+Fit a robust linear model to XY-data received from STDIN. Returns four columns
+to STDOUT. The first two columns are the XY-coordinates of the line, while the
+second two columns give confidence intervals on the line.
+
+Options:
+  -s | --summary : Print a summary of the linear model instead of XY-data for
+                   the fitted line.
+
+Example:
+  cat xy_scatter.txt | linear_model | plot -e \n\n")
+        
+        q(save="no")
+    }
+}
+
+
+library(robustbase, quietly=TRUE)
+table <- read.table(pipe('cat /dev/stdin'), header=F);
+
+V1 <- table$V1
+V2 <- table$V2
+
+mdl <- lmrob(formula = V2 ~ V1)
+
+if (summary_only) {
+    summary(mdl)
+} else {
+    newx <- seq(min(V1), max(V1), (max(V1)-min(V1))/200.0)
+    a <- predict(mdl, newdata=data.frame(V1=newx), interval="confidence")
+    
+    print.matrix <- function(m){
+    write.table(format(m, justify="right"),
+                row.names=F, col.names=F, quote=F)
+    }
+    
+    print(cbind(newx,a))
+}
