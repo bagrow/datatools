@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+# from_epoch.py
+# Jim Bagrow
+# Last Modified: 2012-06-02
+
+import sys, os
+import datetime
+import time
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s [time_format]
+
+Convert epoch times (number of second since the UNIX epoch) read from STDIN to
+formatted time.
+
+Options:
+  time_format  - Describes how the timestamps are displayed [default:
+                 %%Y-%%m-%%d %%H:%%M:%%S].
+
+Example:
+  cat seconds_since.txt | %s > dates.txt""" % (name,name)
+
+
+if __name__ == '__main__':
+    
+    if "-h" in sys.argv[1:] or "--help" in sys.argv[1:]:
+        sys.exit(usage)
+    
+    try:
+        tfmt = sys.argv[1]
+    except IndexError:
+        tfmt = '%Y-%m-%d %H:%M:%S'
+    try:
+        cid = int(sys.argv[2]) - 1
+    except IndexError:
+        cid = 0
+        
+    for x in sys.stdin:
+        L = x.strip().split()
+        
+        x = L[cid]
+        if not x:
+            continue
+        try:
+            x = float(x)
+        except ValueError:
+            sys.exit("Error: data not in float format")
+        
+        # convert float seconds to timestamp:
+        try:
+            timestamp = datetime.datetime.fromtimestamp(x).strftime(tfmt)
+        except Exception,e_msg:
+            sys.exit("Error: %s" % e_msg)
+        
+        L[cid] = timestamp
+        sys.stdout.write("%s\n" % " ".join(L) )
+        
