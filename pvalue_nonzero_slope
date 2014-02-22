@@ -2,7 +2,7 @@
 
 # pvalue_nonzero_slope
 # Jim Bagrow
-# Last Modified: 2014-02-01
+# Last Modified: 2014-02-22
 
 import sys, os
 import numpy
@@ -15,18 +15,29 @@ usage = \
 Perform simple linear regression on XY-data received from STDIN and compute the
 two-sided p-value for a null hypothesis that the slope of the regressed line is
 zero. If this p-value is very small then that is evidence that the data
-exhibits a significant trend.""" % (name)
+exhibits a significant trend.
+
+Options:
+  -q | --quiet : Print only the p-value, without additional text.
+
+Example:
+  cat tutorial/xy.dat | %s""" % (name,name)
 
 if __name__ == '__main__':
     
+    argv = [ s for s in sys.argv[1:] ]
     if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
         sys.exit( usage )
+    A = set(argv)
     
     # get the data and do the regression:
     data = [ map(float,l.strip().split()) for l in sys.stdin if l.strip() ]
     X,Y = zip(*data)
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X,Y)
     
+    if "-q" in A or "--quiet" in A:
+        print p_value
+        sys.exit()
     
     sig_str = ""
     if p_value <= 0.001:
