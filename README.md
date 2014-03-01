@@ -76,6 +76,8 @@ Recent versions of, e.g., OS X include everything but gnuplot, networkx,
 matplotlib, and R. Some knowledge of gnuplot is very helpful for customizing
 plot appearance as the `-p` and `-c` options use valid gnuplot code.
 
+If you need to install some of these dependencies on OS X, I strongly encourage
+you to check out [Homebrew][].
 
 License
 =======
@@ -105,3 +107,4 @@ License
 [matplotlib]: http://matplotlib.sourceforge.net
 [R]:          http://www.r-project.org/
 [robustbase]: http://cran.r-project.org/web/packages/robustbase/index.html
+[Homebrew]:   http://brew.sh/
