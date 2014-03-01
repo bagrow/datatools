@@ -2,7 +2,7 @@
 
 # ksdensity
 # Jim Bagrow
-# Last Modified: 2012-12-12
+# Last Modified: 2014-02-26
 
 import sys, os
 import numpy
@@ -11,10 +11,13 @@ import scipy.stats as stats
 
 name = os.path.basename(sys.argv[0])
 usage = \
-"""Usage: %s
+"""Usage: %s [x-min x-max]
 
 Compute KS-density [1] for PDF of X-data received from STDIN. Returns XY-data
 for the estimated underlying density which may then be plotted.
+
+x-min and x-max control the x-values over which to compute the kernel (default
+are min(data) and max(data)).
 
 [1] http://en.wikipedia.org/wiki/Kernel_density_estimation
 
@@ -34,8 +37,12 @@ if __name__ == '__main__':
     
     kde = stats.kde.gaussian_kde(data)
     
-    xmin,xmax = min(data),max(data)
-    X = numpy.linspace(xmin,xmax,100)
+    try:
+        xmin,xmax = float(sys.argv[1]),float(sys.argv[2])
+    except:
+        xmin,xmax = min(data),max(data)
+    
+    X = numpy.linspace(xmin,xmax,200)
     
     for x,z in izip(X,list(kde(X))):
         print x,z
