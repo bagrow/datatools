@@ -51,10 +51,10 @@ Get the git repository:
     $ cd
     $ git clone git://github.com/bagrow/datatools.git
 
-Then add the `datatools` directory to your path.  For example, put
+Then add the `datatools/bin` directory to your path.  For example, put
 
-    if [ -d "$HOME/datatools" ]; then
-        export PATH=~/datatools:$PATH
+    if [ -d "$HOME/datatools/bin" ]; then
+        export PATH=~/datatools/bin:$PATH
     fi
 
 in your `bashrc`.
