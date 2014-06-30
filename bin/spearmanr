@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+# spearmanr
+# Jim Bagrow
+# Last Modified: 2014-06-28
+
+import sys, os
+import math
+try:
+    import scipy.stats
+except ImportError:
+    sys.exit("Sorry, this function requires the python scipy package. Exiting...")
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s 
+
+Compute Spearman's rho for rank correlation [1] on X-data read from STDIN.
+
+Options:
+  -p | --pvalue : Display pvalue as well as rho.
+
+[1] https://en.wikipedia.org/wiki/Spearman's_rank_correlation_coefficient
+
+Example:
+  cat tutorial/xy.dat | %s """ % (name,name)
+
+
+if __name__ == '__main__':
+    
+    args = [a.lower() for a in sys.argv[1:]]
+    if '-h' in args or '--help' in args:
+        sys.exit( usage )
+    
+    X,Y = zip(*[ map(float, x.strip().split()) for x in sys.stdin if x.strip() ])
+    
+    R,p = scipy.stats.stats.spearmanr(X, Y)
+    
+    ostr = "rho = %f" % R
+    if "-p" in args or "--pvalue" in args:
+        ostr = "rho = %f (p = %0.18f)" % (R,p)
+    
+    print ostr
