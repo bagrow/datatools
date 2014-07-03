@@ -18,7 +18,7 @@ usage = \
 Compute Spearman's rho for rank correlation [1] on X-data read from STDIN.
 
 Options:
-  -p | --pvalue : Display pvalue as well as rho.
+  -q | --quiet : Display only the value of rho.
 
 [1] https://en.wikipedia.org/wiki/Spearman's_rank_correlation_coefficient
 
@@ -36,8 +36,8 @@ if __name__ == '__main__':
     
     R,p = scipy.stats.stats.spearmanr(X, Y)
     
-    ostr = "rho = %f" % R
-    if "-p" in args or "--pvalue" in args:
-        ostr = "rho = %f (p = %0.18f)" % (R,p)
+    ostr = "rho = %f (p = %0.8e)" % (R,p)
+    if "-q" in args or "--quiet" in args:
+        ostr = "%f" % R
     
     print ostr
