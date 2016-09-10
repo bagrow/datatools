@@ -20,6 +20,7 @@ def build_parser():
     parser = argparse.ArgumentParser(description='R|' + usage, formatter_class=SmartFormatter)
     parser.add_argument('size', type=int)
     parser.add_argument('filename', type=str, nargs='?')
+    parser.add_argument('--with-replacement', '-R', action='store_true', help='Sample with replacement')
     return parser
 
 # http://stackoverflow.com/questions/3853722/python-argparse-how-to-insert-newline-in-the-help-text
@@ -33,7 +34,7 @@ class SmartFormatter(argparse.HelpFormatter):
 def sample_without_replacement(size, input):
     # Code adapted from: http://data-analytics-tools.blogspot.com/2009/09/reservoir-sampling-algorithm-in-perl.html
     sample = [];
-    for i,line in enumerate(input):
+    for i, line in enumerate(input):
         if i < size:
             sample.append(line)
         elif i >= size and random.random() < size/float(i+1):
@@ -41,13 +42,33 @@ def sample_without_replacement(size, input):
             sample[replace] = line
     return sample
 
+def sample_with_replacement(size, input):
+    sample = []
+    for i, line in enumerate(input):
+        if i == 0:
+            sample = [line] * size
+        else:
+            for index in range(len(sample)):
+                # Each sample point should have a 1 / (i + 1)
+                #    probability of being the new value
+                # It has an equal probablility of being any of the old
+                #   values (inductive hypothesis), i.e i / (i + 1) / i = 1 / (i + 1)
+                if random.random() < 1 / float(i + 1):
+                    sample[index] = line
+    return sample
+
 
 def main():
     parser = build_parser()
     args = parser.parse_args()
 
+    if args.with_replacement:
+        selection_method = sample_with_replacement
+    else:
+        selection_method = sample_without_replacement
+
     stream = open(args.filename) if args.filename else sys.stdin
-    for line in sample_without_replacement(args.size, stream):
+    for line in selection_method(args.size, stream):
         sys.stdout.write(line)
 
 
