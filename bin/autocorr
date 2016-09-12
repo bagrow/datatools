@@ -20,6 +20,8 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import sys, os
 import numpy
 
@@ -42,4 +44,4 @@ if __name__ == '__main__':
     convolution = numpy.correlate(data, data, mode='full')
     correlation = convolution[convolution.size //2:] / numpy.inner(data, data)
     for value in correlation:
-        print value
+        print(value)
