@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#  This file is part of Datatools.
+#  
+#  Datatools is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Datatools is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
+
+usage(){
+    name=`basename $0`
+    echo -e "Usage: $name [options]"
+    echo -e ""
+    echo -e "Remove first (header) row from STDIN."
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  number of header rows to skip (default 1)"
+    echo -e ""
+    echo -e "WARNING: does not check if first row is a header."
+    echo -e ""
+    echo -e "Example:\n  cat cool_data.txt | nohead | plot"
+    exit 1
+}
+
+is_positive_integer() {
+    [[ $1 =~ ^[0-9]+$ ]] && (( $1 > 0 ))
+}
+
+ARGSTR="$*" # store args before they're consumed
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help )   usage;;
+                [?] )   usage;;
+    esac
+    shift
+done
+
+NUM_SKIP=1
+for arg in $ARGSTR; do
+    if is_positive_integer $arg ; then
+        NUM_SKIP=$arg
+    else
+        echo "Error: number of header rows to skip ('$arg') must be a positive integer."
+        usage
+    fi
+done
+
+
+tail -n +$((NUM_SKIP + 1))
