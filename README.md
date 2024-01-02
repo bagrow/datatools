@@ -103,7 +103,7 @@ License
 [scipy]:      http://www.scipy.org/
 [python]:     http://python.org/
 [gnuplot]:    http://www.gnuplot.info/
-[networkx]:   http://networkx.lanl.gov
+[networkx]:   https://networkx.github.io
 [matplotlib]: http://matplotlib.sourceforge.net
 [R]:          http://www.r-project.org/
 [robustbase]: http://cran.r-project.org/web/packages/robustbase/index.html
