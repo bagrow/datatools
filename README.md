@@ -65,18 +65,18 @@ Requirements
 
 * bash and awk (very common)
 * [gnuplot][] (and X11 terminal)
-* [python][] 2.x (probably 2.5+) with packages:
+* [python][] 3.x with packages:
     - [numpy][] (version with fixed histogram normalization, around 1.6+)
     - [scipy][] (only for `ksdensity`, `normaltest`, `ranksum`, `kstest2`, `rs_ks_tests` and `pvalue_nonzero_slope`)
     - [networkx][] (only for `el2info`, `el2gcc`, and `el2draw`)
     - [matplotlib][] (only for `el2draw`)
 * [R][] and the [robustbase][] package (only for `linear_model`)
 
-Recent versions of, e.g., OS X include everything but gnuplot, networkx,
+Recent versions of, e.g., macOS include everything but gnuplot, networkx,
 matplotlib, and R. Some knowledge of gnuplot is very helpful for customizing
 plot appearance as the `-p` and `-c` options use valid gnuplot code.
 
-If you need to install some of these dependencies on OS X, I strongly encourage
+If you need to install some of these dependencies on macOS, I strongly encourage
 you to check out [Homebrew][].
 
 License
