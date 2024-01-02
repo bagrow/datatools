@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+# length
+# Jim Bagrow
+# Last Modified: 2016-09-09
+
+from __future__ import print_function
+import sys, os
+
+name = os.path.basename(sys.argv[0])
+usage = \
+"""Usage: %s
+
+Count number of lines of data received from stdin. Equivalent to
+`wc -l` only if data ends with a trailing return character, otherwise
+`wc -l` may undercount by one.
+
+example:
+  cat tutorial/xy.dat | %s""" % (name,name)
+
+if __name__ == '__main__':
+    
+    # parse args:
+    argv = [ s.lower() for s in sys.argv[1:] ]
+    if '-h' in argv or '--help' in argv:
+        sys.exit( usage )
+    
+    print(len([ l for l in sys.stdin if l.strip() ]))
