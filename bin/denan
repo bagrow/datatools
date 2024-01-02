@@ -46,7 +46,7 @@ for l in sys.stdin:
     if any( isnan(v) or isinf(v) for v in D ):
         continue
     try:
-        print l.strip()
+        print(l.strip())
     except IOError:
         break
 "

@@ -2,8 +2,9 @@
 
 # curvefit
 # Jim Bagrow
-# Last Modified: 2011-10-19
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 import re, math
 
@@ -101,7 +102,7 @@ def parse_fit_log(logfile, params):
         p2v[ X[0] ] = X[2]
     if len(p2v) != len(params):
         sys.exit("Error: Fit parameters missing, did fit converge?  Exiting...")
-    p,v = zip(*[ (p,p2v[p]) for p in params])
+    p,v = list(zip(*[ (p,p2v[p]) for p in params]))
     return v
 
 
@@ -141,7 +142,7 @@ def build_plot_str(equation,param_val):
     """Takes the fit function and fitted parameter values to build a label to
     show on the gnuplot window.
     """
-    params,vals = zip(*param_val)
+    params,vals = list(zip(*param_val))
     s = "\\n".join( "%s = %s" % (p,v) for (p,v) in param_val)
     return s
 
@@ -271,7 +272,7 @@ if __name__ == '__main__':
     set style line 3 lc 4 
     set style line 4 lc 5 
     set style line 5 lc 2 
-    set style increment user 
+    #set style increment user 
     fac(x) = (int(x)==0) ? 1.0 : int(x) * fac(int(x)-1.0)
     set fit logfile '%s'
     f(x) = %s  # define the function to be fit
@@ -290,7 +291,7 @@ if __name__ == '__main__':
     if '-vv' in options or '--vverbose' in options: # print the fit.log file
         os.system( "cat %s" % logfout )
     elif '-v' in options or '--verbose' in options: # print the fitted formula
-        print "y =", fitted_function
+        print("y =", fitted_function)
     
     # plot data and fit, if desired:
     if '-n' not in options and '--noplot' not in options:
@@ -300,7 +301,7 @@ if __name__ == '__main__':
         
         # add fit label to plot options:
         if "--nolabel" not in options:
-            str_lbl = build_plot_str( equation, zip(params,values) )
+            str_lbl = build_plot_str( equation, list(zip(params,values)) )
             str_lbl = "set label 98 \\\"y = %s\\n%s\\\" at graph 0.715,0.95 front" % (equation,str_lbl)
             plot_options += " -c \"%s\"" % str_lbl
             

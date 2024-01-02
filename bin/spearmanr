@@ -40,4 +40,4 @@ if __name__ == '__main__':
     if "-q" in args or "--quiet" in args:
         ostr = "%f" % R
     
-    print ostr
+    print(ostr)

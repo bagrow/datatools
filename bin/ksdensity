@@ -4,9 +4,9 @@
 # Jim Bagrow
 # Last Modified: 2014-02-26
 
+from __future__ import print_function
 import sys, os
 import numpy
-from itertools import izip
 import scipy.stats as stats
 
 name = os.path.basename(sys.argv[0])
@@ -44,5 +44,5 @@ if __name__ == '__main__':
     
     X = numpy.linspace(xmin,xmax,200)
     
-    for x,z in izip(X,list(kde(X))):
-        print x,z
+    for x,z in zip(X,list(kde(X))):
+        print(x,z)

@@ -82,7 +82,7 @@ if __name__ == '__main__':
     fstr=''
     cstr=''
     pstr='w lp pt 4'
-    ostr='set term x11 enhanced persist'
+    ostr='set term qt enhanced persist'
     do_aver,aver_errorbars = False,False
     aver_args = ""
     for i,arg in enumerate(argv):
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     plotstr = "plot '%s' %s" % (fileout,pstr)
     if shared:
         N = len( open(fileout).readline().strip().split() )-1
-        for i in xrange(1,N):
+        for i in range(1,N):
             plotstr += ", '%s' u 1:%i %s" % (fileout, i+2, pstr)
     if do_aver: # get trendline if necessary
         os.system("cat %s | aver %s > /tmp/file_aver.tmp" % (fileout,aver_args))
@@ -147,12 +147,13 @@ if __name__ == '__main__':
         plotstr += ","+fstr
     
     
-    cmd = """gnuplot << EOF
+    cmd = """export GNUTERM="qt font 'Helvetica,14'"
+    gnuplot << EOF
     set style line 2 lc 3 
     set style line 3 lc 4 
     set style line 4 lc 5 
     set style line 5 lc 2 
-    set style increment user
+    #set style increment user
     %s
     unset key
     %s

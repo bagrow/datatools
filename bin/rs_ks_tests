@@ -47,11 +47,11 @@ if __name__ == '__main__':
     # ks-test:
     ksstat, p_value = scipy.stats.ks_2samp(sample_one, sample_two)
     
-    print "RS p-value =", (2*p_onesided), "*" if 2*p_onesided < 0.05 else ""
-    print "KS p-value =", p_value,        "*" if      p_value < 0.05 else ""
-    print "size(0), size(1)   = %i, %i" % (len(sample_one), len(sample_two))
-    print "mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one))
-    print "mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two))
+    print("RS p-value =", (2*p_onesided), "*" if 2*p_onesided < 0.05 else "")
+    print("KS p-value =", p_value,        "*" if      p_value < 0.05 else "")
+    print("size(0), size(1)   = %i, %i" % (len(sample_one), len(sample_two)) )
+    print("mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one)) )
+    print("mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two)) )
     
     X1 = numpy.array(sample_one)
     X2 = numpy.array(sample_two)
@@ -63,9 +63,9 @@ if __name__ == '__main__':
     s2 = numpy.std(X2,ddof=1)
     
     s = numpy.sqrt( ((n1-1)*s1**2 + (n2-1)*s2**2)/(n1+n2) )
-    print "Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s
+    print("Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s)
     #print "Estimated Z-factor                 =", 1 - 3.0* (s2+s1) / numpy.abs(m2-m1)
-    print "SSMD                               =", (m2-m1)/numpy.sqrt(s1*s1 + s2*s2)
+    print("SSMD                               =", (m2-m1)/numpy.sqrt(s1*s1 + s2*s2))
     #print "Cliff effect size                  =", cliff_effect_size(sample_one,sample_two)
 
 

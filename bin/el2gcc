@@ -4,6 +4,7 @@
 # Jim Bagrow
 # Last Modified: 2011-04-07
 
+from __future__ import print_function
 import sys, os
 try:
     import networkx
@@ -49,5 +50,5 @@ if __name__ == '__main__':
     
     # print edgelist to STDOUT:
     for ni,nj in Ggcc.edges():
-        print ni, nj
+        print(ni, nj)
 

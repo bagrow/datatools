@@ -2,7 +2,7 @@
 
 # normaltest
 # Jim Bagrow
-# Last Modified: 2012-08-22
+# Last Modified: 2016-09-09
 
 """
     This file is part of Datatools.
@@ -21,6 +21,7 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
 import sys, os
 
 name = os.path.basename(sys.argv[0])
@@ -76,6 +77,6 @@ if __name__ == '__main__':
     k, p = stats.normaltest(data)
     
     # display:
-    print "Normality test p-value =", float(p), "(likely non-normal if p << 1)"
+    print("Normality test p-value =", float(p), "(likely non-normal if p << 1)")
     if keep_score:
-        print "          test score   =", float(k)
+        print("          test score   =", float(k))

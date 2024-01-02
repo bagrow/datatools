@@ -2,8 +2,7 @@
 
 # lag.py
 # Jim Bagrow
-# Last Modified: 2012-04-12
-
+# Last Modified: 2016-09-09
 
 """
     This file is part of Datatools.
@@ -22,9 +21,8 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os, math
-from itertools import izip
-import numpy
+from __future__ import print_function
+import sys, os
 
 name = os.path.basename(sys.argv[0])
 usage = \
@@ -70,6 +68,6 @@ if __name__ == '__main__':
         X = data
         Y = data[k:] + data[:k]
     
-    for x,y in izip(X,Y):
-        print x,y
+    for x,y in zip(X,Y):
+        print(x,y)
     

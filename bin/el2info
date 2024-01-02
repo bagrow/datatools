@@ -2,8 +2,9 @@
 
 # el2info
 # Jim Bagrow
-# Last Modified: 2012-04-12
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 try:
     import networkx
@@ -32,6 +33,12 @@ Options:
 Example:
   cat edgelist.txt | %s """ % (name,name)
 
+
+try:
+    input = raw_input
+except NameError:
+    pass
+
 ## {{{ http://code.activestate.com/recipes/577058/ (r2)
 def query_yes_no(question):
     """Ask a yes/no question via raw_input() and return True or False."""
@@ -41,7 +48,7 @@ def query_yes_no(question):
     
     while 1:
         sys.stdout.write(question + " [y/N] ")
-        choice = raw_input().lower()
+        choice = input().lower()
         if choice in valid:
             return valid[choice]
         else:
@@ -89,7 +96,7 @@ if __name__ == '__main__':
         G = networkx.connected_component_subgraphs(G)[0]
         N_comps = "1 (GCC only)"
     else:
-        L       = networkx.connected_components(G)
+        L = list(networkx.connected_components(G))
         N_comps = len(L)
     
     N   = G.number_of_nodes()
@@ -103,7 +110,7 @@ if __name__ == '__main__':
     
     # do the diameter?
     if not skip_diameter and N_comps > 1 and not gcc_only:
-        Gdia = networkx.connected_component_subgraphs(G)[0]
+        Gdia = list(networkx.connected_component_subgraphs(G))[0]
     else:
         Gdia = G
     if prompt_diameter:
@@ -113,19 +120,19 @@ if __name__ == '__main__':
     
     # display output:
     flt_fmt = "%0.8f"
-    print "       Number of Nodes =", N
-    print "       Number of Links =", M
-    print "          Link Density =", flt_fmt % (M / (N*(N-1)/2.0))
-    print "        Average Degree =", flt_fmt % (2.0 * M / N)
-    print "Clustering Coefficient =", flt_fmt % C
-    print "          Transitivity =", flt_fmt % T
-    print "  Number of Components =", N_comps
+    print("       Number of Nodes =", N                             )
+    print("       Number of Links =", M                             )
+    print("          Link Density =", flt_fmt % (M / (N*(N-1)/2.0)) )
+    print("        Average Degree =", flt_fmt % (2.0 * M / N)       )
+    print("Clustering Coefficient =", flt_fmt % C                   )
+    print("          Transitivity =", flt_fmt % T                   )
+    print("  Number of Components =", N_comps                       )
     
     if prompt_diameter:
-        print "              Diameter =", networkx.diameter(Gdia)
+        print("              Diameter =", networkx.diameter(Gdia))
     elif force_diameter:
-        print "              Diameter =", networkx.diameter(Gdia)
+        print("              Diameter =", networkx.diameter(Gdia))
     
     if gcc_only is False and N_comps > 1:
-        print "       Fraction in GCC =", flt_fmt % (1.0 * len(L[0]) / N)
+        print("       Fraction in GCC =", flt_fmt % (1.0 * len(L[0]) / N))
     

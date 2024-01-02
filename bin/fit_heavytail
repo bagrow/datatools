@@ -3,8 +3,9 @@
 
 # fit_heavytail
 # Jim Bagrow
-# Last Modified: 2014-06-26
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 try:
     import powerlaw # third-party install w/ pip, requires `mpmath` also pip-able
@@ -44,19 +45,19 @@ if __name__ == '__main__':
     
     
     results = powerlaw.Fit(data, discrete=do_discrete)
-    print
-    print
-    print "Power law fit:"
-    print "      α = %f ± %f" % (results.power_law.alpha, results.power_law.sigma)
-    print "   xᴹⁱⁿ =", results.power_law.xmin
-    print
-    print "Log-normal fit:"
-    print "      µ = %f" % (results.lognormal.mu)
-    print "      σ = %f" % (results.lognormal.sigma)
+    print(                                                                        )
+    print(                                                                        )
+    print("Power law fit:"                                                        )
+    print("      α = %f ± %f" % (results.power_law.alpha, results.power_law.sigma))
+    print("   xᴹⁱⁿ =", results.power_law.xmin                                     )
+    print(                                                                        )
+    print("Log-normal fit:"                                                       )
+    print("      µ = %f" % (results.lognormal.mu)                                 )
+    print("      σ = %f" % (results.lognormal.sigma)                              )
         
     R, p = results.distribution_compare('power_law', 'lognormal', nested=False)
-    print
-    print "Compare distributions:"
-    print "  log-likehood ratio test: R = %f, p = %f" % (R, p)
-    print "  (if R < 0, favor the power-law.)"
+    print(                                                    )
+    print("Compare distributions:"                            )
+    print("  log-likehood ratio test: R = %f, p = %f" % (R, p))
+    print("  (if R < 0, favor the power-law.)"                )
     

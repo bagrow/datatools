@@ -58,7 +58,7 @@ if __name__ == '__main__':
     fstr=''
     cstr=''
     pstr='w lp pt 4'
-    ostr='set term x11 enhanced persist'
+    ostr='set term qt enhanced persist'
     logX,logY = False,False
     force_key = False
     while argv:
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     set style line 3 lc 4 
     set style line 4 lc 5 
     set style line 5 lc 2 
-    set style increment user 
+    #set style increment user 
     %s
     unset key
     %s

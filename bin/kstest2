@@ -2,8 +2,9 @@
 
 # kstest2.py
 # Jim Bagrow
-# Last Modified: 2013-02-08
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 import numpy
 import scipy.stats
@@ -38,10 +39,10 @@ if __name__ == '__main__':
     ksstat, p_value = scipy.stats.ks_2samp(sample_one, sample_two)
     label = "* significant at 0.05" if p_value < 0.05 else "not significant at 0.05"
     
-    print "p-value =", p_value, "(%s)" % label
-    print "K-S statistic =", ksstat
-    print "mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one))
-    print "mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two))
+    print("p-value =", p_value, "(%s)" % label                                              )
+    print("K-S statistic =", ksstat                                                         )
+    print("mean(0), median(0) = %f, %f" % (numpy.mean(sample_one), numpy.median(sample_one)))
+    print("mean(1), median(1) = %f, %f" % (numpy.mean(sample_two), numpy.median(sample_two)))
     
     X1 = numpy.array(sample_one)
     X2 = numpy.array(sample_two)
@@ -53,5 +54,5 @@ if __name__ == '__main__':
     s2 = numpy.std(X2,ddof=1)
     
     s = numpy.sqrt( ((n1-1)*s1**2 + (n2-1)*s2**2)/(n1+n2) )
-    print "Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s
+    print("Effect size: d=(mean(1)-mean(0))/s =", (m2-m1)/s)
 

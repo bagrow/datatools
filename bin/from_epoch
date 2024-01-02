@@ -2,11 +2,11 @@
 
 # from_epoch.py
 # Jim Bagrow
-# Last Modified: 2012-06-02
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 import datetime
-import time
 
 name = os.path.basename(sys.argv[0])
 usage = \
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         # convert float seconds to timestamp:
         try:
             timestamp = datetime.datetime.fromtimestamp(x).strftime(tfmt)
-        except Exception,e_msg:
+        except Exception as e_msg:
             sys.exit("Error: %s" % e_msg)
         
         L[cid] = timestamp

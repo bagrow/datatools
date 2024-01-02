@@ -36,7 +36,7 @@ if __name__ == '__main__':
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X,Y)
     
     if "-q" in A or "--quiet" in A:
-        print p_value
+        print(p_value)
         sys.exit()
     
     sig_str = ""
@@ -47,8 +47,8 @@ if __name__ == '__main__':
     elif 0.01  < p_value <= 0.05:
         sig_str = "*"
     
-    print "Linear regression:"
-    print "  slope     = %f" % slope
-    print "  intercept = %f" % intercept
-    print "  R-squared = %f" % (r_value**2)
-    print "  p-value   = %f %s" % (p_value, sig_str)
+    print("Linear regression:")
+    print("  slope     = %f" % slope)
+    print("  intercept = %f" % intercept)
+    print("  R-squared = %f" % (r_value**2))
+    print("  p-value   = %f %s" % (p_value, sig_str))

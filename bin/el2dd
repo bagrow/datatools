@@ -2,8 +2,9 @@
 
 # el2dd
 # Jim Bagrow
-# Last Modified: 2011-04-07
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
 
 name = os.path.basename(sys.argv[0])
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     
     if just_degree_sequence:
         for n in n2k:
-            print n2k[n]
+            print(n2k[n])
     else:
         k2nk = {}
         for k in n2k.values():
@@ -67,7 +68,7 @@ if __name__ == '__main__':
                 k2nk[k]  = 1
         
         for k,nk in sorted(k2nk.items()):
-            print k, nk
+            print(k, nk)
 
     
 

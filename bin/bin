@@ -2,7 +2,7 @@
 
 # bin
 # Jim Bagrow
-# Last Modified: 2011-07-02
+# Last Modified: 2016-09-09
 
 """
     This file is part of Datatools.
@@ -21,6 +21,7 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
 import sys, os, numpy
 import warnings
 warnings.simplefilter("ignore", Warning)
@@ -83,4 +84,4 @@ if __name__ == '__main__':
     #print numpy.sum(hist*numpy.diff(bin_edges)) # check normalization...
     
     for b,h in zip(bin_centers, hist):
-        print b, h
+        print(b, h)

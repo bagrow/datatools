@@ -2,10 +2,10 @@
 
 # fnfo
 # Jim Bagrow
-# Last Modified: 2012-02-08
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os, stat, time
-from datetime import datetime
 import subprocess
 import locale
 locale.setlocale(locale.LC_ALL, '')
@@ -100,7 +100,7 @@ def file_contents(filename, delimiter, comment):
         L = line.strip().split(delimiter)
         if file_is_numeric:
             try:
-                X = [float(x) for x in L]
+                [float(x) for x in L]
             except ValueError:
                 file_is_numeric = False
         set_numCols.add( len(L) )
@@ -165,35 +165,43 @@ if __name__ == '__main__':
         if summary:
             fpretty = f.rjust( fwidth )
             if os.path.isdir(f):
-                print "%s:" % fpretty, "directory"
+                print("%s:" % fpretty, "directory")
                 continue
-            isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
-            nr_nc = format_dims(dims).replace(" ","").replace("s", "")
-            nr_nc = nr_nc.replace("row", "").replace("column", "").replace("line","")
-            contents = ("" if isMatrix else "lines (ragged)") if isNumeric else "lines (alphanumeric)"
-            print "%s:" % fpretty, nr_nc, contents
+            try:
+                isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
+                nr_nc = format_dims(dims).replace(" ","").replace("s", "")
+                nr_nc = nr_nc.replace("row", "").replace("column", "").replace("line","")
+                contents = ("" if isMatrix else "lines (ragged)") if isNumeric else "lines (alphanumeric)"
+                print("%s:" % fpretty, nr_nc, contents)
+            except UnicodeDecodeError:
+                pass
             continue
         
-        print f
+        print(f)
         try:
-            fileout = subprocess.Popen("/usr/bin/file -b %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
-            mime = subprocess.Popen("/usr/bin/file -b --mime %s" % f, shell=True, stdout=subprocess.PIPE).communicate()[0]
-            print "    Type          = %s (%s)" % (fileout.strip(), mime.strip())
+            fileout = subprocess.Popen("/usr/bin/file -b %s" % f, 
+                                       shell=True, universal_newlines=True, stdout=subprocess.PIPE).communicate()[0]
+            mime = subprocess.Popen("/usr/bin/file -b --mime %s" % f, 
+                                       shell=True, universal_newlines=True, stdout=subprocess.PIPE).communicate()[0]
+            print("    Type          = {} ({})".format(fileout.strip(), mime.strip()))
         except:
             pass
         
-        print "    Size          =", "%s"  % convert_bytes(fsize)
-        print "    Last modified =", "%s"  % flmod
-        print "    Last accessed =", "%s"  % flacc
-        print "    Permissions   =", get_permissions(f)
+        print("    Size          =", "%s"  % convert_bytes(fsize))
+        print("    Last modified =", "%s"  % flmod               )
+        print("    Last accessed =", "%s"  % flacc               )
+        print("    Permissions   =", get_permissions(f)          )
         
         if not os.path.isdir(f):
-            isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
-            print "    Contents      =", "numeric (%s)" % ("matrix" if isMatrix else "ragged") if isNumeric else "alphanumeric"
-            nr_nc = format_dims(dims)
-            print "    Dimensions    =", nr_nc
+            try:
+                isNumeric, isMatrix, dims = file_contents(f, delimiter, comment)
+                print("    Contents      =", "numeric (%s)" % ("matrix" if isMatrix else "ragged") if isNumeric else "alphanumeric")
+                nr_nc = format_dims(dims)
+                print("    Dimensions    =", nr_nc)
+            except UnicodeDecodeError:
+                pass
         
         if i < len(files)-1:
-            print
+            print()
     
 

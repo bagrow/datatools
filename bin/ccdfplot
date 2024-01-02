@@ -2,10 +2,11 @@
 
 # ccdfplot
 # Jim Bagrow
-# Last Modified: 2012-02-19
+# Last Modified: 2016-09-09
 
+from __future__ import print_function
 import sys, os
-from itertools import izip
+
 
 name = os.path.basename(sys.argv[0])
 usage = \
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     fstr=''
     cstr=''
     pstr='w lp pt 4'
-    ostr='set term x11 enhanced persist'
+    ostr='set term qt enhanced persist'
     list_infiles = []
     for i,arg in enumerate(argv):
         if os.path.exists(arg): # is a file
@@ -129,33 +130,34 @@ if __name__ == '__main__':
             L.append( [float(l.strip()) for l in open(f) if l.strip()] )
         list_titles = [l.replace("_","\_") for l in list_infiles] # since enhanced
     else:            # from stdin
-        D = [ map(float, l.strip().split()) for l in sys.stdin if l.strip() ]
+        D = [ list(map(float, l.strip().split())) for l in sys.stdin if l.strip() ]
         try:
-            L = zip(*D) # transpose
+            L = list(zip(*D)) # transpose
         except:
             sys.exit("Data malformed, check input.")
         list_titles = ["column %i" % i for i in range(1,len(L)+1)]
     num_curves = len(L)
     
-    files = [ "/tmp/file%i.tmp" % i for i in xrange(num_curves) ]
-    for data,f in izip(L,files):
+    files = [ "/tmp/file%i.tmp" % i for i in range(num_curves) ]
+    for data,f in zip(L,files):
         write(list(data), f)
     
     
     # build gnuplot strings:
     kstr = "set key" if force_key else ""
     plotstr = "plot '%s' %s title '%s'" % (files[0], pstr,list_titles[0])
-    for i in xrange(1,num_curves):
+    for i in range(1,num_curves):
         plotstr += ", '%s' %s title '%s'" % (files[i], pstr, list_titles[i])
     if fstr:
         plotstr += ","+fstr
     
-    cmd = """gnuplot << EOF
+    cmd = """export GNUTERM="qt font 'Helvetica,14'"
+    gnuplot << EOF
     set style line 2 lc 3 
     set style line 3 lc 4 
     set style line 4 lc 5 
     set style line 5 lc 2 
-    set style increment user 
+    #set style increment user 
     %s
     unset key
     %s

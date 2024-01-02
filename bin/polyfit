@@ -2,10 +2,9 @@
 
 # polyfit.py
 # Jim Bagrow
-# Last Modified: 2011-07-16
+# Last Modified: 2016-09-09
 
 import sys, os, numpy
-from itertools import izip
 #import warnings
 #warnings.simplefilter("ignore", Warning)
 
@@ -59,20 +58,20 @@ if __name__ == '__main__':
     
     # read XY-data from STDIN: (data is assumed to be two columns)
     data = [ map(float, x.strip().split())[:2] for x in sys.stdin if x.strip() ]
-    X,Y = zip(*data)
+    X,Y = list(zip(*data))
     
     z = numpy.polyfit(X,Y,degree)
     if do_polyval:
         Yout = numpy.polyval(z, X)
         if do_shared:
-            sys.stdout.write( "\n".join("%f %f %f" % (x,y,yf) for x,y,yf in izip(X,Y,Yout)) )
+            sys.stdout.write( "\n".join("%f %f %f" % (x,y,yf) for x,y,yf in zip(X,Y,Yout)) )
         else:
-            sys.stdout.write( "\n".join("%f %f"    % (x,  yf) for x,  yf in izip(X,  Yout)) )
+            sys.stdout.write( "\n".join("%f %f"    % (x,  yf) for x,  yf in zip(X,  Yout)) )
     elif do_rsqrd:
         Yout = numpy.polyval(z,X)
         ymean = numpy.mean(Y)
         SStot = sum( (yi-ymean)**2 for yi    in Y            )
-        SSerr = sum( (yi-fi   )**2 for yi,fi in izip(Y,Yout) )
+        SSerr = sum( (yi-fi   )**2 for yi,fi in zip(Y,Yout) )
         R2 = 1.0 - SSerr/SStot
         sys.stdout.write( " ".join(map(str,z)) )
         sys.stdout.write( " %f" % R2 )

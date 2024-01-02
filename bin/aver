@@ -2,7 +2,7 @@
 
 # aver
 # Jim Bagrow
-# Last Modified: 2014-06-27
+# Last Modified: 2016-09-09
 
 """
     This file is part of Datatools.
@@ -21,6 +21,7 @@
     along with Datatools.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
 import sys, os, math
 import numpy
 use_scipy = True
@@ -74,9 +75,11 @@ Options:
 Example:
   cat tutorial/xy.dat | %s | plot """ % (name,name)
 
+lmap = lambda func, *iterable: list(map(func, *iterable))
+
 def chunks(l, n):
     """ Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]
 
 
@@ -148,9 +151,9 @@ def uniq_binning(errorbars=False, standarderror=False, rows=False, sums=False, i
             except ValueError:
                 pass          # nope, keep it a string...
             try:
-                x2listy[x].extend( map(float,L[1:]) )
+                x2listy[x].extend( lmap(float,L[1:]) )
             except KeyError:
-                x2listy[x] = map(float,L[1:])
+                x2listy[x] = lmap(float,L[1:])
     else: # data is assumed to be two columns:
         data = [ x.strip().split() for x in sys.stdin if x.strip() ]
         for x,y in data:
@@ -165,7 +168,7 @@ def uniq_binning(errorbars=False, standarderror=False, rows=False, sums=False, i
                 x2listy[x] = [y]
     
     for x in sorted(x2listy.keys()):
-        print x, F(x2listy[x])
+        print(x, F(x2listy[x]))
 
 
 def aver_binning(num_bins, log=False, integer=False, errorbars=False, standarderror=False, iqr=False, rows=False, sums=False, prctile=False):
@@ -189,14 +192,14 @@ def aver_binning(num_bins, log=False, integer=False, errorbars=False, standarder
     if rows:
         for l in sys.stdin:
             if not l.strip(): continue
-            L = map(float, l.strip().split())
+            L = lmap(float, l.strip().split())
             x = L[0]
             for y in L[1:]:
                 data.append( (x,y) )
     else: # data is assumed to be two columns:
-        data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
+        data = [ lmap(float, x.strip().split()) for x in sys.stdin if x.strip() ]
     try:
-        X,Y = zip(*data)
+        X,Y = list(zip(*data))
     except ValueError:
         sys.exit("Error: bad data (too many columns?)")
     
@@ -213,7 +216,7 @@ def aver_binning(num_bins, log=False, integer=False, errorbars=False, standarder
     elif integer:
         minVal = int(min(X))
         maxVal = int(max(X)+0.5)
-        bin_edges = range(minVal, maxVal+1)
+        bin_edges = list(range(minVal, maxVal+1))
     else:
         bin_edges = numpy.linspace( min(X)-1e-8, max(X)+1e-8, num_bins+1 )
     
@@ -241,14 +244,14 @@ def aver_binning(num_bins, log=False, integer=False, errorbars=False, standarder
             y_25,bin_edges, misc = scipy.stats.binned_statistic(X,Y, statistic=G, bins=list(bin_edges) )
             y_75,bin_edges, misc = scipy.stats.binned_statistic(X,Y, statistic=H, bins=list(bin_edges) )
             for x,y,el,er in zip(x_bins,y_bins,y_25,y_75):
-                print x,y, el,er
+                print(x,y, el,er)
         elif G:
             y_e,bin_edges, misc = scipy.stats.binned_statistic(X,Y, statistic=G, bins=list(bin_edges) )
             for x,y,e in zip(x_bins,y_bins,y_e):
-                print x,y, e
+                print(x,y, e)
         else:
             for x,y in zip(x_bins,y_bins):
-                print x, y
+                print(x, y)
     
     else: # Fall back to slow way...
         bL,bR, data_in_bin, b = bin_edges[0],bin_edges[1], [], 0
@@ -261,11 +264,11 @@ def aver_binning(num_bins, log=False, integer=False, errorbars=False, standarder
                     data_in_bin.append( y )
                     in_bin = True
                 elif x >= bR:
-                    print 0.5*(bL+bR), F( data_in_bin ) # print current bin
+                    print(0.5*(bL+bR), F( data_in_bin )) # print current bin
                     b += 1                              # go to next bin, but with same x,y
                     bL, bR = bin_edges[b], bin_edges[b+1] # careful about IndexError...
                     data_in_bin = []
-        print 0.5*(bL+bR), F( data_in_bin ) # don't forget last bin!
+        print(0.5*(bL+bR), F( data_in_bin )) # don't forget last bin!
 
 
 def equal_binning(num_bins, errorbars=False, standarderror=False, iqr=False, rows=False, sums=False, prctile=False):
@@ -289,14 +292,14 @@ def equal_binning(num_bins, errorbars=False, standarderror=False, iqr=False, row
     if rows:
         for l in sys.stdin:
             if not l.strip(): continue
-            L = map(float, l.strip().split())
+            L = lmap(float, l.strip().split())
             x = L[0]
             for y in L[1:]:
                 data.append( (x,y) )
     else: # data is assumed to be two columns:
-        data = [ map(float, x.strip().split()) for x in sys.stdin if x.strip() ]
+        data = [ lmap(float, x.strip().split()) for x in sys.stdin if x.strip() ]
     try:
-        X,Y = zip(*data)
+        X,Y = list(zip(*data))
     except ValueError:
         sys.exit("Error: bad data (too many columns?)")
     
@@ -313,8 +316,8 @@ def equal_binning(num_bins, errorbars=False, standarderror=False, iqr=False, row
         D.pop()
     
     for chunk in D:
-        xd,yd = zip(*chunk)
-        print F(list(xd)),F(list(yd))
+        xd,yd = list(zip(*chunk))
+        print(F(list(xd)),F(list(yd)))
 
 
 if __name__ == '__main__':
